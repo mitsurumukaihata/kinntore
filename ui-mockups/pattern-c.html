@@ -1,0 +1,116 @@
+<!DOCTYPE html>
+<html lang="ja"><head><meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>NEON PUMP</title>
+<style>
+@import url('https://fonts.googleapis.com/css2?family=Orbitron:wght@500;700;900&family=Rajdhani:wght@500;700&display=swap');
+*{box-sizing:border-box;margin:0;padding:0;-webkit-tap-highlight-color:transparent}
+body{font-family:'Rajdhani',sans-serif;background:#05030f;color:#fff;min-height:100vh;overflow-x:hidden}
+.app{max-width:420px;margin:0 auto;background:
+  radial-gradient(ellipse at top,rgba(157,78,221,.25) 0%,transparent 50%),
+  radial-gradient(ellipse at bottom right,rgba(0,255,170,.15) 0%,transparent 50%),
+  #05030f;
+  min-height:100vh;position:relative;overflow:hidden}
+/* グリッドオーバーレイ */
+.app::before{content:'';position:absolute;inset:0;background:
+  linear-gradient(rgba(0,255,170,.05) 1px,transparent 1px),
+  linear-gradient(90deg,rgba(0,255,170,.05) 1px,transparent 1px);
+  background-size:24px 24px;pointer-events:none;mask:linear-gradient(180deg,#000 0%,transparent 70%)}
+/* HUDヘッダー */
+.hdr{padding:18px 20px;display:flex;justify-content:space-between;align-items:center;position:relative;z-index:2;border-bottom:1px solid rgba(0,255,170,.2)}
+.hdr .l{font-family:'Orbitron';font-size:14px;letter-spacing:.3em;color:#00ffaa;text-shadow:0 0 12px #00ffaa}
+.hdr .l small{display:block;color:#9d4edd;font-size:9px;letter-spacing:.4em;margin-top:2px;text-shadow:0 0 8px #9d4edd}
+.hdr .r{text-align:right;font-family:'Orbitron';font-size:11px;color:#888;letter-spacing:.15em}
+.hdr .r b{display:block;color:#00ffaa;font-size:14px;text-shadow:0 0 8px #00ffaa}
+/* メインHUD */
+.hud{position:relative;z-index:2;padding:30px 20px 20px;text-align:center}
+.hud .ring{position:relative;width:240px;height:240px;margin:0 auto}
+.hud .ring svg{width:100%;height:100%;transform:rotate(-90deg)}
+.hud .ring .bg{fill:none;stroke:rgba(0,255,170,.1);stroke-width:8}
+.hud .ring .fg{fill:none;stroke:url(#g1);stroke-width:8;stroke-linecap:round;stroke-dasharray:660;stroke-dashoffset:130;filter:drop-shadow(0 0 12px #00ffaa)}
+.hud .center{position:absolute;inset:0;display:flex;flex-direction:column;align-items:center;justify-content:center}
+.hud .center .lab{font-family:'Orbitron';font-size:9px;letter-spacing:.4em;color:#9d4edd;text-shadow:0 0 8px #9d4edd}
+.hud .center .v{font-family:'Orbitron';font-size:48px;font-weight:900;letter-spacing:-.02em;background:linear-gradient(180deg,#fff 0%,#00ffaa 100%);-webkit-background-clip:text;-webkit-text-fill-color:transparent;line-height:1;margin-top:6px}
+.hud .center .u{font-family:'Orbitron';font-size:14px;color:#00ffaa;letter-spacing:.2em;margin-top:2px;text-shadow:0 0 8px #00ffaa}
+.hud .center .pct{font-size:13px;color:#888;margin-top:10px;letter-spacing:.1em}
+.hud .center .pct b{color:#00ffaa}
+/* スタッツバー */
+.stats{display:grid;grid-template-columns:1fr 1fr 1fr;gap:8px;padding:0 20px;margin-bottom:18px;position:relative;z-index:2}
+.stats .s{background:rgba(157,78,221,.08);border:1px solid rgba(157,78,221,.3);padding:10px 8px;text-align:center;border-radius:4px;backdrop-filter:blur(4px)}
+.stats .s .lbl{font-family:'Orbitron';font-size:8px;color:#9d4edd;letter-spacing:.2em;margin-bottom:4px}
+.stats .s .v{font-family:'Orbitron';font-size:20px;font-weight:700;color:#fff}
+.stats .s .v small{color:#00ffaa;font-size:10px;margin-left:2px}
+/* セクション */
+.sec{padding:0 20px;margin:8px 0 12px;position:relative;z-index:2;display:flex;justify-content:space-between;align-items:center}
+.sec h2{font-family:'Orbitron';font-size:13px;letter-spacing:.3em;color:#fff}
+.sec h2::before{content:'▸ ';color:#00ffaa}
+.sec .badge{font-size:10px;color:#9d4edd;letter-spacing:.2em;font-family:'Orbitron'}
+/* 種目 */
+.list{padding:0 20px;display:flex;flex-direction:column;gap:8px;position:relative;z-index:2}
+.ex{background:linear-gradient(90deg,rgba(157,78,221,.08) 0%,rgba(0,0,0,.4) 100%);border:1px solid rgba(157,78,221,.25);padding:12px 14px;display:flex;align-items:center;gap:12px;border-radius:4px;cursor:pointer;transition:.2s;position:relative;overflow:hidden}
+.ex:hover{border-color:#00ffaa;box-shadow:0 0 16px rgba(0,255,170,.25)}
+.ex.on{border-color:#00ffaa;box-shadow:inset 0 0 12px rgba(0,255,170,.15)}
+.ex.on::before{content:'';position:absolute;left:0;top:0;bottom:0;width:3px;background:#00ffaa;box-shadow:0 0 8px #00ffaa}
+.ex .ico{width:40px;height:40px;background:rgba(0,255,170,.1);border:1px solid rgba(0,255,170,.4);display:flex;align-items:center;justify-content:center;color:#00ffaa;font-size:18px;font-family:'Orbitron'}
+.ex .body{flex:1;min-width:0}
+.ex .name{font-weight:700;font-size:14px;letter-spacing:.05em}
+.ex .meta{font-family:'Orbitron';font-size:10px;color:#888;letter-spacing:.1em;margin-top:3px}
+.ex .meta b{color:#00ffaa}
+.ex .vol{text-align:right}
+.ex .vol b{font-family:'Orbitron';font-size:18px;font-weight:700;color:#9d4edd;text-shadow:0 0 6px #9d4edd}
+.ex .vol small{display:block;font-size:8px;color:#666;letter-spacing:.2em;font-family:'Orbitron'}
+/* CTA */
+.cta{margin:20px;background:linear-gradient(90deg,#00ffaa 0%,#9d4edd 100%);color:#000;border:0;padding:16px;font-family:'Orbitron';font-size:14px;font-weight:900;letter-spacing:.25em;cursor:pointer;width:calc(100% - 40px);position:relative;z-index:2;border-radius:4px;box-shadow:0 0 24px rgba(0,255,170,.4);transition:.2s}
+.cta:hover{transform:translateY(-2px);box-shadow:0 0 32px rgba(0,255,170,.6)}
+/* nav */
+.nav{position:sticky;bottom:0;background:rgba(5,3,15,.95);border-top:1px solid rgba(0,255,170,.2);display:flex;padding:10px 0 14px;backdrop-filter:blur(8px);z-index:3}
+.nav a{flex:1;text-align:center;color:#666;text-decoration:none;font-family:'Orbitron';font-size:9px;letter-spacing:.2em;padding:6px 0}
+.nav a.on{color:#00ffaa;text-shadow:0 0 8px #00ffaa}
+.nav a .ico{display:block;font-size:18px;margin-bottom:3px}
+</style></head>
+<body>
+<div class="app">
+  <div class="hdr">
+    <div class="l">PUMP.OS<small>v2.0 / ONLINE</small></div>
+    <div class="r">2026.05.03 / SAT<b>SESSION #023</b></div>
+  </div>
+
+  <div class="hud">
+    <div class="ring">
+      <svg viewBox="0 0 240 240">
+        <defs><linearGradient id="g1" x1="0%" y1="0%" x2="100%" y2="100%"><stop offset="0%" stop-color="#00ffaa"/><stop offset="100%" stop-color="#9d4edd"/></linearGradient></defs>
+        <circle class="bg" cx="120" cy="120" r="105"/>
+        <circle class="fg" cx="120" cy="120" r="105"/>
+      </svg>
+      <div class="center">
+        <div class="lab">TOTAL VOLUME</div>
+        <div class="v">12,450</div>
+        <div class="u">KG</div>
+        <div class="pct">GOAL <b>81%</b> / +1,200kg</div>
+      </div>
+    </div>
+  </div>
+
+  <div class="stats">
+    <div class="s"><div class="lbl">SETS</div><div class="v">10<small>/15</small></div></div>
+    <div class="s"><div class="lbl">REPS</div><div class="v">94</div></div>
+    <div class="s"><div class="lbl">TIME</div><div class="v">42<small>min</small></div></div>
+  </div>
+
+  <div class="sec"><h2>EXERCISE QUEUE</h2><span class="badge">CHEST PROTOCOL</span></div>
+  <div class="list">
+    <div class="ex on"><div class="ico">⬢</div><div class="body"><div class="name">BENCH PRESS</div><div class="meta"><b>80kg</b> × 8 × 4SET</div></div><div class="vol"><b>2,560</b><small>KG</small></div></div>
+    <div class="ex"><div class="ico">⬢</div><div class="body"><div class="name">INCLINE DUMBBELL</div><div class="meta"><b>30kg</b> × 10 × 3SET</div></div><div class="vol"><b>1,800</b><small>KG</small></div></div>
+    <div class="ex"><div class="ico">⬢</div><div class="body"><div class="name">CABLE FLY</div><div class="meta"><b>20kg</b> × 12 × 3SET</div></div><div class="vol"><b>720</b><small>KG</small></div></div>
+    <div class="ex" style="opacity:.4"><div class="ico">⬡</div><div class="body"><div class="name">DIPS</div><div class="meta">BW × MAX × 3SET</div></div><div class="vol"><b>--</b><small>QUEUED</small></div></div>
+  </div>
+
+  <button class="cta">＋ ADD PROTOCOL</button>
+
+  <div class="nav">
+    <a class="on"><span class="ico">⬢</span>HUD</a>
+    <a><span class="ico">📊</span>DATA</a>
+    <a><span class="ico">⏱</span>LOG</a>
+    <a><span class="ico">⚙</span>SYS</a>
+  </div>
+</div>
+</body></html>

@@ -1,0 +1,71 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<title>筋トレアプリ UI 5案</title>
+<style>
+  *{box-sizing:border-box;margin:0;padding:0}
+  body{font-family:-apple-system,'Hiragino Sans',sans-serif;background:#0a0a0a;color:#fff;padding:24px}
+  h1{font-size:28px;margin-bottom:8px;letter-spacing:.05em}
+  .lead{color:#888;margin-bottom:32px}
+  .grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(420px,1fr));gap:24px}
+  .card{background:#161616;border:1px solid #2a2a2a;border-radius:12px;overflow:hidden}
+  .card h3{padding:14px 18px;background:#1f1f1f;font-size:16px;display:flex;justify-content:space-between;align-items:center;border-bottom:1px solid #2a2a2a}
+  .card h3 .tag{font-size:11px;color:#ff8a00;letter-spacing:.1em}
+  .card iframe{width:100%;height:780px;border:0;display:block;background:#000}
+  .card .desc{padding:14px 18px;font-size:13px;color:#aaa;line-height:1.6;border-top:1px solid #2a2a2a;background:#0f0f0f}
+</style>
+</head>
+<body>
+  <h1>筋トレアプリ トップ画面 案</h1>
+  <p class="lead">★ ⑨ TRAIN HARD = 参考画像準拠 (本命) / ⑥⑦⑧ = 写真+いじり / ①〜⑤ = 旧おしゃれ案</p>
+
+  <div class="grid">
+    <div class="card" style="grid-column:1 / -1;border:2px solid #e11d48">
+      <h3>⑨ TRAIN HARD - 参考準拠 ★本命★ <span class="tag">PATTERN I · NEW</span></h3>
+      <iframe src="pattern-i.html" style="height:1400px"></iframe>
+      <div class="desc"><b>頂いた参考画像の方向性で再構成。</b>黒背景×赤アクセント×マッチョ実写ヒーロー、TRAIN HARD/BE STRONG英大文字タイポ、円形プログレス、週カレンダー、種目リスト(ジムマシン写真サムネ)、メダル実績まで全部入り。</div>
+    </div>
+    <div class="card">
+      <h3>⑥ マッスル日記 <span class="tag">PATTERN F</span></h3>
+      <iframe src="pattern-f.html"></iframe>
+      <div class="desc"><b>ステッカー・手書き混在系。</b>マシン写真を主役に、付箋/吹き出し/手書き感の文字。「通称: 胸の支配者」みたいなイジり。気軽な日記帳ノリ。</div>
+    </div>
+    <div class="card">
+      <h3>⑦ 週刊マッスル速報 <span class="tag">PATTERN G · NEW</span></h3>
+      <iframe src="pattern-g.html"></iframe>
+      <div class="desc"><b>週刊誌/ZINE風。</b>「巻頭スクープ ベンチプレス80kg潰れず完遂」みたいな見出しで自分の筋トレを記事化。写真をフォトグリッドで配置。編集後記まである。</div>
+    </div>
+    <div class="card">
+      <h3>⑧ クエスト図鑑 <span class="tag">PATTERN H · NEW</span></h3>
+      <iframe src="pattern-h.html"></iframe>
+      <div class="desc"><b>RPG/モンスター図鑑風。</b>マシン1台=モンスター1体としてカード化。HP/MPバー、レア度、討伐スタンプ。ドット系フォントでファミコン感。</div>
+    </div>
+    <div class="card">
+      <h3>① BEAST MODE <span class="tag">PATTERN A · 旧</span></h3>
+      <iframe src="pattern-a.html"></iframe>
+      <div class="desc"><b>ストリート系。</b>赤×黒×ステンシルフォント。獣感強め。デカ数字＋警告テープでパンチ重視。</div>
+    </div>
+    <div class="card">
+      <h3>② IRON GYM <span class="tag">PATTERN B</span></h3>
+      <iframe src="pattern-b.html"></iframe>
+      <div class="desc"><b>鉄板＆プレート系。</b>金属テクスチャ＋オレンジ。Life Fitnessラベル準拠。落ち着いた重厚感。</div>
+    </div>
+    <div class="card">
+      <h3>③ NEON PUMP <span class="tag">PATTERN C</span></h3>
+      <iframe src="pattern-c.html"></iframe>
+      <div class="desc"><b>サイバー系。</b>ネオングリーン×紫。グロー演出。HUD感あるダッシュボード型。</div>
+    </div>
+    <div class="card">
+      <h3>④ POWERLIFTER <span class="tag">PATTERN D</span></h3>
+      <iframe src="pattern-d.html"></iframe>
+      <div class="desc"><b>ストロングマン系。</b>白×黒×イエロー。Big3 (BENCH/SQUAT/DEADLIFT) を主役に。記録更新に振り切ったUI。</div>
+    </div>
+    <div class="card">
+      <h3>⑤ ARNOLD <span class="tag">PATTERN E</span></h3>
+      <iframe src="pattern-e.html"></iframe>
+      <div class="desc"><b>ボディビル系。</b>ゴールド×ブラック×大理石。シルエット使った高級ジム感。ボリューム&名言推し。</div>
+    </div>
+  </div>
+</body>
+</html>

@@ -1,0 +1,155 @@
+<!DOCTYPE html>
+<html lang="ja"><head><meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>マッチョいじり ② ZINE/週刊誌</title>
+<style>
+@import url('https://fonts.googleapis.com/css2?family=Anton&family=Bebas+Neue&family=Noto+Serif+JP:wght@600;900&family=Yusei+Magic&display=swap');
+*{box-sizing:border-box;margin:0;padding:0;-webkit-tap-highlight-color:transparent}
+body{font-family:'Noto Serif JP',serif;background:#f3ede0;color:#1a1a1a;min-height:100vh;
+  background-image:repeating-linear-gradient(0deg,rgba(0,0,0,.025) 0 1px,transparent 1px 4px)}
+.app{max-width:420px;margin:0 auto;background:#f3ede0;min-height:100vh;padding-bottom:90px;position:relative}
+
+/* 雑誌風ヘッダー */
+.mast{padding:16px 18px 8px;border-bottom:6px double #1a1a1a;position:relative}
+.mast .top{display:flex;justify-content:space-between;font-family:'Bebas Neue';font-size:11px;letter-spacing:.2em;color:#666}
+.mast h1{font-family:'Noto Serif JP';font-weight:900;font-size:38px;letter-spacing:-.02em;line-height:1;margin-top:4px}
+.mast h1 span{color:#c8161d}
+.mast .tag{display:flex;gap:6px;margin-top:6px;font-family:'Anton';font-size:11px;letter-spacing:.1em}
+.mast .tag span{background:#1a1a1a;color:#fff;padding:2px 6px}
+.mast .tag span.r{background:#c8161d}
+
+/* 特集見出し */
+.feat{margin:16px 14px 0;background:#fff;padding:14px 14px 12px;border:2px solid #1a1a1a;position:relative;box-shadow:5px 5px 0 #c8161d}
+.feat .lead{font-family:'Anton';font-size:13px;letter-spacing:.2em;color:#c8161d;margin-bottom:4px}
+.feat h2{font-family:'Noto Serif JP';font-weight:900;font-size:26px;line-height:1.15;letter-spacing:-.01em}
+.feat h2 em{font-style:normal;background:#fff100;padding:0 4px;box-decoration-break:clone}
+.feat .by{margin-top:8px;font-family:'Yusei Magic';font-size:12px;color:#555}
+
+/* 写真グリッド (大1+小2) */
+.photos{margin:14px;display:grid;grid-template-columns:1fr 1fr;grid-template-rows:160px 100px;gap:6px}
+.photos .ph{background-size:cover;background-position:center;position:relative;filter:contrast(1.05);overflow:hidden;cursor:pointer}
+.photos .ph.big{grid-row:1 / span 2}
+.photos .ph .num{position:absolute;left:8px;top:8px;background:#fff100;color:#1a1a1a;font-family:'Anton';font-size:11px;padding:2px 6px;letter-spacing:.1em;border:1px solid #1a1a1a}
+.photos .ph .ttl{position:absolute;left:0;right:0;bottom:0;padding:8px 10px;background:linear-gradient(180deg,transparent,rgba(0,0,0,.85));color:#fff;font-family:'Anton';font-size:14px;letter-spacing:.05em;line-height:1.15}
+.photos .ph .ttl small{display:block;font-size:10px;color:#fff100;letter-spacing:.15em;margin-bottom:2px;font-family:'Bebas Neue';font-size:11px}
+
+/* 大ボリューム */
+.bigv{margin:0 14px;background:#1a1a1a;color:#fff;padding:18px 16px;display:flex;align-items:flex-end;justify-content:space-between;border:2px solid #1a1a1a;position:relative}
+.bigv::before{content:'本日の合計挙上重量';position:absolute;top:-10px;left:14px;background:#fff100;color:#1a1a1a;font-family:'Anton';font-size:10px;padding:2px 8px;letter-spacing:.15em;border:1px solid #1a1a1a}
+.bigv .v{font-family:'Anton';font-size:64px;line-height:.85;letter-spacing:.01em}
+.bigv .v small{font-size:20px;color:#fff100;margin-left:4px}
+.bigv .delta{text-align:right;font-family:'Yusei Magic';font-size:13px}
+.bigv .delta b{font-family:'Anton';font-size:24px;color:#fff100;display:block;line-height:1}
+
+/* 段組記事 */
+.col{margin:18px 14px 8px;column-count:2;column-gap:14px;column-rule:1px dashed #1a1a1a}
+.col h3{font-family:'Anton';font-size:16px;letter-spacing:.05em;margin-bottom:6px;break-after:avoid}
+.col h3::before{content:'■ '}
+.col p{font-size:11px;line-height:1.55;text-align:justify;font-family:'Noto Serif JP';font-weight:600}
+.col p b{background:linear-gradient(180deg,transparent 60%,#fff100 60%)}
+
+/* セクションタイトル */
+.sec{padding:0 14px;margin:14px 0 8px;border-top:3px solid #1a1a1a;border-bottom:1px solid #1a1a1a;display:flex;justify-content:space-between;align-items:center}
+.sec h2{font-family:'Anton';font-size:20px;letter-spacing:.05em;padding:6px 0}
+.sec small{font-family:'Bebas Neue';font-size:13px;color:#c8161d;letter-spacing:.1em}
+
+/* 記録テーブル風 */
+.tbl{margin:0 14px;background:#fff;border:2px solid #1a1a1a}
+.tbl .row{display:grid;grid-template-columns:24px 1fr auto auto;gap:8px;padding:10px 12px;border-bottom:1px dashed #ccc;align-items:center;cursor:pointer}
+.tbl .row:last-child{border-bottom:0}
+.tbl .row:hover{background:#fff100}
+.tbl .row .n{font-family:'Anton';font-size:14px;color:#c8161d;text-align:center}
+.tbl .row .nm{font-family:'Noto Serif JP';font-weight:900;font-size:14px}
+.tbl .row .nm small{display:block;font-family:'Yusei Magic';font-size:10px;color:#777;font-weight:400;margin-top:1px}
+.tbl .row .meta{font-family:'Bebas Neue';font-size:14px;letter-spacing:.05em;color:#333;text-align:right;line-height:1.1}
+.tbl .row .meta b{color:#1a1a1a;font-size:18px}
+.tbl .row .vol{font-family:'Anton';font-size:18px;text-align:right;min-width:60px}
+.tbl .row .vol small{font-family:'Bebas Neue';font-size:10px;color:#888;letter-spacing:.15em;display:block}
+.tbl .row.done{background:#fafaf0}
+.tbl .row.done .n{color:#22a559}
+.tbl .row.done .n::after{content:'✓';display:block;font-size:10px}
+
+/* CTA = 投票ボタン風 */
+.cta-row{margin:18px 14px 0;display:grid;grid-template-columns:2fr 1fr;gap:8px}
+.cta{background:#c8161d;color:#fff;border:0;padding:18px;font-family:'Anton';font-size:18px;letter-spacing:.1em;cursor:pointer;border:2px solid #1a1a1a;box-shadow:4px 4px 0 #1a1a1a;transition:.1s}
+.cta.alt{background:#fff;color:#1a1a1a}
+.cta:active{transform:translate(2px,2px);box-shadow:2px 2px 0 #1a1a1a}
+
+/* 編集後記 */
+.foot{margin:18px 14px 0;font-family:'Yusei Magic';font-size:11px;color:#555;line-height:1.6;border-top:1px dashed #1a1a1a;padding:8px 0}
+.foot b{color:#c8161d}
+
+/* nav */
+.nav{position:fixed;bottom:0;left:50%;transform:translateX(-50%);width:420px;max-width:100%;background:#1a1a1a;display:flex;padding:8px 0 14px;border-top:4px solid #c8161d}
+.nav a{flex:1;text-align:center;color:#888;text-decoration:none;font-family:'Anton';font-size:10px;letter-spacing:.15em;padding:6px 0}
+.nav a.on{color:#fff100}
+.nav a .ico{display:block;font-size:16px;margin-bottom:1px}
+</style></head>
+<body>
+<div class="app">
+
+  <div class="mast">
+    <div class="top"><span>VOL.023</span><span>2026.05.03 SAT</span><span>¥0</span></div>
+    <h1>週刊 <span>マッスル</span>速報</h1>
+    <div class="tag"><span class="r">特報</span><span>胸の日</span><span>気合十分</span><span>晩飯は鶏</span></div>
+  </div>
+
+  <div class="feat">
+    <div class="lead">巻頭スクープ</div>
+    <h2>ベンチプレス<em>80kg</em>、<br>ついに4セット目も<em>潰れず</em>完遂</h2>
+    <div class="by">取材・撮影 / 自分</div>
+  </div>
+
+  <div class="photos">
+    <div class="ph big" style="background-image:url('img/465BA571-0D63-4E6B-8CB4-5BDA94C4C8A4.jpg')">
+      <span class="num">N°01</span>
+      <div class="ttl"><small>MAIN EVENT</small>胸を破壊する儀式</div>
+    </div>
+    <div class="ph" style="background-image:url('img/D10257F6-0B45-4BDB-A1FC-063984F9FF78.jpg')">
+      <span class="num">N°02</span>
+      <div class="ttl"><small>SUB</small>腹いじめ</div>
+    </div>
+    <div class="ph" style="background-image:url('img/3D95FF56-1292-4915-97CD-0FA0C257B44E.jpg')">
+      <span class="num">N°03</span>
+      <div class="ttl"><small>SUB</small>ハム破壊</div>
+    </div>
+  </div>
+
+  <div class="bigv">
+    <div class="v">12,450<small>KG</small></div>
+    <div class="delta">前回比<b>+1,200</b><span>そろそろ調子乗っていい</span></div>
+  </div>
+
+  <div class="col">
+    <h3>本日の見どころ</h3>
+    <p>序盤の<b>ベンチプレス4セット目</b>で、先週は2レップで力尽きていたが、本日は<b>8レップ完遂</b>。フォーム崩れもなく、確実な進歩を記録した。</p>
+    <h3>気になる課題</h3>
+    <p>後半に控える<b>ディップス</b>で、毎回ヒヨってしまう問題が続いている。本日は逃げずに3セット完遂できるかが焦点。</p>
+  </div>
+
+  <div class="sec"><h2>本日のメニュー</h2><small>3 / 5 完了</small></div>
+
+  <div class="tbl">
+    <div class="row done"><div class="n">1</div><div class="nm">ベンチプレス<small>胸の支配者</small></div><div class="meta"><b>80</b>kg × 8 × 4</div><div class="vol">2,560<small>KG</small></div></div>
+    <div class="row done"><div class="n">2</div><div class="nm">アブクランチ<small>腹いじめ機</small></div><div class="meta"><b>30</b>kg × 15 × 3</div><div class="vol">1,350<small>KG</small></div></div>
+    <div class="row done"><div class="n">3</div><div class="nm">レッグカール<small>ハム壊し</small></div><div class="meta"><b>40</b>kg × 12 × 3</div><div class="vol">1,440<small>KG</small></div></div>
+    <div class="row"><div class="n">4</div><div class="nm">レッグエクステンション<small>太もも処刑台</small></div><div class="meta"><b>50</b>kg × 10 × 3</div><div class="vol">--<small>NEXT</small></div></div>
+    <div class="row"><div class="n">5</div><div class="nm">アシステッド懸垂<small>救済懸垂</small></div><div class="meta">-30kg × 8 × 3</div><div class="vol">--<small>WAIT</small></div></div>
+  </div>
+
+  <div class="cta-row">
+    <button class="cta">▶ 次セット記録する</button>
+    <button class="cta alt">＋ 種目</button>
+  </div>
+
+  <div class="foot"><b>編集後記:</b> 今日の自分、明らかに調子いい。プロテイン買い忘れたのが心残り。次号もお楽しみに。</div>
+
+</div>
+
+<div class="nav">
+  <a class="on"><span class="ico">📰</span>TODAY</a>
+  <a><span class="ico">📊</span>STATS</a>
+  <a><span class="ico">📒</span>LOG</a>
+  <a><span class="ico">🍖</span>EAT</a>
+  <a><span class="ico">💪</span>ME</a>
+</div>
+</body></html>

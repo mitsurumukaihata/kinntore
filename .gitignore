@@ -1,0 +1,20 @@
+# 参考用画像 (ChatGPT生成のスクショ系。実装時に自前生成画像へ差し替え後、個別にaddする)
+ui-mockups/img/reference.png
+ui-mockups/img/hero.png
+ui-mockups/img/hero-*.png
+ui-mockups/img/tile-*.png
+
+# Node
+node_modules/
+ui-mockups/node_modules/
+ui-mockups/package.json
+ui-mockups/package-lock.json
+
+# OS
+.DS_Store
+Thumbs.db
+
+# Editor
+.vscode/
+.idea/
+*.swp

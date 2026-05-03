@@ -1,0 +1,185 @@
+<!DOCTYPE html>
+<html lang="ja"><head><meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>マッチョいじり ③ ガチャ図鑑</title>
+<style>
+@import url('https://fonts.googleapis.com/css2?family=Anton&family=Bebas+Neue&family=DotGothic16&family=Noto+Sans+JP:wght@500;700;900&display=swap');
+*{box-sizing:border-box;margin:0;padding:0;-webkit-tap-highlight-color:transparent}
+body{font-family:'Noto Sans JP',sans-serif;background:#0e1116;color:#fff;min-height:100vh}
+.app{max-width:420px;margin:0 auto;background:
+  radial-gradient(ellipse at top,#1a2230 0%,#0e1116 60%);
+  min-height:100vh;padding-bottom:90px;position:relative;overflow:hidden}
+.app::before{content:'';position:absolute;inset:0;background-image:
+  repeating-linear-gradient(0deg,rgba(255,255,255,.02) 0 1px,transparent 1px 3px);
+  pointer-events:none}
+
+/* レトロドット枠ヘッダー */
+.hdr{padding:16px 16px 10px;position:relative;z-index:2}
+.hdr .row{display:flex;justify-content:space-between;align-items:center}
+.hdr .lvl{background:#fff;color:#000;padding:3px 8px;font-family:'DotGothic16';font-size:13px;letter-spacing:.05em}
+.hdr .lvl b{color:#ff8a00}
+.hdr .day{font-family:'DotGothic16';font-size:11px;color:#8aa}
+.hdr h1{font-family:'Anton';font-size:30px;letter-spacing:.04em;margin-top:10px;line-height:1}
+.hdr h1 span{color:#ff8a00}
+.hdr .greet{font-family:'DotGothic16';font-size:13px;color:#aabbcc;margin-top:6px}
+.hdr .greet b{color:#ffeb6b}
+
+/* HPバー風 */
+.bars{margin:10px 16px 0;display:flex;flex-direction:column;gap:6px}
+.bar{display:grid;grid-template-columns:60px 1fr auto;gap:8px;align-items:center;font-family:'DotGothic16';font-size:11px;color:#aabbcc}
+.bar .lab b{color:#fff}
+.bar .track{background:#1f2530;height:10px;position:relative;border:1px solid #2a3340}
+.bar .fill{position:absolute;left:0;top:0;bottom:0;background:linear-gradient(90deg,#22c55e,#86efac)}
+.bar .fill.org{background:linear-gradient(90deg,#ff8a00,#ffd166)}
+.bar .fill.red{background:linear-gradient(90deg,#dc2626,#f87171)}
+.bar .v{font-family:'DotGothic16';font-size:11px;color:#fff}
+
+/* 大ボリュームHUD */
+.hud{margin:14px 16px 0;background:linear-gradient(180deg,#11161e,#0a0d12);border:2px solid #2a3340;padding:14px 16px;position:relative;border-radius:4px;box-shadow:inset 0 0 0 1px rgba(255,255,255,.04)}
+.hud::before,.hud::after{content:'';position:absolute;width:8px;height:8px;background:#ff8a00}
+.hud::before{top:-1px;left:-1px;clip-path:polygon(0 0,100% 0,0 100%)}
+.hud::after{bottom:-1px;right:-1px;clip-path:polygon(100% 0,100% 100%,0 100%)}
+.hud .l{font-family:'DotGothic16';font-size:11px;color:#8aa;letter-spacing:.1em}
+.hud .v{font-family:'Anton';font-size:62px;line-height:.9;letter-spacing:.01em;background:linear-gradient(180deg,#fff,#ff8a00);-webkit-background-clip:text;-webkit-text-fill-color:transparent}
+.hud .v small{font-size:18px;color:#ff8a00;-webkit-text-fill-color:#ff8a00;margin-left:4px}
+.hud .row{display:flex;justify-content:space-between;align-items:center;margin-top:6px;font-family:'DotGothic16';font-size:12px;color:#aabbcc}
+.hud .row b{color:#ffeb6b}
+
+/* 図鑑グリッド */
+.zukan-h{padding:0 16px;margin:18px 0 8px;display:flex;justify-content:space-between;align-items:center}
+.zukan-h h2{font-family:'Anton';font-size:18px;letter-spacing:.05em}
+.zukan-h h2::before{content:'▼ '}
+.zukan-h .badge{background:#1f2530;border:1px solid #2a3340;padding:3px 8px;font-family:'DotGothic16';font-size:11px;color:#aabbcc}
+.zukan-h .badge b{color:#ff8a00}
+
+.zukan{padding:0 16px;display:grid;grid-template-columns:1fr 1fr;gap:8px}
+.card{background:#11161e;border:2px solid #2a3340;padding:6px;cursor:pointer;transition:.15s;position:relative;overflow:hidden}
+.card.r{border-color:#ff8a00;box-shadow:0 0 0 1px #ff8a00,0 0 14px rgba(255,138,0,.2)}
+.card.r::before{content:'★ RARE';position:absolute;top:6px;right:6px;background:#ff8a00;color:#000;font-family:'DotGothic16';font-size:9px;padding:2px 4px;letter-spacing:.1em;z-index:2}
+.card.sr::before{content:'★★ SR';background:#a78bfa;color:#000}
+.card.sr{border-color:#a78bfa;box-shadow:0 0 0 1px #a78bfa,0 0 14px rgba(167,139,250,.25)}
+.card .ph{width:100%;aspect-ratio:1;background-size:cover;background-position:center;filter:contrast(1.1) saturate(1.05);position:relative}
+.card .ph::after{content:'';position:absolute;inset:0;background:linear-gradient(180deg,transparent 50%,rgba(0,0,0,.85))}
+.card .ph .no{position:absolute;left:6px;bottom:6px;font-family:'DotGothic16';font-size:10px;color:#fff;z-index:2;letter-spacing:.05em}
+.card .body{padding:8px 6px 6px}
+.card .nm{font-family:'Anton';font-size:13px;letter-spacing:.04em;line-height:1.1}
+.card .meta{font-family:'DotGothic16';font-size:10px;color:#8aa;margin-top:4px;display:flex;justify-content:space-between}
+.card .meta b{color:#ffeb6b}
+.card .stat{margin-top:6px;display:flex;gap:3px}
+.card .stat span{flex:1;height:4px;background:#1f2530;border:1px solid #2a3340}
+.card .stat span.f{background:#ff8a00;border-color:#ff8a00}
+.card .done-stamp{position:absolute;top:50%;left:50%;transform:translate(-50%,-50%) rotate(-12deg);background:rgba(34,197,94,.85);color:#fff;font-family:'Anton';font-size:18px;padding:4px 12px;letter-spacing:.15em;border:2px solid #fff;z-index:3}
+
+/* 図鑑進捗 */
+.dex{margin:14px 16px 0;background:#11161e;border:1px dashed #2a3340;padding:10px 12px;font-family:'DotGothic16';font-size:11px;color:#aabbcc;display:flex;justify-content:space-between;align-items:center}
+.dex b{color:#ff8a00;font-family:'Anton';font-size:18px;letter-spacing:.03em}
+.dex small{color:#fff100}
+
+/* CTA */
+.cta-wrap{padding:16px;display:grid;grid-template-columns:1fr 1fr;gap:8px}
+.cta{background:#ff8a00;color:#000;border:0;padding:14px;font-family:'Anton';font-size:16px;letter-spacing:.08em;cursor:pointer;border-radius:2px;position:relative;box-shadow:0 4px 0 #b35f00;transition:.1s}
+.cta.alt{background:#1f2530;color:#fff;box-shadow:0 4px 0 #0a0d12;border:1px solid #2a3340}
+.cta:active{transform:translateY(3px);box-shadow:0 1px 0 #b35f00}
+
+/* nav */
+.nav{position:fixed;bottom:0;left:50%;transform:translateX(-50%);width:420px;max-width:100%;background:#0a0d12;display:flex;padding:8px 0 14px;border-top:2px solid #2a3340}
+.nav a{flex:1;text-align:center;color:#556;text-decoration:none;font-family:'DotGothic16';font-size:11px;padding:6px 0}
+.nav a.on{color:#ff8a00}
+.nav a .ico{display:block;font-size:16px;margin-bottom:1px}
+</style></head>
+<body>
+<div class="app">
+
+  <div class="hdr">
+    <div class="row">
+      <div class="lvl">Lv.<b>23</b> マッチョ見習い</div>
+      <div class="day">2026/05/03 SAT</div>
+    </div>
+    <h1>本日のクエスト<br><span>「胸を破壊せよ」</span></h1>
+    <div class="greet">残りスタミナ<b>72%</b> ・ プロテイン在庫<b>残り3食</b></div>
+  </div>
+
+  <div class="bars">
+    <div class="bar"><div class="lab"><b>HP</b></div><div class="track"><div class="fill" style="width:72%"></div></div><div class="v">72/100</div></div>
+    <div class="bar"><div class="lab"><b>MP</b></div><div class="track"><div class="fill org" style="width:81%"></div></div><div class="v">81/100</div></div>
+    <div class="bar"><div class="lab"><b>FOCUS</b></div><div class="track"><div class="fill red" style="width:60%"></div></div><div class="v">60/100</div></div>
+  </div>
+
+  <div class="hud">
+    <div class="l">▼ TOTAL VOLUME (累積ダメージ)</div>
+    <div class="v">12,450<small>KG</small></div>
+    <div class="row"><span>前回比 <b>+1,200kg</b></span><span>NEXT Lv. <b>2,550kg</b></span></div>
+  </div>
+
+  <div class="zukan-h"><h2>本日の討伐対象</h2><span class="badge">図鑑 <b>23</b>/64</span></div>
+
+  <div class="zukan">
+    <div class="card r">
+      <div class="ph" style="background-image:url('img/465BA571-0D63-4E6B-8CB4-5BDA94C4C8A4.jpg')"><span class="no">N°001</span></div>
+      <div class="body">
+        <div class="nm">ベンチ・プレス</div>
+        <div class="meta"><span>胸属性</span><b>2,560kg</b></div>
+        <div class="stat"><span class="f"></span><span class="f"></span><span class="f"></span><span class="f"></span><span></span></div>
+      </div>
+      <div class="done-stamp">討伐</div>
+    </div>
+    <div class="card">
+      <div class="ph" style="background-image:url('img/D10257F6-0B45-4BDB-A1FC-063984F9FF78.jpg')"><span class="no">N°007</span></div>
+      <div class="body">
+        <div class="nm">アブ・クランチ</div>
+        <div class="meta"><span>腹属性</span><b>1,350kg</b></div>
+        <div class="stat"><span class="f"></span><span class="f"></span><span class="f"></span><span></span><span></span></div>
+      </div>
+      <div class="done-stamp">討伐</div>
+    </div>
+    <div class="card sr">
+      <div class="ph" style="background-image:url('img/3D95FF56-1292-4915-97CD-0FA0C257B44E.jpg')"><span class="no">N°012</span></div>
+      <div class="body">
+        <div class="nm">レッグ・カール</div>
+        <div class="meta"><span>脚属性</span><b>1,440kg</b></div>
+        <div class="stat"><span class="f"></span><span class="f"></span><span class="f"></span><span class="f"></span><span></span></div>
+      </div>
+      <div class="done-stamp">討伐</div>
+    </div>
+    <div class="card r">
+      <div class="ph" style="background-image:url('img/5F71EEA8-9B40-4278-B01D-812D7473ED79.jpg')"><span class="no">N°015</span></div>
+      <div class="body">
+        <div class="nm">レッグ・エクステンション</div>
+        <div class="meta"><span>脚属性</span><b>NEXT</b></div>
+        <div class="stat"><span></span><span></span><span></span><span></span><span></span></div>
+      </div>
+    </div>
+    <div class="card">
+      <div class="ph" style="background-image:url('img/EC4D2BDF-0485-41C6-B5F4-05A8C715B8CD.jpg')"><span class="no">N°021</span></div>
+      <div class="body">
+        <div class="nm">アシステッド懸垂</div>
+        <div class="meta"><span>背属性</span><b>WAIT</b></div>
+        <div class="stat"><span></span><span></span><span></span><span></span><span></span></div>
+      </div>
+    </div>
+    <div class="card sr">
+      <div class="ph" style="background-image:url('img/AD446C5E-A969-469F-87BB-A72EA669D4DC.jpg')"><span class="no">N°029</span></div>
+      <div class="body">
+        <div class="nm">プルダウン</div>
+        <div class="meta"><span>背属性</span><b>WAIT</b></div>
+        <div class="stat"><span></span><span></span><span></span><span></span><span></span></div>
+      </div>
+    </div>
+  </div>
+
+  <div class="dex">図鑑コンプ率 <b>35%</b><small>★レア15体 / SR3体</small></div>
+
+  <div class="cta-wrap">
+    <button class="cta">▶ 次の敵に挑む</button>
+    <button class="cta alt">＋ モンスター追加</button>
+  </div>
+
+</div>
+
+<div class="nav">
+  <a class="on"><span class="ico">⚔</span>QUEST</a>
+  <a><span class="ico">📖</span>図鑑</a>
+  <a><span class="ico">📅</span>LOG</a>
+  <a><span class="ico">🎒</span>持物</a>
+  <a><span class="ico">🧑</span>勇者</a>
+</div>
+</body></html>

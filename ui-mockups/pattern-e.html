@@ -1,0 +1,111 @@
+<!DOCTYPE html>
+<html lang="ja"><head><meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>ARNOLD</title>
+<style>
+@import url('https://fonts.googleapis.com/css2?family=Cinzel:wght@500;700;900&family=Cormorant+Garamond:ital,wght@0,400;0,600;1,400&family=Inter:wght@400;600&display=swap');
+*{box-sizing:border-box;margin:0;padding:0;-webkit-tap-highlight-color:transparent}
+body{font-family:'Inter',sans-serif;background:#0a0805;color:#f5e6c8;min-height:100vh}
+.app{max-width:420px;margin:0 auto;background:
+  radial-gradient(ellipse at top,rgba(212,175,55,.12) 0%,transparent 60%),
+  linear-gradient(180deg,#0a0805 0%,#000 100%);
+  min-height:100vh;position:relative}
+/* 大理石テクスチャ装飾 */
+.app::before{content:'';position:absolute;inset:0;background:
+  url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" width="100" height="100"><filter id="n"><feTurbulence baseFrequency="0.7" numOctaves="2" stitchTiles="stitch"/></filter><rect width="100" height="100" filter="url(%23n)" opacity="0.04"/></svg>');
+  pointer-events:none}
+/* ヘッダー */
+.hdr{padding:22px 24px 16px;text-align:center;position:relative;z-index:2;border-bottom:1px solid rgba(212,175,55,.25)}
+.hdr .crest{font-family:'Cinzel';font-size:10px;letter-spacing:.5em;color:#d4af37;margin-bottom:4px}
+.hdr .crest::before,.hdr .crest::after{content:'━';margin:0 8px;color:rgba(212,175,55,.5)}
+.hdr h1{font-family:'Cinzel';font-size:32px;font-weight:900;letter-spacing:.08em;background:linear-gradient(180deg,#f5e6c8 0%,#d4af37 50%,#8b6914 100%);-webkit-background-clip:text;-webkit-text-fill-color:transparent;line-height:1}
+.hdr .sub{font-family:'Cormorant Garamond';font-style:italic;font-size:13px;color:#8b7556;margin-top:2px;letter-spacing:.05em}
+/* シルエット背景 */
+.silhouette{position:absolute;top:90px;left:50%;transform:translateX(-50%);font-size:280px;line-height:1;color:rgba(212,175,55,.04);pointer-events:none;z-index:1}
+/* メインボリューム */
+.volume{padding:30px 24px 22px;text-align:center;position:relative;z-index:2}
+.volume .lbl{font-family:'Cinzel';font-size:10px;letter-spacing:.5em;color:#d4af37;margin-bottom:8px}
+.volume .v{font-family:'Cinzel';font-size:78px;font-weight:900;background:linear-gradient(180deg,#fff 0%,#d4af37 60%,#8b6914 100%);-webkit-background-clip:text;-webkit-text-fill-color:transparent;line-height:.9;letter-spacing:-.02em;text-shadow:0 0 40px rgba(212,175,55,.3)}
+.volume .u{font-family:'Cinzel';font-size:24px;color:#d4af37;margin-left:4px;font-weight:700}
+.volume .delta{margin-top:10px;font-family:'Cormorant Garamond';font-size:15px;color:#8b7556;font-style:italic}
+.volume .delta b{color:#d4af37;font-weight:600}
+/* 区切り */
+.divider{display:flex;align-items:center;padding:0 24px;margin:8px 0;position:relative;z-index:2}
+.divider::before,.divider::after{content:'';flex:1;height:1px;background:linear-gradient(90deg,transparent,rgba(212,175,55,.4),transparent)}
+.divider span{font-family:'Cinzel';font-size:11px;letter-spacing:.4em;color:#d4af37;padding:0 16px}
+/* 名言 */
+.quote{padding:14px 24px 22px;text-align:center;position:relative;z-index:2}
+.quote p{font-family:'Cormorant Garamond';font-style:italic;font-size:18px;color:#f5e6c8;line-height:1.4;letter-spacing:.02em}
+.quote p::before{content:'❝ ';color:#d4af37;font-size:24px}
+.quote p::after{content:' ❞';color:#d4af37;font-size:24px}
+.quote .by{font-family:'Cinzel';font-size:9px;letter-spacing:.4em;color:#8b7556;margin-top:8px}
+/* セクションタイトル */
+.sec{padding:16px 24px 12px;display:flex;justify-content:space-between;align-items:center;position:relative;z-index:2}
+.sec h2{font-family:'Cinzel';font-size:14px;letter-spacing:.3em;color:#d4af37}
+.sec small{font-family:'Cormorant Garamond';font-style:italic;font-size:13px;color:#8b7556}
+/* 種目リスト */
+.list{padding:0 24px;display:flex;flex-direction:column;gap:1px;position:relative;z-index:2;border-top:1px solid rgba(212,175,55,.15);border-bottom:1px solid rgba(212,175,55,.15)}
+.ex{padding:14px 0;display:grid;grid-template-columns:auto 1fr auto;gap:14px;align-items:center;border-bottom:1px solid rgba(212,175,55,.08);cursor:pointer;transition:.2s}
+.ex:last-child{border-bottom:0}
+.ex:hover{background:rgba(212,175,55,.04)}
+.ex .num{font-family:'Cinzel';font-size:14px;color:#d4af37;font-weight:700;width:24px;text-align:center;border:1px solid rgba(212,175,55,.4);border-radius:50%;height:24px;display:flex;align-items:center;justify-content:center;font-size:11px}
+.ex.done .num{background:#d4af37;color:#0a0805}
+.ex .body .name{font-weight:600;font-size:15px;color:#f5e6c8;letter-spacing:.02em}
+.ex .body .meta{font-family:'Cormorant Garamond';font-style:italic;font-size:13px;color:#8b7556;margin-top:2px;letter-spacing:.03em}
+.ex .body .meta b{color:#d4af37;font-style:normal;font-weight:600}
+.ex .vol{text-align:right}
+.ex .vol b{font-family:'Cinzel';font-size:18px;font-weight:700;color:#f5e6c8;line-height:1}
+.ex .vol small{display:block;font-size:9px;letter-spacing:.3em;color:#8b7556;margin-top:2px;font-family:'Cinzel'}
+/* CTA */
+.cta-wrap{padding:22px 24px;text-align:center;position:relative;z-index:2}
+.cta{background:linear-gradient(180deg,#d4af37 0%,#8b6914 100%);color:#0a0805;border:0;padding:16px 48px;font-family:'Cinzel';font-size:13px;font-weight:900;letter-spacing:.3em;cursor:pointer;border-radius:2px;box-shadow:0 4px 24px rgba(212,175,55,.3),inset 0 1px 0 rgba(255,255,255,.2);transition:.2s;position:relative}
+.cta::before,.cta::after{content:'◆';position:absolute;top:50%;transform:translateY(-50%);color:rgba(10,8,5,.4);font-size:8px}
+.cta::before{left:14px}
+.cta::after{right:14px}
+.cta:hover{transform:translateY(-1px);box-shadow:0 6px 28px rgba(212,175,55,.5)}
+/* nav */
+.nav{position:sticky;bottom:0;background:rgba(10,8,5,.95);border-top:1px solid rgba(212,175,55,.25);display:flex;padding:10px 0 14px;backdrop-filter:blur(6px);z-index:3}
+.nav a{flex:1;text-align:center;color:#5a4a35;text-decoration:none;font-family:'Cinzel';font-size:9px;letter-spacing:.25em;padding:6px 0}
+.nav a.on{color:#d4af37}
+.nav a .ico{display:block;font-size:18px;margin-bottom:3px}
+</style></head>
+<body>
+<div class="app">
+  <div class="hdr">
+    <div class="crest">EST · 2026</div>
+    <h1>ARNOLD</h1>
+    <div class="sub">— The Temple of Iron —</div>
+  </div>
+
+  <div class="silhouette">🏛</div>
+
+  <div class="volume">
+    <div class="lbl">TOTAL VOLUME · DAY 023</div>
+    <div><span class="v">12,450</span><span class="u">KG</span></div>
+    <div class="delta"><b>+1,200kg</b> beyond your last conquest · 81% of glory</div>
+  </div>
+
+  <div class="divider"><span>WISDOM</span></div>
+  <div class="quote">
+    <p>The last three or four reps is what makes the muscle grow.</p>
+    <div class="by">— ARNOLD SCHWARZENEGGER</div>
+  </div>
+
+  <div class="sec"><h2>TODAY'S RITUAL</h2><small>Chest · 3 of 5 conquered</small></div>
+  <div class="list">
+    <div class="ex done"><div class="num">I</div><div class="body"><div class="name">Bench Press</div><div class="meta"><b>80kg</b> · 8 reps · 4 sets</div></div><div class="vol"><b>2,560</b><small>KG</small></div></div>
+    <div class="ex done"><div class="num">II</div><div class="body"><div class="name">Incline Dumbbell</div><div class="meta"><b>30kg</b> · 10 reps · 3 sets</div></div><div class="vol"><b>1,800</b><small>KG</small></div></div>
+    <div class="ex done"><div class="num">III</div><div class="body"><div class="name">Cable Fly</div><div class="meta"><b>20kg</b> · 12 reps · 3 sets</div></div><div class="vol"><b>720</b><small>KG</small></div></div>
+    <div class="ex"><div class="num">IV</div><div class="body"><div class="name">Dips</div><div class="meta">bodyweight · to failure · 3 sets</div></div><div class="vol"><b>—</b><small>AWAITS</small></div></div>
+    <div class="ex"><div class="num">V</div><div class="body"><div class="name">Push Up</div><div class="meta">bodyweight · to failure · 3 sets</div></div><div class="vol"><b>—</b><small>AWAITS</small></div></div>
+  </div>
+
+  <div class="cta-wrap"><button class="cta">CONTINUE THE FORGE</button></div>
+
+  <div class="nav">
+    <a class="on"><span class="ico">⚜</span>TEMPLE</a>
+    <a><span class="ico">📜</span>SCROLL</a>
+    <a><span class="ico">🏆</span>GLORY</a>
+    <a><span class="ico">⚔</span>SELF</a>
+  </div>
+</div>
+</body></html>

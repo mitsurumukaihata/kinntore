@@ -1,0 +1,93 @@
+<!DOCTYPE html>
+<html lang="ja"><head><meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>BEAST MODE</title>
+<style>
+@import url('https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Oswald:wght@500;700&family=Anton&display=swap');
+*{box-sizing:border-box;margin:0;padding:0;-webkit-tap-highlight-color:transparent}
+body{font-family:'Oswald',sans-serif;background:#0a0a0a;color:#fff;min-height:100vh;overflow-x:hidden}
+.app{max-width:420px;margin:0 auto;background:
+  linear-gradient(135deg,rgba(220,30,30,.06) 0%,transparent 40%),
+  radial-gradient(circle at 80% 10%,rgba(220,30,30,.15) 0%,transparent 50%),
+  #0a0a0a;
+  min-height:100vh;position:relative}
+/* 警告テープ */
+.tape{height:18px;background:repeating-linear-gradient(45deg,#ffcc00 0 14px,#000 14px 28px);position:relative}
+/* ヘッダー */
+.hdr{padding:20px 22px 16px;display:flex;justify-content:space-between;align-items:flex-start}
+.hdr .day{font-family:'Anton',sans-serif;font-size:11px;color:#888;letter-spacing:.3em}
+.hdr .title{font-family:'Anton',sans-serif;font-size:38px;line-height:.95;letter-spacing:.02em;margin-top:2px}
+.hdr .title span{color:#dc1e1e;text-shadow:0 0 18px rgba(220,30,30,.6)}
+.hdr .avatar{width:46px;height:46px;border-radius:50%;background:linear-gradient(135deg,#dc1e1e,#7a0000);display:flex;align-items:center;justify-content:center;font-weight:700;border:2px solid #2a2a2a}
+/* メインボリューム */
+.volume{margin:8px 22px 18px;background:#111;border:1px solid #2a2a2a;border-left:5px solid #dc1e1e;padding:18px 20px;position:relative;overflow:hidden}
+.volume::before{content:'TOTAL VOLUME';position:absolute;top:8px;right:10px;font-size:9px;color:#444;letter-spacing:.25em}
+.volume .label{font-size:10px;color:#666;letter-spacing:.2em;margin-bottom:4px}
+.volume .num{font-family:'Bebas Neue',sans-serif;font-size:72px;line-height:.9;letter-spacing:.01em;background:linear-gradient(180deg,#fff 0%,#888 100%);-webkit-background-clip:text;-webkit-text-fill-color:transparent}
+.volume .unit{font-family:'Anton';font-size:22px;color:#dc1e1e;margin-left:4px}
+.volume .delta{margin-top:6px;font-size:13px;color:#4ade80;letter-spacing:.05em}
+.volume .delta .arr{color:#dc1e1e}
+/* セッションタイトル */
+.sec-ttl{padding:0 22px;margin:18px 0 10px;display:flex;justify-content:space-between;align-items:center}
+.sec-ttl h2{font-family:'Anton';font-size:20px;letter-spacing:.05em}
+.sec-ttl .more{font-size:11px;color:#666;letter-spacing:.2em}
+/* 種目カード */
+.list{padding:0 22px;display:flex;flex-direction:column;gap:10px}
+.ex{background:#141414;border:1px solid #2a2a2a;padding:14px 16px;display:flex;align-items:center;gap:14px;position:relative;cursor:pointer;transition:.15s}
+.ex:hover{border-color:#dc1e1e}
+.ex .icon{width:48px;height:48px;background:#000;border:1px solid #333;display:flex;align-items:center;justify-content:center;font-size:24px}
+.ex .body{flex:1;min-width:0}
+.ex .name{font-family:'Anton';font-size:17px;letter-spacing:.03em}
+.ex .meta{font-size:12px;color:#888;margin-top:2px}
+.ex .meta b{color:#fff;font-weight:500}
+.ex .vol{text-align:right;font-family:'Bebas Neue';font-size:24px;color:#dc1e1e;line-height:1}
+.ex .vol small{display:block;font-size:9px;color:#666;letter-spacing:.2em;margin-top:2px;font-family:'Oswald'}
+.ex .bar{position:absolute;left:0;bottom:0;height:2px;background:#dc1e1e}
+/* 追加ボタン */
+.add{margin:18px 22px 28px;background:#dc1e1e;color:#fff;border:0;padding:18px;font-family:'Anton';font-size:18px;letter-spacing:.15em;cursor:pointer;position:relative;overflow:hidden;width:calc(100% - 44px);box-shadow:0 0 0 1px #000,0 6px 0 #7a0000}
+.add::after{content:'';position:absolute;top:0;left:-100%;width:100%;height:100%;background:linear-gradient(90deg,transparent,rgba(255,255,255,.2),transparent);animation:sh 3s infinite}
+@keyframes sh{50%,100%{left:100%}}
+.add:active{transform:translateY(4px);box-shadow:0 0 0 1px #000,0 2px 0 #7a0000}
+/* 下部ナビ */
+.nav{position:sticky;bottom:0;background:#000;border-top:1px solid #2a2a2a;display:flex;padding:10px 0 14px}
+.nav a{flex:1;text-align:center;color:#666;text-decoration:none;font-size:10px;letter-spacing:.15em;padding:6px 0}
+.nav a.on{color:#dc1e1e}
+.nav a .ico{display:block;font-size:20px;margin-bottom:3px}
+/* スカル装飾 */
+.skull{position:absolute;top:24px;right:88px;font-size:80px;opacity:.04;pointer-events:none}
+</style></head>
+<body>
+<div class="app">
+  <div class="tape"></div>
+  <div class="skull">💀</div>
+  <div class="hdr">
+    <div>
+      <div class="day">2026.05.03 SAT / DAY 023</div>
+      <div class="title">NO PAIN<br><span>NO GAIN.</span></div>
+    </div>
+    <div class="avatar">M</div>
+  </div>
+
+  <div class="volume">
+    <div class="label">TODAY'S TOTAL VOLUME</div>
+    <div class="num">12,450<span class="unit">KG</span></div>
+    <div class="delta"><span class="arr">▲</span> +1,200kg vs 前回 / 81% of 目標</div>
+  </div>
+
+  <div class="sec-ttl"><h2>TODAY'S MENU</h2><span class="more">3 / 5 DONE</span></div>
+  <div class="list">
+    <div class="ex"><div class="icon">🏋️</div><div class="body"><div class="name">BENCH PRESS</div><div class="meta"><b>80kg</b> × 8 × <b>4set</b></div></div><div class="vol">2,560<small>KG</small></div><div class="bar" style="width:100%"></div></div>
+    <div class="ex"><div class="icon">💪</div><div class="body"><div class="name">INCLINE DUMBBELL</div><div class="meta"><b>30kg</b> × 10 × <b>3set</b></div></div><div class="vol">1,800<small>KG</small></div><div class="bar" style="width:75%"></div></div>
+    <div class="ex"><div class="icon">🦾</div><div class="body"><div class="name">CABLE FLY</div><div class="meta"><b>20kg</b> × 12 × <b>3set</b></div></div><div class="vol">720<small>KG</small></div><div class="bar" style="width:60%"></div></div>
+    <div class="ex" style="opacity:.45"><div class="icon">🦵</div><div class="body"><div class="name">DIPS</div><div class="meta"><b>自重</b> × 限界 × <b>3set</b></div></div><div class="vol">--<small>WAITING</small></div></div>
+  </div>
+
+  <button class="add">＋ ADD EXERCISE</button>
+
+  <div class="nav">
+    <a class="on"><span class="ico">🔥</span>TODAY</a>
+    <a><span class="ico">📊</span>STATS</a>
+    <a><span class="ico">📅</span>LOG</a>
+    <a><span class="ico">⚙</span>MENU</a>
+  </div>
+</div>
+</body></html>
