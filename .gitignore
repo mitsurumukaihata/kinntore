@@ -18,3 +18,7 @@ Thumbs.db
 .vscode/
 .idea/
 *.swp
+
+# 受領した設計ハンドオフバンドル (取り込み済みなので原本はコミット不要)
+kinntore UI.zip
+kinntore-ui-extracted/

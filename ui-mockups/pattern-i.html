@@ -1,151 +1,237 @@
 <!DOCTYPE html>
-<html lang="ja"><head><meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1">
-<title>TRAIN HARD</title>
+<html lang="ja"><head><meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<title>kinntore</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Inter+Tight:wght@400;500;600;700;800;900&family=JetBrains+Mono:wght@400;500;600&family=Zen+Kaku+Gothic+New:wght@400;500;700;900&display=swap" rel="stylesheet">
 <style>
-@import url('https://fonts.googleapis.com/css2?family=Anton&family=Bebas+Neue&family=Oswald:wght@500;700&family=Noto+Sans+JP:wght@500;700;900&display=swap');
+:root{
+  --photo-bg:#0a0a0a;
+  --photo-card:#1a1a1a;
+  --photo-card-2:#232323;
+  --photo-line:rgba(255,255,255,0.08);
+  --photo-line-strong:rgba(255,255,255,0.16);
+  --photo-text:#ffffff;
+  --photo-mute:#9a9a9a;
+  --photo-dim:#5e5e5e;
+  --photo-red:#E63946;
+  --photo-red-deep:#B22838;
+  --photo-red-soft:rgba(230,57,70,0.15);
+  --gold:#D4A04B;
+  --silver:#A8A8A8;
+  --bronze:#8C5A2A;
+  --ok:#4FB07A;
+  --f-ui:'Inter Tight',-apple-system,system-ui,sans-serif;
+  --f-jp:'Zen Kaku Gothic New',-apple-system,'Hiragino Kaku Gothic ProN',sans-serif;
+  --f-display:'Bebas Neue','Inter Tight',system-ui,sans-serif;
+  --f-mono:'JetBrains Mono',ui-monospace,monospace;
+}
 *{box-sizing:border-box;margin:0;padding:0;-webkit-tap-highlight-color:transparent}
-html,body{background:#000}
-body{font-family:'Noto Sans JP',sans-serif;color:#fff;min-height:100vh}
-.app{max-width:420px;margin:0 auto;min-height:100vh;padding-bottom:90px;position:relative}
+html,body{background:#000;overscroll-behavior-y:contain}
+body{font-family:var(--f-ui),var(--f-jp);color:var(--photo-text);min-height:100vh;-webkit-font-smoothing:antialiased;letter-spacing:-0.01em}
+.app{max-width:420px;margin:0 auto;min-height:100vh;background:var(--photo-bg);padding-bottom:90px;position:relative}
 
-/* ★ ヒーロー固定レイヤー (画面に貼り付き、下にスクロールしても残る) */
-.hero-fixed{position:fixed;top:0;left:50%;transform:translateX(-50%);width:100%;max-width:420px;height:62vh;z-index:1;overflow:hidden;background:#000}
-.hero-fixed img{width:100%;height:100%;object-fit:cover;object-position:center 20%;display:block;filter:contrast(1.05) saturate(1.05);transition:opacity .35s}
-.hero-fixed .grad{position:absolute;inset:0;background:
-  linear-gradient(180deg,rgba(0,0,0,.55) 0%,transparent 25%,transparent 55%,rgba(0,0,0,.85) 90%,#000 100%),
-  linear-gradient(90deg,rgba(0,0,0,.45) 0%,transparent 50%);
-  pointer-events:none}
+/* ★ 右側に薄く透過したマッチョシルエットを固定 (装飾レイヤー) */
+.macho-bg{position:fixed;top:0;left:50%;transform:translateX(-50%);width:100%;max-width:420px;height:100vh;z-index:0;pointer-events:none;overflow:hidden}
+.macho-bg img{position:absolute;right:-12%;top:6vh;height:88vh;width:auto;opacity:.08;filter:contrast(1.2) brightness(.95) grayscale(.3);mix-blend-mode:lighten;transition:opacity .4s}
+.macho-bg::after{content:'';position:absolute;inset:0;background:linear-gradient(90deg,rgba(0,0,0,.4) 0%,transparent 30%,transparent 65%,rgba(0,0,0,.4) 100%);pointer-events:none}
 
-/* ヘッダー (ヒーロー上に固定で乗る) */
-.topbar{position:fixed;top:0;left:50%;transform:translateX(-50%);width:100%;max-width:420px;z-index:5;padding:14px 18px 10px;display:flex;justify-content:space-between;align-items:center}
-.topbar .menu{display:flex;gap:14px}
-.topbar .menu a{color:rgba(255,255,255,.6);text-decoration:none;font-family:'Oswald';font-size:11px;letter-spacing:.2em;text-transform:uppercase;cursor:pointer}
-.topbar .menu a.on{color:#fff;border-bottom:2px solid #e11d48;padding-bottom:2px}
-.topbar .ham{color:#fff;font-size:22px;line-height:1;cursor:pointer;width:24px;text-align:center}
+/* プル時にページ本体ごと下に動く */
+.page-content{transition:transform .25s cubic-bezier(.2,.8,.2,1);will-change:transform;position:relative;z-index:2}
+.page-content.pulling{transition:none}
 
-/* タグセレクタ (固定) */
-.tagbar{position:fixed;top:46px;left:50%;transform:translateX(-50%);width:100%;max-width:420px;z-index:5;padding:8px 14px 12px;display:flex;gap:8px;overflow-x:auto;scrollbar-width:none}
+/* プルトゥリフレッシュインジケータ */
+.ptr{position:fixed;top:0;left:50%;transform:translate(-50%,-60px);width:46px;height:46px;background:var(--photo-card);border:1px solid var(--photo-line);border-radius:50%;display:flex;align-items:center;justify-content:center;z-index:60;transition:transform .25s,opacity .2s;opacity:0;box-shadow:0 6px 18px rgba(0,0,0,.5)}
+.ptr .arrow{font-family:var(--f-ui);font-weight:800;color:var(--photo-red);font-size:18px;line-height:1;transition:transform .25s}
+.ptr.ready .arrow{transform:rotate(180deg)}
+.ptr.loading .arrow{display:none}
+.ptr .spin{display:none;width:18px;height:18px;border:2px solid var(--photo-line-strong);border-top-color:var(--photo-red);border-radius:50%;animation:ptr-spin .8s linear infinite}
+.ptr.loading .spin{display:block}
+@keyframes ptr-spin{to{transform:rotate(360deg)}}
+.ptr-label{position:fixed;top:60px;left:50%;transform:translateX(-50%);font-size:10px;letter-spacing:.2em;color:var(--photo-mute);z-index:60;text-transform:uppercase;font-weight:700;opacity:0;transition:opacity .2s;pointer-events:none}
+
+/* 固定ヘッダー (ナビ + タグ) */
+.topbar{position:fixed;top:0;left:50%;transform:translateX(-50%);width:100%;max-width:420px;z-index:50;padding:14px 20px 10px;display:flex;justify-content:space-between;align-items:center;pointer-events:none}
+.topbar .nav-btn{width:36px;height:36px;border-radius:50%;background:rgba(0,0,0,.55);backdrop-filter:blur(8px);display:flex;align-items:center;justify-content:center;font-size:18px;color:#fff;cursor:pointer;pointer-events:auto;border:1px solid rgba(255,255,255,.1)}
+.topbar .nav-btn:active{background:rgba(0,0,0,.75)}
+
+/* タグセレクタ */
+.tagbar{position:fixed;top:60px;left:50%;transform:translateX(-50%);width:100%;max-width:420px;z-index:40;padding:6px 14px 12px;display:flex;gap:6px;overflow-x:auto;scrollbar-width:none;background:linear-gradient(180deg,rgba(10,10,10,.7),rgba(10,10,10,.0));backdrop-filter:blur(6px)}
 .tagbar::-webkit-scrollbar{display:none}
-.tag{flex:0 0 auto;padding:8px 16px;border-radius:50px;background:rgba(20,20,20,.6);backdrop-filter:blur(10px);border:1px solid rgba(255,255,255,.12);font-family:'Noto Sans JP';font-size:13px;font-weight:700;color:rgba(255,255,255,.7);cursor:pointer;transition:.2s;letter-spacing:.05em}
-.tag.on{background:#e11d48;border-color:#e11d48;color:#fff;box-shadow:0 4px 14px rgba(225,29,72,.4)}
-.tag:hover:not(.on){background:rgba(40,40,40,.8);color:#fff}
+.tag{flex:0 0 auto;padding:7px 14px;border-radius:50px;background:rgba(20,20,20,.85);backdrop-filter:blur(10px);border:1px solid var(--photo-line);font-family:var(--f-jp);font-size:13px;font-weight:700;color:rgba(255,255,255,.65);cursor:pointer;transition:.18s;letter-spacing:.02em}
+.tag.on{background:var(--photo-red);border-color:var(--photo-red);color:#fff;box-shadow:0 4px 14px rgba(230,57,70,.4)}
+.tag:active{transform:scale(.96)}
+
+/* ヒーロー */
+.hero{position:relative;height:340px;overflow:hidden}
+.hero img{width:100%;height:100%;object-fit:cover;object-position:center 18%;display:block;transition:opacity .35s}
+/* 上下グラデ */
+.hero .grad{position:absolute;inset:0;background:linear-gradient(180deg,rgba(0,0,0,.55) 0%,transparent 28%,transparent 55%,rgba(10,10,10,.85) 88%,var(--photo-bg) 100%);pointer-events:none}
+/* 赤い斜めスラッシュ (V9踏襲) */
+.hero .slash{position:absolute;right:-30px;top:0;width:200px;height:340px;pointer-events:none}
+.hero .slash svg{width:100%;height:100%}
 
 /* ヒーロー上のラベル */
-.hero-label{position:fixed;left:50%;transform:translateX(-50%);width:100%;max-width:420px;z-index:4;padding:0 22px;top:40vh;pointer-events:none}
-.hero-label .day{display:inline-block;background:#e11d48;color:#fff;font-family:'Oswald';font-size:10px;letter-spacing:.25em;padding:4px 10px;font-weight:700}
-.hero-label h1{font-family:'Anton';font-size:48px;line-height:.95;letter-spacing:.02em;margin-top:10px;text-shadow:0 4px 24px rgba(0,0,0,.6)}
-.hero-label h1 em{font-style:normal;color:#e11d48;display:block}
-.hero-label .sub{font-size:13px;color:rgba(255,255,255,.85);margin-top:8px;font-weight:500;text-shadow:0 2px 12px rgba(0,0,0,.5)}
+.hero-label{position:absolute;left:0;right:0;bottom:14px;z-index:2;padding:0 22px;pointer-events:none}
+.hero-label .day{display:inline-block;background:var(--photo-red);color:#fff;font-family:var(--f-display);font-size:11px;letter-spacing:.18em;padding:5px 10px;font-weight:400;border-radius:4px}
+.hero-label h1{font-family:var(--f-jp);font-weight:900;font-size:30px;line-height:1.15;letter-spacing:-.01em;margin-top:12px;color:#fff;text-shadow:0 2px 20px rgba(0,0,0,.7)}
+.hero-label h1 em{font-style:normal;color:var(--photo-red);display:block}
+.hero-label .meta{display:flex;gap:14px;font-size:12px;color:var(--photo-mute);font-family:var(--f-jp);margin-top:10px;font-weight:600}
+.hero-label .meta .it{display:flex;align-items:center;gap:5px}
+.hero-label .meta .ic{color:var(--photo-red);font-family:var(--f-display);font-size:13px;letter-spacing:0}
 
-/* スクロール領域 (透明スペースでヒーローを見せる) */
-.scroll-area{position:relative;z-index:2;padding-top:62vh}
+/* ステータス3カード */
+.stats{padding:14px 16px 8px;display:grid;grid-template-columns:1fr 1fr 1fr;gap:8px}
+.stats .s{background:var(--photo-card);border:1px solid var(--photo-line);padding:12px 12px;border-radius:10px}
+.stats .s .l{font-family:var(--f-display);font-size:10px;color:var(--photo-dim);letter-spacing:.18em}
+.stats .s .v{font-family:var(--f-mono);font-weight:500;font-size:20px;letter-spacing:-.01em;line-height:1.1;margin-top:4px;color:#fff}
+.stats .s .v small{font-size:10px;color:var(--photo-mute);font-family:var(--f-display);letter-spacing:.1em;font-weight:400;margin-left:2px}
+.stats .s.r .v{color:var(--photo-red)}
 
-/* スクロール部分の上端グラデーション */
-.scroll-area::before{content:'';position:absolute;top:-40px;left:0;right:0;height:80px;background:linear-gradient(180deg,transparent,#000);pointer-events:none}
-
-/* スクロール下の本体 */
-.body{background:#000;padding:0 0 30px}
-
-/* 本日のステータス3枚 */
-.stats{padding:14px 18px;display:flex;gap:10px;background:#000}
-.stats .s{flex:1;background:#141414;border:1px solid #1f1f1f;padding:12px 12px;border-radius:10px}
-.stats .s .l{font-family:'Oswald';font-size:9px;color:#888;letter-spacing:.2em;text-transform:uppercase}
-.stats .s .v{font-family:'Anton';font-size:22px;letter-spacing:.02em;line-height:1;margin-top:4px}
-.stats .s .v small{font-size:11px;color:#888;font-family:'Oswald'}
-.stats .s.r .v{color:#e11d48}
-
-/* 大ボタン */
-.cta-main{margin:8px 18px 18px;background:#e11d48;color:#fff;border:0;padding:18px;font-family:'Noto Sans JP';font-size:16px;font-weight:900;cursor:pointer;border-radius:50px;width:calc(100% - 36px);box-shadow:0 8px 24px rgba(225,29,72,.35);transition:.15s;display:flex;align-items:center;justify-content:center;gap:10px}
-.cta-main:hover{background:#be123c;transform:translateY(-2px);box-shadow:0 10px 28px rgba(225,29,72,.5)}
-.cta-main .arr{font-family:'Anton';font-size:18px}
-
-/* 進捗ブロック */
-.progress-block{margin:0 18px 18px;background:#0f0f0f;border:1px solid #1f1f1f;border-radius:14px;padding:18px 18px 16px}
-.progress-block .ttl{display:flex;justify-content:space-between;align-items:center;margin-bottom:14px}
-.progress-block .ttl h3{font-family:'Oswald';font-size:13px;letter-spacing:.2em;color:#fff;text-transform:uppercase}
-.progress-block .ttl small{font-size:11px;color:#888;letter-spacing:.05em}
-.progress-block .ttl small b{color:#e11d48}
-.progress-block .row{display:grid;grid-template-columns:auto 1fr;gap:18px;align-items:center}
-.ring{width:90px;height:90px;position:relative;flex-shrink:0}
-.ring svg{transform:rotate(-90deg);width:100%;height:100%}
-.ring .bg{fill:none;stroke:#1f1f1f;stroke-width:9}
-.ring .fg{fill:none;stroke:#e11d48;stroke-width:9;stroke-linecap:round;stroke-dasharray:251;stroke-dashoffset:62}
-.ring .center{position:absolute;inset:0;display:flex;flex-direction:column;align-items:center;justify-content:center}
-.ring .center b{font-family:'Anton';font-size:24px;letter-spacing:.02em;line-height:1}
-.ring .center small{font-size:9px;color:#888;letter-spacing:.2em;font-family:'Oswald';margin-top:1px}
-.progress-block .info{font-size:13px;color:#aaa;line-height:1.5}
-.progress-block .info .big{font-family:'Anton';font-size:22px;letter-spacing:.02em;display:block;margin-bottom:2px;color:#fff}
-.progress-block .info .big small{color:#e11d48;font-size:13px;margin-left:3px;font-family:'Oswald'}
-.progress-block .info span b{color:#e11d48;font-family:'Anton';font-size:14px;font-weight:400}
-.progress-block .info span b.w{color:#fff}
-
-/* 週カレンダー */
-.week{margin:0 18px 18px;display:grid;grid-template-columns:repeat(7,1fr);gap:6px}
-.week .d{aspect-ratio:1;background:#0f0f0f;border:1px solid #1f1f1f;border-radius:50%;display:flex;flex-direction:column;align-items:center;justify-content:center;position:relative}
-.week .d small{font-family:'Oswald';font-size:9px;color:#666;letter-spacing:.1em}
-.week .d b{font-family:'Anton';font-size:14px;color:#fff}
-.week .d.on{background:#e11d48;border-color:#e11d48}
-.week .d.on small,.week .d.on b{color:#fff}
-.week .d.today{box-shadow:0 0 0 2px #e11d48}
-.week .d.done::after{content:'';position:absolute;bottom:-2px;right:-2px;background:#22c55e;width:8px;height:8px;border-radius:50%}
+/* CTA */
+.cta-main{margin:6px 16px 18px;background:var(--photo-red);color:#fff;border:0;padding:14px 0;border-radius:8px;width:calc(100% - 32px);font-family:var(--f-jp);font-size:15px;font-weight:700;letter-spacing:.04em;cursor:pointer;transition:background .15s,transform .1s}
+.cta-main:hover{background:var(--photo-red-deep)}
+.cta-main:active{transform:scale(.99)}
+.cta-ghost{background:transparent;color:#fff;border:1px solid rgba(255,255,255,.3);padding:14px 0;border-radius:8px;width:100%;font-size:15px;font-weight:600;cursor:pointer}
 
 /* セクションタイトル */
-.sec{padding:0 18px;margin:8px 0 12px;display:flex;justify-content:space-between;align-items:center}
-.sec h2{font-family:'Anton';font-size:22px;letter-spacing:.04em}
-.sec a{color:#e11d48;text-decoration:none;font-family:'Oswald';font-size:11px;letter-spacing:.15em;cursor:pointer}
+.sec{padding:0 18px;margin:8px 0 10px;display:flex;justify-content:space-between;align-items:center}
+.sec h2{font-family:var(--f-jp);font-size:14px;font-weight:700;letter-spacing:-.01em}
+.sec a{color:var(--photo-mute);text-decoration:none;font-size:11px;cursor:pointer}
+.sec a:active{color:#fff}
 
 /* 種目リスト */
-.list{padding:0 18px;display:flex;flex-direction:column;gap:10px}
-.ex{background:#0f0f0f;border:1px solid #1f1f1f;border-radius:12px;padding:10px;display:grid;grid-template-columns:60px 1fr auto;gap:12px;align-items:center;cursor:pointer;transition:.15s}
-.ex:hover{border-color:#e11d48;background:#161616}
-.ex .thumb{width:60px;height:60px;background-size:cover;background-position:center;border-radius:8px;filter:contrast(1.05);background-color:#222}
-.ex .body .name{font-weight:700;font-size:14px}
-.ex .body .meta{font-family:'Oswald';font-size:12px;color:#888;letter-spacing:.05em;margin-top:3px}
-.ex .body .meta b{color:#fff;font-size:14px}
-.ex .vol{text-align:right}
-.ex .vol b{font-family:'Anton';font-size:18px;color:#e11d48;line-height:1;display:block}
-.ex .vol small{display:block;font-size:9px;color:#666;letter-spacing:.15em;font-family:'Oswald';margin-top:2px}
-.ex.done .vol b{color:#22c55e}
-.ex .pin{display:inline-block;font-size:9px;background:#e11d48;color:#fff;padding:1px 5px;border-radius:3px;margin-left:5px;letter-spacing:.05em;font-family:'Oswald'}
+.list{padding:0 16px;display:flex;flex-direction:column;gap:8px}
+.ex{background:var(--photo-card);border:1px solid var(--photo-line);border-radius:10px;padding:10px;display:grid;grid-template-columns:48px 1fr 24px;gap:12px;align-items:center;cursor:pointer;transition:.15s}
+.ex:hover{border-color:var(--photo-line-strong);background:#1f1f1f}
+.ex:active{transform:scale(.99)}
+.ex .thumb{width:48px;height:48px;border-radius:8px;background-size:cover;background-position:center;background-color:#0a0a0a;flex-shrink:0}
+.ex .body{min-width:0}
+.ex .body .name{font-family:var(--f-jp);font-size:13px;font-weight:700;line-height:1.2;color:#fff}
+.ex .body .meta{font-size:11px;color:var(--photo-mute);margin-top:3px;font-weight:500;letter-spacing:.02em;font-family:var(--f-jp)}
+.ex .body .meta b{color:#fff;font-weight:700}
+.ex .chev{color:var(--photo-mute);font-size:18px;display:flex;align-items:center;justify-content:center;font-family:var(--f-ui)}
+.ex.done{opacity:.6}
+.ex.done .body .name::after{content:' ✓';color:var(--ok);font-size:11px}
+.ex.next{border-color:var(--photo-red);background:linear-gradient(90deg,rgba(230,57,70,.06),transparent 60%)}
+.ex.next .chev{color:var(--photo-red)}
+.ex .pin{display:inline-block;font-size:9px;background:var(--photo-red);color:#fff;padding:2px 6px;border-radius:3px;margin-left:6px;letter-spacing:.1em;font-family:var(--f-display);font-weight:400;vertical-align:middle}
 
-/* 実績バッジ (シンプル化、絵文字なし) */
-.medals{margin:0 18px 18px;background:#0f0f0f;border:1px solid #1f1f1f;border-radius:14px;padding:14px 16px}
+/* WEEK プログラム進捗 */
+.program{margin:0 16px 14px;background:linear-gradient(135deg,#1a0a0c 0%,var(--photo-card) 60%);border:1px solid rgba(230,57,70,.15);border-radius:12px;padding:18px;display:grid;grid-template-columns:1fr auto;gap:14px;align-items:center;position:relative;overflow:hidden}
+.program::before{content:'';position:absolute;right:-30px;top:-20px;width:140px;height:140px;background:radial-gradient(circle,rgba(230,57,70,.18) 0%,transparent 70%);pointer-events:none}
+.prog-tag{font-family:var(--f-display);font-size:11px;letter-spacing:.18em;color:var(--photo-red)}
+.program h3{font-family:var(--f-jp);font-size:20px;font-weight:900;letter-spacing:-.01em;line-height:1.1;margin-top:4px}
+.program h3 small{display:block;font-size:12px;color:var(--photo-mute);font-weight:600;margin-top:2px}
+.prog-bar{margin-top:12px;height:5px;background:#0e0e0e;border-radius:3px;overflow:hidden}
+.prog-fill{height:100%;background:linear-gradient(90deg,var(--photo-red),#f97484);border-radius:3px;box-shadow:0 0 12px rgba(230,57,70,.5)}
+.prog-meta{margin-top:8px;font-family:var(--f-display);font-size:11px;letter-spacing:.08em;color:var(--photo-mute)}
+.prog-meta b{color:#fff;font-family:var(--f-mono);font-size:14px;font-weight:600;letter-spacing:-.01em}
+.prog-r{align-self:stretch;width:74px;background:linear-gradient(135deg,var(--photo-red) 0%,#7f1c2a 100%);border-radius:8px;display:flex;align-items:center;justify-content:center;font-family:var(--f-mono);font-weight:600;font-size:32px;color:#fff;letter-spacing:-.02em}
+.prog-r::before{content:'60'}
+.prog-r::after{content:'%';font-family:var(--f-display);font-weight:400;font-size:14px;align-self:flex-start;margin-top:10px;margin-left:1px}
+
+/* 週カレンダー */
+.week{margin:0 16px 14px;display:grid;grid-template-columns:repeat(7,1fr);gap:5px}
+.week .d{aspect-ratio:1;background:var(--photo-card);border:1px solid var(--photo-line);border-radius:50%;display:flex;flex-direction:column;align-items:center;justify-content:center;position:relative}
+.week .d small{font-family:var(--f-display);font-size:9px;color:var(--photo-dim);letter-spacing:.1em}
+.week .d b{font-family:var(--f-mono);font-weight:500;font-size:13px;color:#fff;letter-spacing:-.01em;margin-top:1px}
+.week .d.on{background:var(--photo-red);border-color:var(--photo-red)}
+.week .d.on small,.week .d.on b{color:#fff}
+.week .d.today{box-shadow:0 0 0 2px var(--photo-red)}
+.week .d.done::after{content:'';position:absolute;bottom:-2px;right:-2px;background:var(--ok);width:7px;height:7px;border-radius:50%}
+
+/* ボリューム推移チャート */
+.chart-block{margin:0 16px 14px;background:var(--photo-card);border:1px solid var(--photo-line);border-radius:12px;padding:14px 16px}
+.chart-block .ttl{display:flex;justify-content:space-between;align-items:center;margin-bottom:10px}
+.chart-block .ttl h3{font-family:var(--f-jp);font-size:13px;font-weight:700;letter-spacing:-.01em}
+.chart-block .ttl small{font-family:var(--f-display);font-size:11px;color:var(--photo-mute);letter-spacing:.05em}
+.chart-block .ttl small b{color:var(--photo-red)}
+.line-chart{width:100%;height:100px;display:block}
+.chart-axis{display:flex;justify-content:space-between;font-family:var(--f-display);font-size:9px;color:var(--photo-dim);letter-spacing:.05em;margin-top:6px;padding:0 4px}
+.chart-axis span.on{color:var(--photo-red)}
+.chart-foot{margin-top:10px;font-family:var(--f-mono);font-weight:500;font-size:22px;letter-spacing:-.01em;color:#fff}
+.chart-foot small{font-family:var(--f-jp);font-size:11px;color:var(--ok);font-weight:600;margin-left:8px}
+
+/* 人体図 */
+.body-block{margin:0 16px 14px;background:var(--photo-card);border:1px solid var(--photo-line);border-radius:12px;padding:14px 16px}
+.body-block .ttl{display:flex;justify-content:space-between;align-items:center;margin-bottom:12px}
+.body-block .ttl h3{font-family:var(--f-jp);font-size:13px;font-weight:700;letter-spacing:-.01em}
+.body-block .ttl small{font-family:var(--f-display);font-size:14px;color:var(--photo-red);letter-spacing:.05em}
+.body-row{display:grid;grid-template-columns:120px 1fr;gap:14px;align-items:center}
+.body-svg{width:120px;height:auto}
+.body-svg [data-part]{transition:fill .3s,stroke .3s}
+.body-svg [data-part].on{fill:var(--photo-red);stroke:#fca5af;filter:drop-shadow(0 0 6px rgba(230,57,70,.6))}
+.body-info{display:flex;flex-direction:column;gap:8px}
+.muscles{display:flex;flex-wrap:wrap;gap:5px}
+.mus{background:#0e0e0e;border:1px solid var(--photo-line);color:var(--photo-mute);padding:4px 10px;border-radius:50px;font-size:11px;font-weight:600;font-family:var(--f-jp)}
+.mus.on{background:var(--photo-red-soft);border-color:var(--photo-red);color:#fca5af}
+.body-cta{font-size:11px;color:var(--photo-mute);font-family:var(--f-jp);font-weight:600}
+.body-cta b{color:#fff;font-family:var(--f-mono);font-size:16px;margin-left:4px;letter-spacing:-.01em;font-weight:500}
+
+/* 限界を超えろ モチベーションカード */
+.motiv{margin:0 16px 14px;border-radius:12px;overflow:hidden;position:relative;height:220px;cursor:pointer}
+.motiv img{width:100%;height:100%;object-fit:cover;object-position:center 25%;display:block}
+.motiv-grad{position:absolute;inset:0;background:linear-gradient(180deg,rgba(0,0,0,.4) 0%,rgba(0,0,0,.6) 50%,rgba(0,0,0,.92) 100%)}
+.motiv-glow{position:absolute;left:-30px;top:-20px;width:200px;height:200px;background:radial-gradient(circle,rgba(230,57,70,.55) 0%,transparent 70%);filter:blur(20px);pointer-events:none}
+.motiv-body{position:absolute;left:18px;right:18px;bottom:16px;color:#fff;z-index:2}
+.motiv-tag{font-family:var(--f-display);font-size:11px;letter-spacing:.18em;color:#fff;background:var(--photo-red);display:inline-block;padding:4px 10px;border-radius:4px}
+.motiv h3{font-family:var(--f-jp);font-weight:900;font-size:32px;letter-spacing:-.01em;line-height:1;margin-top:10px;text-shadow:0 4px 16px rgba(0,0,0,.5)}
+.motiv h3 em{font-style:normal;color:var(--photo-red)}
+.motiv p{font-size:12px;color:rgba(255,255,255,.8);margin-top:8px;line-height:1.5;font-family:var(--f-jp)}
+.motiv-cta{margin-top:12px;background:#fff;color:#000;border:0;padding:10px 22px;font-family:var(--f-jp);font-size:13px;font-weight:700;border-radius:50px;cursor:pointer;letter-spacing:.04em;transition:.15s}
+.motiv-cta:hover{background:var(--photo-red);color:#fff}
+
+/* 漫画ひとコマカード */
+.manga{margin:0 16px 14px;background:var(--photo-card);border:1px solid var(--photo-line);border-radius:12px;overflow:hidden}
+.manga-head{padding:12px 16px 8px;display:flex;justify-content:space-between;align-items:center;border-bottom:1px solid var(--photo-line)}
+.manga-head h3{font-family:var(--f-jp);font-size:13px;font-weight:700;letter-spacing:-.01em}
+.manga-head .tag-r{font-family:var(--f-display);font-size:10px;letter-spacing:.18em;color:var(--photo-red);background:var(--photo-red-soft);padding:3px 8px;border-radius:4px}
+.manga-frame{position:relative;background:#fff;padding:0;margin:10px 12px;border:1px solid #2a2a2a;border-radius:6px;overflow:hidden;box-shadow:0 2px 0 #000,inset 0 0 0 4px #fff}
+.manga-frame img{width:100%;height:auto;display:block}
+.manga-frame::before{content:'';position:absolute;inset:0;border:2px solid #000;border-radius:6px;pointer-events:none}
+.manga-foot{padding:10px 16px 14px;display:flex;justify-content:space-between;align-items:center}
+.manga-foot .ex-name{font-family:var(--f-jp);font-size:13px;font-weight:700;color:#fff}
+.manga-foot .ex-name small{display:block;font-family:var(--f-display);font-size:10px;color:var(--photo-mute);letter-spacing:.15em;margin-top:2px;font-weight:400}
+.manga-foot .ex-action{font-family:var(--f-jp);font-size:12px;color:var(--photo-red);font-weight:700;cursor:pointer}
+
+/* 実績バッジ */
+.medals{margin:0 16px 14px;background:var(--photo-card);border:1px solid var(--photo-line);border-radius:12px;padding:14px 16px}
 .medals .ttl{display:flex;justify-content:space-between;align-items:center;margin-bottom:12px}
-.medals .ttl h3{font-family:'Oswald';font-size:13px;letter-spacing:.2em;text-transform:uppercase}
-.medals .ttl small{color:#888;font-size:11px}
-.medals .row{display:flex;justify-content:space-around;gap:8px}
-.medals .m{text-align:center;flex:1}
-.medals .m .ico{width:50px;height:50px;margin:0 auto;border-radius:50%;display:flex;align-items:center;justify-content:center;font-family:'Anton';font-size:20px;background:linear-gradient(135deg,#2a2a2a,#1a1a1a);border:2px solid #333;color:#666}
-.medals .m.gold .ico{background:linear-gradient(135deg,#ffd700,#b8860b);border-color:#ffd700;color:#3a2a00;box-shadow:0 0 16px rgba(255,215,0,.3)}
-.medals .m.silver .ico{background:linear-gradient(135deg,#c0c0c0,#808080);border-color:#c0c0c0;color:#222}
-.medals .m.bronze .ico{background:linear-gradient(135deg,#cd7f32,#8b4513);border-color:#cd7f32;color:#3a1f00}
-.medals .m .lab{font-size:10px;color:#888;margin-top:6px;line-height:1.2;font-family:'Oswald';letter-spacing:.05em}
+.medals .ttl h3{font-family:var(--f-jp);font-size:13px;font-weight:700}
+.medals .ttl small{color:var(--photo-mute);font-size:11px}
+.medals .row{display:grid;grid-template-columns:repeat(4,1fr);gap:10px}
+.medals .m{text-align:center}
+.medals .m .badge{width:56px;height:56px;margin:0 auto;display:flex;align-items:center;justify-content:center;position:relative;border-radius:8px;background:linear-gradient(135deg,#222,#111);border:1px solid #2a2a2a}
+.medals .m .badge svg{width:26px;height:26px}
+.medals .m.gold .badge{background:linear-gradient(135deg,#E8C76C,#9A7A30);border-color:var(--gold);box-shadow:0 0 14px rgba(212,160,75,.3)}
+.medals .m.silver .badge{background:linear-gradient(135deg,#D8D8D8,#888);border-color:var(--silver)}
+.medals .m.bronze .badge{background:linear-gradient(135deg,#C8895A,#6A3F1A);border-color:var(--bronze)}
+.medals .m.locked .badge{opacity:.35}
+.medals .m .lab{font-size:10px;color:var(--photo-mute);margin-top:6px;line-height:1.2;font-family:var(--f-jp)}
 .medals .m .lab b{color:#fff;display:block;font-size:11px;font-weight:700}
 
-/* nav (絵文字なし、テキスト＋ドット) */
-.nav{position:fixed;bottom:0;left:50%;transform:translateX(-50%);width:100%;max-width:420px;background:rgba(0,0,0,.95);backdrop-filter:blur(12px);border-top:1px solid #1f1f1f;display:flex;padding:10px 0 14px;z-index:10}
-.nav a{flex:1;text-align:center;color:#666;text-decoration:none;font-family:'Oswald';font-size:10px;letter-spacing:.15em;padding:6px 0;text-transform:uppercase;cursor:pointer;position:relative}
-.nav a.on{color:#e11d48}
-.nav a .ico{display:block;font-family:'Anton';font-size:14px;margin-bottom:3px;letter-spacing:.05em}
-.nav a.on::before{content:'';position:absolute;top:-1px;left:50%;transform:translateX(-50%);width:24px;height:2px;background:#e11d48}
-</style></head>
+/* タブバー (5タブ) */
+.tab{position:fixed;bottom:0;left:50%;transform:translateX(-50%);width:100%;max-width:420px;background:rgba(10,10,10,.95);backdrop-filter:blur(12px);border-top:1px solid var(--photo-line);padding:10px 8px 28px;display:grid;grid-template-columns:repeat(5,1fr);gap:4px;z-index:30}
+.tab a{display:flex;flex-direction:column;align-items:center;gap:4px;font-size:10px;color:var(--photo-dim);text-decoration:none;letter-spacing:.04em;cursor:pointer;font-family:var(--f-jp);font-weight:700;padding:4px 0}
+.tab a.on{color:var(--photo-red)}
+.tab a .ic{font-size:18px;line-height:1;font-family:var(--f-ui)}
+</style>
+</head>
 <body>
 <div class="app">
 
-  <!-- ★ 固定ヒーロー画像 (タグで切替、下スクロールしても残る) -->
-  <div class="hero-fixed">
-    <img id="heroImg" src="img/hero-chest.png" alt="">
-    <div class="grad"></div>
-  </div>
+  <!-- プルトゥリフレッシュ -->
+  <div class="ptr" id="ptr"><span class="arrow">↓</span><span class="spin"></span></div>
+  <div class="ptr-label" id="ptrLabel">引っ張って更新</div>
 
-  <!-- 固定ヘッダー -->
+  <!-- 右側に固定で残るマッチョシルエット -->
+  <div class="macho-bg"><img id="machoBg" src="img/hero-chest.png" alt=""></div>
+
+  <!-- 固定ヘッダー (戻る + メニュー) -->
   <div class="topbar">
-    <div class="menu">
-      <a class="on">HOME</a>
-      <a>WORKOUT</a>
-      <a>STATS</a>
-    </div>
-    <div class="ham">≡</div>
+    <div class="nav-btn">‹</div>
+    <div class="nav-btn">⋯</div>
   </div>
 
   <!-- 固定タグバー -->
@@ -157,188 +243,271 @@ body{font-family:'Noto Sans JP',sans-serif;color:#fff;min-height:100vh}
     <div class="tag" data-tag="leg">脚</div>
   </div>
 
-  <!-- ヒーロー上の見出し (固定) -->
-  <div class="hero-label" id="heroLabel">
-    <span class="day">CHEST DAY · DAY 023</span>
-    <h1 id="heroTitle">胸を<em>破壊する日</em></h1>
-    <div class="sub" id="heroSub">本日のメニュー: <b style="color:#fff">5種目</b> / 完了 <b style="color:#fff">3</b> / 残り <b style="color:#e11d48">2</b></div>
-  </div>
+  <!-- ★ ページ本体 (プル時に下に動く) -->
+  <div class="page-content" id="pageContent">
 
-  <!-- スクロール領域 -->
-  <div class="scroll-area">
-    <div class="body">
-
-      <div class="stats">
-        <div class="s"><div class="l">VOLUME</div><div class="v" id="statVol">12,450<small> KG</small></div></div>
-        <div class="s r"><div class="l">CALORIES</div><div class="v">520<small> KCAL</small></div></div>
-        <div class="s"><div class="l">TIME</div><div class="v">42<small> MIN</small></div></div>
+    <!-- ヒーロー -->
+    <div class="hero">
+      <img id="heroImg" src="img/hero-chest.png" alt="">
+      <div class="grad"></div>
+      <div class="slash">
+        <svg viewBox="0 0 200 340" preserveAspectRatio="none">
+          <path d="M120 0 L200 0 L200 340 L40 340 Z" fill="var(--photo-red)" opacity="0.7"/>
+          <path d="M100 0 L130 0 L70 340 L40 340 Z" fill="#000" opacity="0.4"/>
+        </svg>
       </div>
-
-      <button class="cta-main">ワークアウトを開始<span class="arr">▶</span></button>
-
-      <div class="progress-block">
-        <div class="ttl"><h3>本日の目標</h3><small>達成率 <b>75%</b></small></div>
-        <div class="row">
-          <div class="ring">
-            <svg viewBox="0 0 100 100"><circle class="bg" cx="50" cy="50" r="40"/><circle class="fg" cx="50" cy="50" r="40"/></svg>
-            <div class="center"><b>75<small style="font-size:14px;color:#e11d48">%</small></b><small>GOAL</small></div>
-          </div>
-          <div class="info">
-            <span class="big">9,300<small>/12,500 kg</small></span>
-            <span>あと <b>3,200kg</b> で目標達成。<br>残り種目: <b class="w">2件</b></span>
-          </div>
+      <div class="hero-label" id="heroLabel">
+        <span class="day">CHEST DAY · DAY 023</span>
+        <h1 id="heroTitle">胸を<em>破壊する日</em></h1>
+        <div class="meta" id="heroMeta">
+          <span class="it"><span class="ic">▣</span><span id="heroLevel">中級者向け</span></span>
+          <span class="it"><span class="ic">◷</span><span id="heroTime">約60分</span></span>
         </div>
       </div>
-
-      <div class="week">
-        <div class="d done"><small>MON</small><b>27</b></div>
-        <div class="d"><small>TUE</small><b>28</b></div>
-        <div class="d done"><small>WED</small><b>29</b></div>
-        <div class="d"><small>THU</small><b>30</b></div>
-        <div class="d done"><small>FRI</small><b>1</b></div>
-        <div class="d today on"><small>SAT</small><b>3</b></div>
-        <div class="d"><small>SUN</small><b>4</b></div>
-      </div>
-
-      <div class="sec"><h2 id="listTitle">胸の種目</h2><a>すべて表示 →</a></div>
-      <div class="list" id="exList"></div>
-
-      <div class="medals">
-        <div class="ttl"><h3>実績</h3><small>3 / 12 獲得</small></div>
-        <div class="row">
-          <div class="m gold"><div class="ico">1</div><div class="lab"><b>3日連続</b>WEEK STREAK</div></div>
-          <div class="m silver"><div class="ico">2</div><div class="lab"><b>10万kg</b>TOTAL VOLUME</div></div>
-          <div class="m bronze"><div class="ico">3</div><div class="lab"><b>初挑戦</b>BENCH 80KG</div></div>
-          <div class="m"><div class="ico">−</div><div class="lab"><b>--</b>NEXT</div></div>
-        </div>
-      </div>
-
     </div>
+
+    <div class="stats">
+      <div class="s"><div class="l">VOLUME</div><div class="v" id="statVol">12,450<small>KG</small></div></div>
+      <div class="s r"><div class="l">CALORIES</div><div class="v">520<small>KCAL</small></div></div>
+      <div class="s"><div class="l">TIME</div><div class="v">42<small>MIN</small></div></div>
+    </div>
+
+    <button class="cta-main">ワークアウトを開始</button>
+
+    <div class="program">
+      <div>
+        <div class="prog-tag">PROGRAM</div>
+        <h3>WEEK 1<small>基礎をつくる週</small></h3>
+        <div class="prog-bar"><div class="prog-fill" style="width:60%"></div></div>
+        <div class="prog-meta"><b>3</b>日達成 / 5日目標</div>
+      </div>
+      <div class="prog-r"></div>
+    </div>
+
+    <div class="week">
+      <div class="d done"><small>MON</small><b>27</b></div>
+      <div class="d"><small>TUE</small><b>28</b></div>
+      <div class="d done"><small>WED</small><b>29</b></div>
+      <div class="d"><small>THU</small><b>30</b></div>
+      <div class="d done"><small>FRI</small><b>1</b></div>
+      <div class="d today on"><small>SAT</small><b>3</b></div>
+      <div class="d"><small>SUN</small><b>4</b></div>
+    </div>
+
+    <div class="chart-block">
+      <div class="ttl"><h3>ボリューム推移</h3><small>直近 <b>7日間</b></small></div>
+      <svg class="line-chart" viewBox="0 0 320 100" preserveAspectRatio="none">
+        <defs><linearGradient id="grad-line" x1="0" y1="0" x2="0" y2="1">
+          <stop offset="0%" stop-color="#E63946" stop-opacity=".5"/>
+          <stop offset="100%" stop-color="#E63946" stop-opacity="0"/>
+        </linearGradient></defs>
+        <line x1="0" y1="86" x2="320" y2="86" stroke="rgba(255,255,255,0.06)" stroke-width="1"/>
+        <line x1="0" y1="56" x2="320" y2="56" stroke="rgba(255,255,255,0.04)" stroke-width="1" stroke-dasharray="2 4"/>
+        <line x1="0" y1="26" x2="320" y2="26" stroke="rgba(255,255,255,0.04)" stroke-width="1" stroke-dasharray="2 4"/>
+        <path d="M 10,72 L 60,50 L 110,62 L 160,38 L 210,46 L 260,26 L 310,14 L 310,86 L 10,86 Z" fill="url(#grad-line)"/>
+        <polyline points="10,72 60,50 110,62 160,38 210,46 260,26 310,14" fill="none" stroke="#E63946" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"/>
+        <circle cx="10" cy="72" r="3" fill="#E63946"/>
+        <circle cx="60" cy="50" r="3" fill="#E63946"/>
+        <circle cx="110" cy="62" r="3" fill="#E63946"/>
+        <circle cx="160" cy="38" r="3" fill="#E63946"/>
+        <circle cx="210" cy="46" r="3" fill="#E63946"/>
+        <circle cx="260" cy="26" r="3" fill="#E63946"/>
+        <circle cx="310" cy="14" r="4" fill="#fff" stroke="#E63946" stroke-width="2"/>
+      </svg>
+      <div class="chart-axis"><span>4/27</span><span>4/28</span><span>4/29</span><span>4/30</span><span>5/1</span><span>5/2</span><span class="on">5/3</span></div>
+      <div class="chart-foot">12,450 <small>過去7日最高</small></div>
+    </div>
+
+    <div class="body-block">
+      <div class="ttl"><h3>本日のターゲット</h3><small id="bodyTargetLabel">胸</small></div>
+      <div class="body-row">
+        <svg class="body-svg" viewBox="0 0 120 220" id="bodySvg">
+          <ellipse cx="60" cy="20" rx="13" ry="16" fill="#1f1f1f" stroke="#333" stroke-width="1"/>
+          <rect x="54" y="33" width="12" height="8" fill="#1f1f1f"/>
+          <path data-part="shoulder" d="M 30,50 Q 40,42 60,42 Q 80,42 90,50 L 88,62 Q 75,55 60,55 Q 45,55 32,62 Z" fill="#1f1f1f" stroke="#333" stroke-width="1"/>
+          <path data-part="chest" d="M 35,58 Q 50,62 60,62 Q 70,62 85,58 L 86,90 Q 60,96 60,96 Q 60,96 34,90 Z" fill="#1f1f1f" stroke="#333" stroke-width="1"/>
+          <path d="M 28,55 Q 22,80 22,110 L 30,110 Q 32,80 36,58 Z" fill="#181818" stroke="#2a2a2a" stroke-width="1"/>
+          <path d="M 92,55 Q 98,80 98,110 L 90,110 Q 88,80 84,58 Z" fill="#181818" stroke="#2a2a2a" stroke-width="1"/>
+          <path d="M 40,90 Q 60,98 80,90 L 82,125 Q 60,128 38,125 Z" fill="#181818" stroke="#2a2a2a" stroke-width="1"/>
+          <path data-part="back" d="M 35,55 Q 60,52 85,55 L 86,90 Q 60,93 34,90 Z" fill="transparent" stroke="transparent"/>
+          <path data-part="hip" d="M 38,125 Q 60,130 82,125 L 80,148 Q 60,152 40,148 Z" fill="#1f1f1f" stroke="#333" stroke-width="1"/>
+          <path data-part="leg" d="M 40,148 Q 60,152 80,148 L 78,200 Q 70,210 60,210 Q 50,210 42,200 Z M 40,148 L 42,200 Q 50,210 60,210 Z" fill="#1f1f1f" stroke="#333" stroke-width="1"/>
+        </svg>
+        <div class="body-info">
+          <div class="muscles" id="muscleList"></div>
+          <div class="body-cta">推定消費カロリー<b>520 kcal</b></div>
+        </div>
+      </div>
+    </div>
+
+    <div class="sec"><h2>種目一覧</h2><a>すべて表示 ›</a></div>
+    <div class="list" id="exList"></div>
+
+    <div style="height:14px"></div>
+
+    <div class="motiv">
+      <img src="img/asset-bodybuilder-full.png" alt="">
+      <div class="motiv-glow"></div>
+      <div class="motiv-grad"></div>
+      <div class="motiv-body">
+        <div class="motiv-tag">CHALLENGE</div>
+        <h3>限界を<em>超えろ</em></h3>
+        <p>昨日の自分を超えるのは<br>今日のトレーニングだ。</p>
+        <button class="motiv-cta">記録する</button>
+      </div>
+    </div>
+
+    <div class="manga">
+      <div class="manga-head">
+        <h3>本日のひとコマ</h3>
+        <span class="tag-r">REAR DELT</span>
+      </div>
+      <div class="manga-frame">
+        <img src="img/manga-rear-delt.png" alt="ペックデック リアの一コマ">
+      </div>
+      <div class="manga-foot">
+        <div class="ex-name">ペックデック (リア)<small>三角筋 後部</small></div>
+        <div class="ex-action">記録する ›</div>
+      </div>
+    </div>
+
+    <div class="medals">
+      <div class="ttl"><h3>実績</h3><small>3 / 12 獲得</small></div>
+      <div class="row">
+        <div class="m gold"><div class="badge"><svg viewBox="0 0 24 24" fill="none"><path d="M12 2 L14 9 L22 10 L16 15 L18 22 L12 18 L6 22 L8 15 L2 10 L10 9 Z" fill="#3a2a00"/></svg></div><div class="lab"><b>3日連続</b>WEEK STREAK</div></div>
+        <div class="m silver"><div class="badge"><svg viewBox="0 0 24 24" fill="none"><path d="M12 2 L14 9 L22 10 L16 15 L18 22 L12 18 L6 22 L8 15 L2 10 L10 9 Z" fill="#222"/></svg></div><div class="lab"><b>10万kg</b>TOTAL VOLUME</div></div>
+        <div class="m bronze"><div class="badge"><svg viewBox="0 0 24 24" fill="none"><path d="M12 2 L14 9 L22 10 L16 15 L18 22 L12 18 L6 22 L8 15 L2 10 L10 9 Z" fill="#3a1f00"/></svg></div><div class="lab"><b>初挑戦</b>BENCH 80KG</div></div>
+        <div class="m locked"><div class="badge"><svg viewBox="0 0 24 24" fill="none"><path d="M12 2 L14 9 L22 10 L16 15 L18 22 L12 18 L6 22 L8 15 L2 10 L10 9 Z" fill="#444"/></svg></div><div class="lab"><b>--</b>NEXT</div></div>
+      </div>
+    </div>
+
   </div>
+  <!-- /page-content -->
 
 </div>
 
-<!-- 下部ナビ (絵文字なし、テキスト記号のみ) -->
-<div class="nav">
-  <a class="on"><span class="ico">●</span>HOME</a>
-  <a><span class="ico">▲</span>TRAIN</a>
-  <a><span class="ico">▤</span>STATS</a>
-  <a><span class="ico">★</span>AWARD</a>
-  <a><span class="ico">●</span>ME</a>
+<!-- タブバー (5タブ: ホーム / 記録 / メニュー / 進捗 / 設定) -->
+<div class="tab">
+  <a><span class="ic">⌂</span>ホーム</a>
+  <a><span class="ic">▤</span>記録</a>
+  <a class="on"><span class="ic">☰</span>メニュー</a>
+  <a><span class="ic">◢</span>進捗</a>
+  <a><span class="ic">⚙</span>設定</a>
 </div>
 
 <script>
-// ====== タグ別データ (画像/見出し/種目リスト) ======
 const DATA = {
   chest: {
-    img: 'img/hero-chest.png',
-    badge: 'CHEST DAY · DAY 023',
-    title: '胸を<em>破壊する日</em>',
-    sub: '本日のメニュー: <b style="color:#fff">5種目</b> / 完了 <b style="color:#fff">3</b> / 残り <b style="color:#e11d48">2</b>',
-    listTitle: '胸の種目',
-    vol: '12,450',
-    items: [
-      { name:'ベンチプレス',         meta:'<b>80</b>kg × <b>8</b>rep × <b>4</b>set', vol:'2,560', state:'done', img:'img/465BA571-0D63-4E6B-8CB4-5BDA94C4C8A4.jpg' },
-      { name:'インクラインダンベル', meta:'<b>30</b>kg × <b>10</b>rep × <b>3</b>set', vol:'1,800', state:'done', img:'img/465BA571-0D63-4E6B-8CB4-5BDA94C4C8A4.jpg' },
-      { name:'ケーブルフライ',       meta:'<b>20</b>kg × <b>12</b>rep × <b>3</b>set', vol:'720', state:'done', img:'img/465BA571-0D63-4E6B-8CB4-5BDA94C4C8A4.jpg' },
-      { name:'ディップス',           meta:'自重 × <b>10</b>rep × <b>3</b>set 予定', vol:'--', state:'next' },
-      { name:'プッシュアップ',       meta:'自重 × 限界 × <b>3</b>set 予定', vol:'--', state:'wait' },
+    img:'img/hero-chest.png', badge:'CHEST DAY · DAY 023',
+    title:'胸を<em>破壊する日</em>', level:'中級者向け', time:'約60分',
+    vol:'12,450', bodyParts:['chest','shoulder'],
+    muscles:['大胸筋 (上部)','大胸筋 (下部)','前鋸筋','三角筋 前部'],
+    targetLabel:'胸',
+    items:[
+      {name:'ベンチプレス',         sets:4, reps:8,  weight:80, state:'done', img:'img/465BA571-0D63-4E6B-8CB4-5BDA94C4C8A4.jpg'},
+      {name:'インクラインダンベル', sets:3, reps:10, weight:30, state:'done', img:'img/465BA571-0D63-4E6B-8CB4-5BDA94C4C8A4.jpg'},
+      {name:'ケーブルフライ',       sets:3, reps:12, weight:20, state:'done', img:'img/465BA571-0D63-4E6B-8CB4-5BDA94C4C8A4.jpg'},
+      {name:'ディップス',           sets:3, reps:10, state:'next'},
+      {name:'プッシュアップ',       sets:3, reps:15, state:'wait'},
     ],
   },
   shoulder: {
-    img: 'img/hero-shoulder.png',
-    badge: 'SHOULDER DAY · DAY 024',
-    title: '肩を<em>盛る日</em>',
-    sub: '本日のメニュー: <b style="color:#fff">4種目</b> / 完了 <b style="color:#fff">0</b> / 残り <b style="color:#e11d48">4</b>',
-    listTitle: '肩の種目',
-    vol: '8,200',
-    items: [
-      { name:'ショルダープレス',     meta:'<b>40</b>kg × <b>10</b>rep × <b>4</b>set', vol:'1,600', state:'next' },
-      { name:'サイドレイズ',         meta:'<b>10</b>kg × <b>15</b>rep × <b>3</b>set', vol:'450', state:'wait' },
-      { name:'リアレイズ',           meta:'<b>8</b>kg × <b>15</b>rep × <b>3</b>set', vol:'360', state:'wait' },
-      { name:'フェイスプル',         meta:'<b>20</b>kg × <b>15</b>rep × <b>3</b>set', vol:'900', state:'wait' },
+    img:'img/hero-shoulder.png', badge:'SHOULDER DAY · DAY 024',
+    title:'肩を<em>盛る日</em>', level:'中級者向け', time:'約45分',
+    vol:'8,200', bodyParts:['shoulder'],
+    muscles:['三角筋 前部','三角筋 中部','三角筋 後部','僧帽筋'],
+    targetLabel:'肩',
+    items:[
+      {name:'ショルダープレス', sets:4, reps:10, weight:40, state:'next'},
+      {name:'サイドレイズ',     sets:3, reps:15, weight:10, state:'wait'},
+      {name:'リアレイズ',       sets:3, reps:15, weight:8,  state:'wait'},
+      {name:'フェイスプル',     sets:3, reps:15, weight:20, state:'wait'},
     ],
   },
   back: {
-    img: 'img/hero-back.png',
-    badge: 'BACK DAY · DAY 025',
-    title: '背中を<em>引き裂く日</em>',
-    sub: '本日のメニュー: <b style="color:#fff">5種目</b> / 完了 <b style="color:#fff">0</b> / 残り <b style="color:#e11d48">5</b>',
-    listTitle: '背中の種目',
-    vol: '14,800',
-    items: [
-      { name:'デッドリフト',         meta:'<b>120</b>kg × <b>5</b>rep × <b>4</b>set', vol:'2,400', state:'next' },
-      { name:'ラットプルダウン',     meta:'<b>60</b>kg × <b>10</b>rep × <b>4</b>set', vol:'2,400', state:'wait', img:'img/AD446C5E-A969-469F-87BB-A72EA669D4DC.jpg' },
-      { name:'ベントオーバーロウ',   meta:'<b>60</b>kg × <b>10</b>rep × <b>3</b>set', vol:'1,800', state:'wait' },
-      { name:'シーテッドロウ',       meta:'<b>50</b>kg × <b>12</b>rep × <b>3</b>set', vol:'1,800', state:'wait' },
-      { name:'アシステッド懸垂',     meta:'補助 <b>-30</b>kg × <b>8</b> × <b>3</b>set', vol:'--', state:'wait', img:'img/EC4D2BDF-0485-41C6-B5F4-05A8C715B8CD.jpg' },
+    img:'img/hero-back.png', badge:'BACK DAY · DAY 025',
+    title:'背中を<em>引き裂く日</em>', level:'上級者向け', time:'約70分',
+    vol:'14,800', bodyParts:['back','shoulder'],
+    muscles:['広背筋','僧帽筋','脊柱起立筋','大円筋'],
+    targetLabel:'背中',
+    items:[
+      {name:'デッドリフト',       sets:4, reps:5,  weight:120, state:'next'},
+      {name:'ラットプルダウン',   sets:4, reps:10, weight:60,  state:'wait', img:'img/AD446C5E-A969-469F-87BB-A72EA669D4DC.jpg'},
+      {name:'ベントオーバーロウ', sets:3, reps:10, weight:60,  state:'wait'},
+      {name:'シーテッドロウ',     sets:3, reps:12, weight:50,  state:'wait'},
+      {name:'アシステッド懸垂',   sets:3, reps:8,  state:'wait', img:'img/EC4D2BDF-0485-41C6-B5F4-05A8C715B8CD.jpg'},
     ],
   },
   hip: {
-    img: 'img/hero-hip.png',
-    badge: 'HIP DAY · DAY 026',
-    title: 'お尻を<em>仕上げる日</em>',
-    sub: '本日のメニュー: <b style="color:#fff">4種目</b> / 完了 <b style="color:#fff">0</b> / 残り <b style="color:#e11d48">4</b>',
-    listTitle: 'お尻の種目',
-    vol: '11,400',
-    items: [
-      { name:'ヒップスラスト',       meta:'<b>80</b>kg × <b>10</b>rep × <b>4</b>set', vol:'3,200', state:'next' },
-      { name:'ブルガリアンスクワット', meta:'<b>20</b>kg × <b>12</b>rep × <b>3</b>set', vol:'720', state:'wait' },
-      { name:'グルートブリッジ',     meta:'<b>40</b>kg × <b>15</b>rep × <b>3</b>set', vol:'1,800', state:'wait' },
-      { name:'ケーブルキックバック', meta:'<b>15</b>kg × <b>15</b>rep × <b>3</b>set', vol:'675', state:'wait' },
+    img:'img/hero-hip.png', badge:'HIP DAY · DAY 026',
+    title:'お尻を<em>仕上げる日</em>', level:'中級者向け', time:'約50分',
+    vol:'11,400', bodyParts:['hip'],
+    muscles:['大殿筋','中殿筋','小殿筋','ハムストリング'],
+    targetLabel:'お尻',
+    items:[
+      {name:'ヒップスラスト',         sets:4, reps:10, weight:80, state:'next'},
+      {name:'ブルガリアンスクワット', sets:3, reps:12, weight:20, state:'wait'},
+      {name:'グルートブリッジ',       sets:3, reps:15, weight:40, state:'wait'},
+      {name:'ケーブルキックバック',   sets:3, reps:15, weight:15, state:'wait'},
     ],
   },
   leg: {
-    img: 'img/hero-leg.png',
-    badge: 'LEG DAY · DAY 027',
-    title: '脚を<em>潰す日</em>',
-    sub: '本日のメニュー: <b style="color:#fff">5種目</b> / 完了 <b style="color:#fff">0</b> / 残り <b style="color:#e11d48">5</b>',
-    listTitle: '脚の種目',
-    vol: '18,600',
-    items: [
-      { name:'バーベルスクワット',   meta:'<b>100</b>kg × <b>8</b>rep × <b>4</b>set', vol:'3,200', state:'next' },
-      { name:'レッグプレス',         meta:'<b>180</b>kg × <b>10</b>rep × <b>4</b>set', vol:'7,200', state:'wait' },
-      { name:'レッグエクステンション', meta:'<b>50</b>kg × <b>12</b>rep × <b>3</b>set', vol:'1,800', state:'wait', img:'img/5F71EEA8-9B40-4278-B01D-812D7473ED79.jpg' },
-      { name:'レッグカール',         meta:'<b>40</b>kg × <b>12</b>rep × <b>3</b>set', vol:'1,440', state:'wait', img:'img/3D95FF56-1292-4915-97CD-0FA0C257B44E.jpg' },
-      { name:'カーフレイズ',         meta:'<b>60</b>kg × <b>20</b>rep × <b>3</b>set', vol:'3,600', state:'wait' },
+    img:'img/hero-leg.png', badge:'LEG DAY · DAY 027',
+    title:'脚を<em>潰す日</em>', level:'上級者向け', time:'約75分',
+    vol:'18,600', bodyParts:['leg','hip'],
+    muscles:['大腿四頭筋','ハムストリング','カーフ','内転筋'],
+    targetLabel:'脚',
+    items:[
+      {name:'バーベルスクワット',     sets:4, reps:8,  weight:100, state:'next'},
+      {name:'レッグプレス',           sets:4, reps:10, weight:180, state:'wait'},
+      {name:'レッグエクステンション', sets:3, reps:12, weight:50,  state:'wait', img:'img/5F71EEA8-9B40-4278-B01D-812D7473ED79.jpg'},
+      {name:'レッグカール',           sets:3, reps:12, weight:40,  state:'wait', img:'img/3D95FF56-1292-4915-97CD-0FA0C257B44E.jpg'},
+      {name:'カーフレイズ',           sets:3, reps:20, weight:60,  state:'wait'},
     ],
   },
 };
 
-const labelEl = {
-  img: document.getElementById('heroImg'),
-  title: document.getElementById('heroTitle'),
-  sub: document.getElementById('heroSub'),
-  badge: document.querySelector('.hero-label .day'),
-  listTitle: document.getElementById('listTitle'),
-  list: document.getElementById('exList'),
-  vol: document.getElementById('statVol'),
+const $ = id => document.getElementById(id);
+const el = {
+  img:$('heroImg'), machoBg:$('machoBg'), title:$('heroTitle'),
+  level:$('heroLevel'), time:$('heroTime'),
+  badge:document.querySelector('.hero-label .day'),
+  list:$('exList'), vol:$('statVol'),
+  bodySvg:$('bodySvg'), muscleList:$('muscleList'), bodyTargetLabel:$('bodyTargetLabel'),
 };
 
 function render(tag) {
   const d = DATA[tag];
-  // ヒーロー画像をフェード切替
-  labelEl.img.style.opacity = '0';
+  el.img.style.opacity='0';
+  el.machoBg.style.opacity='0';
   setTimeout(() => {
-    labelEl.img.src = d.img;
-    labelEl.img.style.opacity = '1';
+    el.img.src = d.img;
+    el.machoBg.src = d.img;
+    el.img.style.opacity='1';
+    el.machoBg.style.opacity='';
   }, 180);
-  labelEl.badge.textContent = d.badge;
-  labelEl.title.innerHTML = d.title;
-  labelEl.sub.innerHTML = d.sub;
-  labelEl.listTitle.textContent = d.listTitle;
-  labelEl.vol.innerHTML = d.vol + '<small> KG</small>';
-  labelEl.list.innerHTML = d.items.map(it => `
-    <div class="ex ${it.state==='done'?'done':''}">
+  el.badge.textContent = d.badge;
+  el.title.innerHTML = d.title;
+  el.level.textContent = d.level;
+  el.time.textContent = d.time;
+  el.vol.innerHTML = d.vol + '<small>KG</small>';
+
+  el.bodySvg.querySelectorAll('[data-part]').forEach(e => e.classList.remove('on'));
+  (d.bodyParts||[]).forEach(p => {
+    const e = el.bodySvg.querySelector(`[data-part="${p}"]`);
+    if (e) e.classList.add('on');
+  });
+  el.muscleList.innerHTML = (d.muscles||[]).map(m => `<div class="mus on">${m}</div>`).join('');
+  el.bodyTargetLabel.textContent = d.targetLabel || '';
+
+  el.list.innerHTML = d.items.map(it => `
+    <div class="ex ${it.state==='done'?'done':it.state==='next'?'next':''}">
       <div class="thumb" style="${it.img?`background-image:url('${it.img}')`:''}"></div>
       <div class="body">
         <div class="name">${it.name}${it.state==='next'?'<span class="pin">NEXT</span>':''}</div>
-        <div class="meta">${it.meta}</div>
+        <div class="meta"><b>${it.sets||3}</b>セット × <b>${it.reps||10}</b>回${it.weight?` ・ <b>${it.weight}</b>kg`:''}</div>
       </div>
-      <div class="vol">
-        <b>${it.vol}</b>
-        <small>${it.state==='done'?'KG':it.state==='next'?'READY':'WAIT'}</small>
-      </div>
+      <div class="chev">›</div>
     </div>
   `).join('');
 }
@@ -352,5 +521,78 @@ document.querySelectorAll('#tagbar .tag').forEach(t => {
 });
 
 render('chest');
+
+// プルトゥリフレッシュ
+(function() {
+  const ptr=$('ptr'), lbl=$('ptrLabel'), page=$('pageContent');
+  const TH=70, MAX=140;
+  let startY=0, dy=0, pulling=false, loading=false;
+
+  const setLabel = (t, show) => { lbl.textContent=t; lbl.style.opacity=show?'1':'0'; };
+
+  const onStart = y => { if (loading||window.scrollY>2) return; startY=y; dy=0; pulling=true; };
+  const onMove = (y, e) => {
+    if (!pulling||loading) return;
+    dy = y-startY;
+    if (dy<=0) { reset(); return; }
+    if (e&&e.cancelable) e.preventDefault();
+    const pull = Math.min(dy*0.55, MAX);
+    page.classList.add('pulling');
+    page.style.transform = `translateY(${pull}px)`;
+    ptr.style.transform = `translate(-50%, ${pull-60}px)`;
+    ptr.style.opacity = Math.min(pull/50, 1);
+    const ready = pull>=TH;
+    ptr.classList.toggle('ready', ready);
+    setLabel(ready?'離して更新':'引っ張って更新', true);
+  };
+  const onEnd = () => {
+    if (!pulling) return;
+    pulling=false;
+    if (ptr.classList.contains('ready')) doRefresh(); else reset();
+  };
+  function reset() {
+    page.classList.remove('pulling');
+    page.style.transform='';
+    ptr.style.transform='';
+    ptr.style.opacity='';
+    ptr.classList.remove('ready');
+    setLabel('', false);
+  }
+  function doRefresh() {
+    loading=true;
+    ptr.classList.remove('ready');
+    ptr.classList.add('loading');
+    ptr.style.transform='translate(-50%, 30px)';
+    ptr.style.opacity='1';
+    setLabel('更新中…', true);
+    page.classList.remove('pulling');
+    page.style.transform='translateY(60px)';
+    setTimeout(() => {
+      const at = document.querySelector('#tagbar .tag.on');
+      if (at) render(at.dataset.tag);
+      ptr.classList.remove('loading');
+      loading=false;
+      reset();
+      toast('最新の状態に更新しました');
+    }, 900);
+  }
+  function toast(msg) {
+    const t=document.createElement('div');
+    t.textContent=msg;
+    t.style.cssText='position:fixed;top:80px;left:50%;transform:translateX(-50%);background:var(--photo-card);border:1px solid var(--photo-line);color:#fff;padding:10px 18px;border-radius:50px;font-size:12px;font-weight:600;z-index:70;box-shadow:0 6px 20px rgba(0,0,0,.4);opacity:0;transition:opacity .25s';
+    document.body.appendChild(t);
+    requestAnimationFrame(()=>t.style.opacity='1');
+    setTimeout(()=>{t.style.opacity='0';setTimeout(()=>t.remove(),300);}, 1800);
+  }
+
+  window.addEventListener('touchstart', e=>onStart(e.touches[0].clientY), {passive:true});
+  window.addEventListener('touchmove',  e=>onMove(e.touches[0].clientY, e), {passive:false});
+  window.addEventListener('touchend',   onEnd, {passive:true});
+  window.addEventListener('touchcancel', onEnd, {passive:true});
+  let md=false;
+  window.addEventListener('mousedown', e=>{md=true;onStart(e.clientY);});
+  window.addEventListener('mousemove', e=>{if(md)onMove(e.clientY, e);});
+  window.addEventListener('mouseup',   ()=>{md=false;onEnd();});
+})();
 </script>
 </body></html>
