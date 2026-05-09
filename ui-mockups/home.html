@@ -46,91 +46,33 @@
 *{box-sizing:border-box;margin:0;padding:0;-webkit-tap-highlight-color:transparent}
 html,body{background:#000;overscroll-behavior-y:contain;-webkit-text-size-adjust:100%;text-size-adjust:100%;touch-action:manipulation}
 
-/* ===== Bachiluck スプラッシュスクリーン (約 4.2s) ===== */
-.splash{position:fixed;inset:0;background:radial-gradient(ellipse at center, #1a0a0c 0%, #000 75%);z-index:200;display:flex;flex-direction:column;align-items:center;justify-content:center;overflow:hidden;animation:splash-out .8s cubic-bezier(.4,0,.6,1) 3.4s forwards}
+/* ===== Bachiluck スプラッシュ (約 2.6s · スマートで静かな演出) ===== */
+.splash{position:fixed;inset:0;background:#0a0a0a;z-index:200;display:flex;flex-direction:column;align-items:center;justify-content:center;overflow:hidden;animation:splash-out .55s ease-in 2.0s forwards}
 .splash.skip{display:none}
-.splash-logo{position:relative;max-width:55%;max-height:42vh;width:auto;height:auto;opacity:0;transform:scale(.7) rotate(-8deg) translateY(40px);animation:splash-logo-in 1.3s cubic-bezier(.2,.8,.2,1) .35s forwards, splash-logo-float 3.2s ease-in-out 1.65s, splash-logo-pulse 2.4s ease-in-out 1.2s;filter:drop-shadow(0 12px 50px rgba(230,57,70,.55)) drop-shadow(0 0 80px rgba(230,57,70,.25));z-index:3}
-.splash-name{position:relative;margin-top:18px;font-family:'Bebas Neue','Inter Tight',system-ui,sans-serif;font-size:42px;letter-spacing:.22em;color:#fff;font-weight:400;opacity:0;transform:translateY(20px) scale(.92);animation:splash-name-in 1s cubic-bezier(.2,.8,.2,1) 1.45s forwards;text-shadow:0 0 24px rgba(230,57,70,.4),0 2px 12px rgba(0,0,0,.6);z-index:3;padding-left:.22em;display:flex;align-items:center}
-.splash-name .splash-i{position:relative;color:#E63946;display:inline-block;text-shadow:0 0 20px rgba(230,57,70,.85),0 0 8px rgba(230,57,70,1);animation:splash-i-glow 1.8s ease-in-out 2.4s infinite alternate}
-.splash-name::after{content:'';position:absolute;left:50%;bottom:-12px;transform:translateX(-50%);width:0;height:1px;background:linear-gradient(90deg,transparent 0%,rgba(230,57,70,.3) 20%,#E63946 50%,rgba(230,57,70,.3) 80%,transparent 100%);animation:splash-line 1.4s cubic-bezier(.2,.8,.2,1) 1.9s forwards}
-.splash-tagline{position:relative;margin-top:34px;font-family:'Bebas Neue','Inter Tight',system-ui,sans-serif;font-size:11px;letter-spacing:.42em;color:rgba(255,255,255,.4);font-weight:400;opacity:0;animation:splash-tagline-in .9s cubic-bezier(.2,.8,.2,1) 2.3s forwards;z-index:3;padding-left:.42em}
-.splash-glow{position:absolute;width:90vw;height:90vw;max-width:780px;max-height:780px;background:radial-gradient(circle,rgba(230,57,70,.4) 0%,rgba(230,57,70,.12) 32%,transparent 62%);filter:blur(50px);animation:splash-glow 4s cubic-bezier(.2,.8,.2,1) forwards;opacity:0;z-index:1;pointer-events:none}
-/* 放射状の赤いライン (背景効果) */
-.splash-rays{position:absolute;inset:0;display:flex;align-items:center;justify-content:center;pointer-events:none;z-index:1;opacity:0;animation:splash-rays-fade 4s ease-out forwards}
-.splash-rays span{position:absolute;width:2px;height:120vh;background:linear-gradient(180deg,transparent 0%,rgba(230,57,70,.18) 50%,transparent 100%);transform-origin:center center;animation:splash-rays-rotate 14s linear infinite}
-.splash-rays span:nth-child(1){transform:rotate(0deg)}
-.splash-rays span:nth-child(2){transform:rotate(45deg)}
-.splash-rays span:nth-child(3){transform:rotate(90deg)}
-.splash-rays span:nth-child(4){transform:rotate(135deg)}
-.splash-rays span:nth-child(5){transform:rotate(22.5deg);height:100vh;opacity:.6}
-.splash-rays span:nth-child(6){transform:rotate(67.5deg);height:100vh;opacity:.6}
-.splash-rays span:nth-child(7){transform:rotate(112.5deg);height:100vh;opacity:.6}
-.splash-rays span:nth-child(8){transform:rotate(157.5deg);height:100vh;opacity:.6}
-.splash-particles{position:absolute;inset:0;pointer-events:none;z-index:2}
-.splash-particles span{position:absolute;width:3px;height:3px;background:#E63946;border-radius:50%;opacity:0;animation:splash-particle 3.5s ease-out forwards;box-shadow:0 0 12px rgba(230,57,70,.95)}
-.splash-particles span:nth-child(1){left:18%;top:28%;animation-delay:.3s}
-.splash-particles span:nth-child(2){left:82%;top:22%;animation-delay:.5s;width:2px;height:2px}
-.splash-particles span:nth-child(3){left:23%;top:72%;animation-delay:.7s;width:4px;height:4px}
-.splash-particles span:nth-child(4){left:80%;top:68%;animation-delay:.9s}
-.splash-particles span:nth-child(5){left:13%;top:52%;animation-delay:.55s;width:2px;height:2px}
-.splash-particles span:nth-child(6){left:90%;top:42%;animation-delay:.75s}
-.splash-particles span:nth-child(7){left:50%;top:14%;animation-delay:.4s;width:2px;height:2px}
-.splash-particles span:nth-child(8){left:50%;top:88%;animation-delay:1s;width:3px;height:3px}
+.splash-glow{position:absolute;width:60vw;height:60vw;max-width:520px;max-height:520px;background:radial-gradient(circle,rgba(230,57,70,.16) 0%,rgba(230,57,70,.04) 40%,transparent 70%);filter:blur(40px);opacity:0;animation:splash-glow 2.4s ease-out forwards;z-index:1;pointer-events:none}
+.splash-logo{position:relative;max-width:48%;max-height:36vh;width:auto;height:auto;opacity:0;transform:scale(.94);animation:splash-logo-in 1s cubic-bezier(.2,.8,.2,1) .15s forwards;filter:drop-shadow(0 6px 28px rgba(230,57,70,.32));z-index:2}
+.splash-name{position:relative;margin-top:22px;font-family:'Bebas Neue','Inter Tight',system-ui,sans-serif;font-size:26px;letter-spacing:.34em;color:#fff;font-weight:400;opacity:0;transform:translateY(8px);animation:splash-name-in .8s cubic-bezier(.2,.8,.2,1) .85s forwards;z-index:2;padding-left:.34em;display:flex;align-items:center}
+.splash-name .splash-i{color:#E63946;display:inline-block}
 @keyframes splash-logo-in{
-  0%{opacity:0;transform:scale(.7) rotate(-8deg) translateY(40px)}
-  55%{opacity:1;transform:scale(1.06) rotate(2deg) translateY(-4px)}
-  78%{transform:scale(.98) rotate(-1deg) translateY(2px)}
-  100%{opacity:1;transform:scale(1) rotate(0deg) translateY(0)}
-}
-@keyframes splash-logo-float{
-  0%,100%{transform:translateY(0) scale(1)}
-  50%{transform:translateY(-6px) scale(1.015)}
-}
-@keyframes splash-logo-pulse{
-  0%,100%{filter:drop-shadow(0 12px 50px rgba(230,57,70,.55)) drop-shadow(0 0 80px rgba(230,57,70,.25))}
-  50%{filter:drop-shadow(0 14px 60px rgba(230,57,70,.8)) drop-shadow(0 0 110px rgba(230,57,70,.45))}
+  from{opacity:0;transform:scale(.94)}
+  to{opacity:1;transform:scale(1)}
 }
 @keyframes splash-name-in{
-  0%{opacity:0;transform:translateY(20px) scale(.92);letter-spacing:.5em;filter:blur(4px)}
-  100%{opacity:1;transform:translateY(0) scale(1);letter-spacing:.22em;filter:blur(0)}
-}
-@keyframes splash-i-glow{
-  0%{text-shadow:0 0 20px rgba(230,57,70,.85),0 0 8px rgba(230,57,70,1)}
-  100%{text-shadow:0 0 30px rgba(230,57,70,1),0 0 14px rgba(230,57,70,1),0 0 4px #fff}
-}
-@keyframes splash-line{
-  to{width:62%}
-}
-@keyframes splash-tagline-in{
-  0%{opacity:0;transform:translateY(8px);letter-spacing:.6em}
-  100%{opacity:1;transform:translateY(0);letter-spacing:.42em}
+  0%{opacity:0;transform:translateY(8px);letter-spacing:.5em}
+  100%{opacity:1;transform:translateY(0);letter-spacing:.34em}
 }
 @keyframes splash-glow{
-  0%{opacity:0;transform:scale(.5)}
-  35%{opacity:1;transform:scale(1)}
-  100%{opacity:0;transform:scale(1.5)}
-}
-@keyframes splash-rays-fade{
   0%{opacity:0}
-  30%{opacity:1}
-  90%{opacity:1}
+  40%{opacity:1}
   100%{opacity:0}
 }
-@keyframes splash-rays-rotate{
-  to{transform:rotate(360deg)}
-}
-@keyframes splash-particle{
-  0%{opacity:0;transform:translateY(0) scale(.5)}
-  20%{opacity:1;transform:translateY(-18px) scale(1)}
-  100%{opacity:0;transform:translateY(-72px) scale(.3)}
-}
 @keyframes splash-out{
-  to{opacity:0;visibility:hidden;pointer-events:none;transform:scale(1.06)}
+  to{opacity:0;visibility:hidden;pointer-events:none}
 }
-/* ダッシュボード本体は最初に薄く出して、スプラッシュ消える瞬間に滑らかに登場 */
-.app{opacity:0;animation:app-in .85s cubic-bezier(.2,.8,.2,1) 3.25s forwards}
+/* ダッシュボード本体はスプラッシュ消える瞬間に静かに登場 */
+.app{opacity:0;animation:app-in .55s ease-out 2.05s forwards}
 .splash.skip ~ .app{opacity:1;animation:none}
-@keyframes app-in{from{opacity:0;transform:translateY(10px)}to{opacity:1;transform:translateY(0)}}
+@keyframes app-in{from{opacity:0}to{opacity:1}}
 button,a,.card,.btn,.tab a{touch-action:manipulation;-webkit-touch-callout:none;-webkit-user-select:none;user-select:none}
 /* テキスト切れ防止: flex/grid 子要素の最小幅を 0 に */
 .streak > *,.last > *,.stats > *,.parts > * > *,.charts-swipe > * > *,.head > *,.last-row > *{min-width:0}
@@ -253,20 +195,11 @@ body{font-family:var(--f-ui),var(--f-jp);color:var(--photo-text);min-height:100v
 </head>
 <body>
 
-<!-- スプラッシュスクリーン (Bachiluck ロゴ + 名前) -->
+<!-- スプラッシュスクリーン (Bachiluck) -->
 <div class="splash" id="splash">
   <div class="splash-glow"></div>
-  <div class="splash-rays" aria-hidden="true">
-    <span></span><span></span><span></span><span></span>
-    <span></span><span></span><span></span><span></span>
-  </div>
-  <div class="splash-particles">
-    <span></span><span></span><span></span><span></span><span></span>
-    <span></span><span></span><span></span>
-  </div>
   <img class="splash-logo" src="img/bachiluck-mark.png" alt="Bachiluck">
   <div class="splash-name" aria-hidden="true">BACH<span class="splash-i">I</span>LUCK</div>
-  <div class="splash-tagline" aria-hidden="true">TRAIN HARD · BE STRONG</div>
 </div>
 
 <div class="app">
@@ -426,7 +359,7 @@ swipe.addEventListener('scroll', () => {
     return;
   }
   sessionStorage.setItem('kinntore_splash_done', '1');
-  setTimeout(() => splash.remove(), 4400);
+  setTimeout(() => splash.remove(), 2700);
 
   // スプラッシュ表示中に進捗/記録ページのデータを先読み (過去90日)
   // sessionStorage に保存 → record/progress ページで即利用
