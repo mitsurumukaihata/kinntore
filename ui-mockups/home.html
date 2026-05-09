@@ -1,0 +1,247 @@
+<!DOCTYPE html>
+<html lang="ja"><head><meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<title>kinntore — ホーム</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Inter+Tight:wght@400;500;600;700;800;900&family=JetBrains+Mono:wght@400;500;600&family=Zen+Kaku+Gothic+New:wght@400;500;700;900&display=swap" rel="stylesheet">
+<style>
+:root{
+  --photo-bg:#0a0a0a;--photo-card:#1a1a1a;--photo-card-2:#232323;
+  --photo-line:rgba(255,255,255,0.08);--photo-line-strong:rgba(255,255,255,0.16);
+  --photo-text:#ffffff;--photo-mute:#9a9a9a;--photo-dim:#5e5e5e;
+  --photo-red:#E63946;--photo-red-deep:#B22838;--photo-red-soft:rgba(230,57,70,0.15);
+  --gold:#D4A04B;--silver:#A8A8A8;--bronze:#8C5A2A;--ok:#4FB07A;
+  --f-ui:'Inter Tight',-apple-system,system-ui,sans-serif;
+  --f-jp:'Zen Kaku Gothic New',-apple-system,'Hiragino Kaku Gothic ProN',sans-serif;
+  --f-display:'Bebas Neue','Inter Tight',system-ui,sans-serif;
+  --f-mono:'JetBrains Mono',ui-monospace,monospace;
+}
+*{box-sizing:border-box;margin:0;padding:0;-webkit-tap-highlight-color:transparent}
+html,body{background:#000;overscroll-behavior-y:contain}
+body{font-family:var(--f-ui),var(--f-jp);color:var(--photo-text);min-height:100vh;-webkit-font-smoothing:antialiased;letter-spacing:-0.01em}
+.app{max-width:420px;margin:0 auto;min-height:100vh;background:var(--photo-bg);padding-bottom:90px;position:relative}
+
+/* ヘッダー (グリーティング) */
+.head{padding:22px 20px 8px;display:flex;justify-content:space-between;align-items:flex-start}
+.head .gr{flex:1}
+.head .gr .lead{font-family:var(--f-display);font-size:11px;letter-spacing:.18em;color:var(--photo-mute);margin-bottom:4px}
+.head .gr h1{font-family:var(--f-jp);font-size:24px;font-weight:900;letter-spacing:-.01em;line-height:1.1}
+.head .gr h1 em{font-style:normal;color:var(--photo-red)}
+.head .av{width:42px;height:42px;border-radius:50%;background:linear-gradient(135deg,#2a2a2a,#0a0a0a);display:flex;align-items:center;justify-content:center;border:1px solid var(--photo-line);font-family:var(--f-jp);font-weight:700;color:#fff;font-size:16px}
+
+/* 連続記録ストリップ */
+.streak{margin:8px 16px 16px;background:linear-gradient(135deg,#1a0a0c,var(--photo-card) 70%);border:1px solid rgba(230,57,70,.2);border-radius:12px;padding:14px 16px;display:flex;align-items:center;gap:14px;position:relative;overflow:hidden}
+.streak::before{content:'';position:absolute;right:-30px;top:-20px;width:140px;height:140px;background:radial-gradient(circle,rgba(230,57,70,.18) 0%,transparent 70%);pointer-events:none}
+.streak .num{font-family:var(--f-mono);font-weight:600;font-size:38px;color:var(--photo-red);line-height:.95;letter-spacing:-.02em}
+.streak .num small{display:block;font-family:var(--f-display);font-size:10px;color:var(--photo-mute);letter-spacing:.18em;margin-top:2px;font-weight:400}
+.streak .desc{flex:1}
+.streak .desc b{font-family:var(--f-jp);font-size:14px;font-weight:700;color:#fff;display:block}
+.streak .desc span{font-size:11px;color:var(--photo-mute);font-family:var(--f-jp);margin-top:3px;display:block}
+
+/* 前回トレ カード */
+.last{margin:0 16px 16px;background:var(--photo-card);border:1px solid var(--photo-line);border-radius:12px;padding:14px 16px}
+.last .ttl{display:flex;justify-content:space-between;align-items:center;margin-bottom:10px}
+.last .ttl h3{font-family:var(--f-jp);font-size:13px;font-weight:700}
+.last .ttl small{font-family:var(--f-display);font-size:10px;color:var(--photo-dim);letter-spacing:.15em}
+.last .row{display:flex;align-items:center;gap:12px}
+.last .row .ic{width:48px;height:48px;border-radius:8px;background:var(--photo-red-soft);display:flex;align-items:center;justify-content:center;color:var(--photo-red);font-family:var(--f-display);font-size:20px}
+.last .row .info{flex:1;min-width:0}
+.last .row .info .nm{font-family:var(--f-jp);font-size:14px;font-weight:700;color:#fff}
+.last .row .info .meta{font-size:11px;color:var(--photo-mute);margin-top:3px;font-family:var(--f-jp)}
+.last .row .info .meta b{color:#fff;font-weight:700}
+.last .row .v{text-align:right}
+.last .row .v b{font-family:var(--f-mono);font-size:18px;color:#fff;font-weight:500;letter-spacing:-.01em}
+.last .row .v small{font-family:var(--f-display);font-size:9px;color:var(--photo-mute);letter-spacing:.18em;display:block;margin-top:2px;font-weight:400}
+
+/* セクション見出し */
+.sec{padding:0 18px;margin:14px 0 10px;display:flex;justify-content:space-between;align-items:baseline}
+.sec h2{font-family:var(--f-jp);font-size:18px;font-weight:900;letter-spacing:-.01em}
+.sec h2 small{font-family:var(--f-display);font-size:10px;color:var(--photo-dim);letter-spacing:.18em;font-weight:400;margin-left:8px}
+.sec a{color:var(--photo-mute);text-decoration:none;font-size:11px;font-family:var(--f-jp);font-weight:600;cursor:pointer}
+
+/* 部位ボタングリッド */
+.parts{padding:0 16px;display:grid;grid-template-columns:1fr 1fr;gap:10px}
+.parts .p{aspect-ratio:1.05;border-radius:14px;overflow:hidden;position:relative;cursor:pointer;transition:.18s;background:var(--photo-card);text-decoration:none;display:block}
+.parts .p:active{transform:scale(.98)}
+.parts .p:hover{box-shadow:0 0 0 2px var(--photo-red-soft)}
+.parts .p img{width:100%;height:100%;object-fit:cover;object-position:center 20%;display:block}
+.parts .p::after{content:'';position:absolute;inset:0;background:linear-gradient(180deg,rgba(0,0,0,.15) 30%,rgba(0,0,0,.85) 100%);pointer-events:none}
+.parts .p .lbl{position:absolute;left:14px;right:14px;bottom:12px;z-index:2;color:#fff;display:flex;justify-content:space-between;align-items:flex-end}
+.parts .p .lbl .nm{font-family:var(--f-jp);font-size:22px;font-weight:900;line-height:1;letter-spacing:-.01em;text-shadow:0 2px 14px rgba(0,0,0,.6)}
+.parts .p .lbl .nm small{display:block;font-family:var(--f-display);font-size:9px;color:rgba(255,255,255,.7);letter-spacing:.2em;margin-top:6px;font-weight:400;text-shadow:none}
+.parts .p .lbl .arr{font-family:var(--f-display);font-size:18px;color:var(--photo-red);background:#fff;width:28px;height:28px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-weight:400;line-height:1}
+.parts .p.next-up{box-shadow:inset 0 0 0 2px var(--photo-red)}
+.parts .p.next-up::before{content:'NEXT';position:absolute;top:10px;right:10px;background:var(--photo-red);color:#fff;font-family:var(--f-display);font-size:9px;letter-spacing:.18em;padding:3px 6px;border-radius:3px;z-index:3}
+.parts .p .stat{position:absolute;top:10px;left:10px;z-index:3;font-family:var(--f-mono);font-size:11px;color:#fff;background:rgba(0,0,0,.55);backdrop-filter:blur(6px);padding:3px 7px;border-radius:50px;font-weight:500;letter-spacing:-.01em}
+.parts .p.full{grid-column:1 / -1;aspect-ratio:2.5}
+
+/* 統計2列 */
+.stats2{margin:0 16px 14px;display:grid;grid-template-columns:1fr 1fr 1fr;gap:8px}
+.stats2 .s{background:var(--photo-card);border:1px solid var(--photo-line);padding:12px;border-radius:10px}
+.stats2 .s .l{font-family:var(--f-display);font-size:9px;color:var(--photo-dim);letter-spacing:.18em}
+.stats2 .s .v{font-family:var(--f-mono);font-weight:500;font-size:20px;color:#fff;line-height:1.1;margin-top:4px;letter-spacing:-.01em}
+.stats2 .s .v small{font-size:10px;color:var(--photo-mute);font-family:var(--f-display);font-weight:400;margin-left:2px;letter-spacing:.05em}
+.stats2 .s.r .v{color:var(--photo-red)}
+
+/* ボリュームグラフ (全体) */
+.chart-block{margin:0 16px 14px;background:var(--photo-card);border:1px solid var(--photo-line);border-radius:12px;padding:14px 16px}
+.chart-block .ttl{display:flex;justify-content:space-between;align-items:center;margin-bottom:10px}
+.chart-block .ttl h3{font-family:var(--f-jp);font-size:13px;font-weight:700}
+.chart-block .ttl small{font-family:var(--f-display);font-size:11px;color:var(--photo-mute);letter-spacing:.05em}
+.chart-block .ttl small b{color:var(--photo-red)}
+.line-chart{width:100%;height:120px;display:block}
+.chart-axis{display:flex;justify-content:space-between;font-family:var(--f-display);font-size:9px;color:var(--photo-dim);letter-spacing:.05em;margin-top:6px;padding:0 4px}
+.chart-axis span.on{color:var(--photo-red)}
+.chart-foot{margin-top:10px;display:flex;justify-content:space-between;align-items:center}
+.chart-foot b{font-family:var(--f-mono);font-weight:500;font-size:22px;color:#fff;letter-spacing:-.01em}
+.chart-foot small{font-family:var(--f-jp);font-size:11px;color:var(--ok);font-weight:600}
+
+/* 実績 (コンパクト) */
+.medals{margin:0 16px 14px;background:var(--photo-card);border:1px solid var(--photo-line);border-radius:12px;padding:14px 16px}
+.medals .ttl{display:flex;justify-content:space-between;align-items:center;margin-bottom:12px}
+.medals .ttl h3{font-family:var(--f-jp);font-size:13px;font-weight:700}
+.medals .ttl small{color:var(--photo-mute);font-size:11px}
+.medals .row{display:grid;grid-template-columns:repeat(4,1fr);gap:10px}
+.medals .m{text-align:center}
+.medals .m .badge{width:52px;height:52px;margin:0 auto;display:flex;align-items:center;justify-content:center;border-radius:8px;background:linear-gradient(135deg,#222,#111);border:1px solid #2a2a2a}
+.medals .m .badge svg{width:24px;height:24px}
+.medals .m.gold .badge{background:linear-gradient(135deg,#E8C76C,#9A7A30);border-color:var(--gold);box-shadow:0 0 14px rgba(212,160,75,.3)}
+.medals .m.silver .badge{background:linear-gradient(135deg,#D8D8D8,#888);border-color:var(--silver)}
+.medals .m.bronze .badge{background:linear-gradient(135deg,#C8895A,#6A3F1A);border-color:var(--bronze)}
+.medals .m.locked .badge{opacity:.35}
+.medals .m .lab{font-size:10px;color:var(--photo-mute);margin-top:6px;line-height:1.2;font-family:var(--f-jp)}
+.medals .m .lab b{color:#fff;display:block;font-size:11px;font-weight:700}
+
+/* 最近の履歴 */
+.recent{margin:0 16px 14px;display:flex;flex-direction:column;gap:8px}
+.recent .item{background:var(--photo-card);border:1px solid var(--photo-line);border-radius:10px;padding:12px 14px;display:grid;grid-template-columns:auto 1fr auto;gap:12px;align-items:center}
+.recent .item .dot{width:8px;height:8px;border-radius:50%;background:var(--photo-red)}
+.recent .item.done .dot{background:var(--ok)}
+.recent .item .info .ttl{font-family:var(--f-jp);font-size:13px;font-weight:700}
+.recent .item .info .meta{font-size:11px;color:var(--photo-mute);margin-top:2px;font-family:var(--f-jp)}
+.recent .item .v{text-align:right}
+.recent .item .v b{font-family:var(--f-mono);font-size:14px;color:#fff;font-weight:500;letter-spacing:-.01em}
+.recent .item .v small{display:block;font-family:var(--f-display);font-size:9px;color:var(--photo-mute);letter-spacing:.15em;font-weight:400;margin-top:1px}
+
+/* タブバー */
+.tab{position:fixed;bottom:0;left:50%;transform:translateX(-50%);width:100%;max-width:420px;background:rgba(10,10,10,.95);backdrop-filter:blur(12px);border-top:1px solid var(--photo-line);padding:10px 8px 28px;display:grid;grid-template-columns:repeat(5,1fr);gap:4px;z-index:30}
+.tab a{display:flex;flex-direction:column;align-items:center;gap:4px;font-size:10px;color:var(--photo-dim);text-decoration:none;letter-spacing:.04em;cursor:pointer;font-family:var(--f-jp);font-weight:700;padding:4px 0}
+.tab a.on{color:var(--photo-red)}
+.tab a .ic{font-size:18px;line-height:1;font-family:var(--f-ui)}
+</style>
+</head>
+<body>
+<div class="app">
+
+  <div class="head">
+    <div class="gr">
+      <div class="lead">2026.05.09 SAT · DAY 023</div>
+      <h1>おはよう、<em>向畑さん</em></h1>
+    </div>
+    <div class="av">M</div>
+  </div>
+
+  <div class="streak">
+    <div class="num">23<small>DAYS</small></div>
+    <div class="desc">
+      <b>連続トレーニング中</b>
+      <span>このペースを維持して、来週は記録更新を狙おう。</span>
+    </div>
+  </div>
+
+  <div class="last">
+    <div class="ttl"><h3>前回のトレーニング</h3><small>5/8 FRI · 19:30</small></div>
+    <div class="row">
+      <div class="ic">▣</div>
+      <div class="info">
+        <div class="nm">胸の日 · 5種目完遂</div>
+        <div class="meta">所要 <b>62分</b> ・ 消費 <b>520kcal</b> ・ ボリューム <b>12,450kg</b></div>
+      </div>
+      <div class="v"><b>+1.2k</b><small>VS PREV</small></div>
+    </div>
+  </div>
+
+  <div class="sec"><h2>部位を選ぶ<small>BODY PART</small></h2></div>
+
+  <div class="parts">
+    <a class="p next-up" href="pattern-i.html#chest">
+      <div class="stat">3日前</div>
+      <img src="img/hero-chest.png" alt="胸">
+      <div class="lbl"><div class="nm">胸<small>CHEST</small></div><div class="arr">›</div></div>
+    </a>
+    <a class="p" href="pattern-i.html#shoulder">
+      <div class="stat">5日前</div>
+      <img src="img/hero-shoulder.png" alt="肩">
+      <div class="lbl"><div class="nm">肩<small>SHOULDER</small></div><div class="arr">›</div></div>
+    </a>
+    <a class="p" href="pattern-i.html#back">
+      <div class="stat">2日前</div>
+      <img src="img/hero-back.png" alt="背中">
+      <div class="lbl"><div class="nm">背中<small>BACK</small></div><div class="arr">›</div></div>
+    </a>
+    <a class="p" href="pattern-i.html#hip">
+      <div class="stat">7日前</div>
+      <img src="img/hero-hip.png" alt="お尻">
+      <div class="lbl"><div class="nm">お尻<small>HIP</small></div><div class="arr">›</div></div>
+    </a>
+    <a class="p full" href="pattern-i.html#leg">
+      <div class="stat">4日前</div>
+      <img src="img/hero-leg.png" alt="脚">
+      <div class="lbl"><div class="nm">脚<small>LEG</small></div><div class="arr">›</div></div>
+    </a>
+  </div>
+
+  <div class="sec"><h2>今週の統計<small>THIS WEEK</small></h2></div>
+  <div class="stats2">
+    <div class="s"><div class="l">VOLUME</div><div class="v">65.2<small>K KG</small></div></div>
+    <div class="s r"><div class="l">CALORIES</div><div class="v">2,840<small>KCAL</small></div></div>
+    <div class="s"><div class="l">SESSIONS</div><div class="v">5<small>/7</small></div></div>
+  </div>
+
+  <div class="chart-block">
+    <div class="ttl"><h3>ボリューム推移</h3><small>直近 <b>30日間</b></small></div>
+    <svg class="line-chart" viewBox="0 0 320 120" preserveAspectRatio="none">
+      <defs><linearGradient id="grad-line" x1="0" y1="0" x2="0" y2="1">
+        <stop offset="0%" stop-color="#E63946" stop-opacity=".5"/>
+        <stop offset="100%" stop-color="#E63946" stop-opacity="0"/>
+      </linearGradient></defs>
+      <line x1="0" y1="106" x2="320" y2="106" stroke="rgba(255,255,255,0.06)" stroke-width="1"/>
+      <line x1="0" y1="76" x2="320" y2="76" stroke="rgba(255,255,255,0.04)" stroke-width="1" stroke-dasharray="2 4"/>
+      <line x1="0" y1="46" x2="320" y2="46" stroke="rgba(255,255,255,0.04)" stroke-width="1" stroke-dasharray="2 4"/>
+      <line x1="0" y1="16" x2="320" y2="16" stroke="rgba(255,255,255,0.04)" stroke-width="1" stroke-dasharray="2 4"/>
+      <path d="M 5,90 L 25,75 L 45,82 L 65,68 L 85,90 L 105,72 L 125,55 L 145,80 L 165,62 L 185,78 L 205,52 L 225,65 L 245,40 L 265,55 L 285,32 L 315,18 L 315,106 L 5,106 Z" fill="url(#grad-line)"/>
+      <polyline points="5,90 25,75 45,82 65,68 85,90 105,72 125,55 145,80 165,62 185,78 205,52 225,65 245,40 265,55 285,32 315,18" fill="none" stroke="#E63946" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"/>
+      <circle cx="315" cy="18" r="4" fill="#fff" stroke="#E63946" stroke-width="2"/>
+    </svg>
+    <div class="chart-axis"><span>4月</span><span>4月中旬</span><span>5月</span><span class="on">本日</span></div>
+    <div class="chart-foot"><b>278,400 kg</b><small>▲ 過去30日累計 / 先月比 +12%</small></div>
+  </div>
+
+  <div class="sec"><h2>実績<small>ACHIEVEMENTS</small></h2><a>すべて見る ›</a></div>
+  <div class="medals">
+    <div class="row">
+      <div class="m gold"><div class="badge"><svg viewBox="0 0 24 24" fill="none"><path d="M12 2 L14 9 L22 10 L16 15 L18 22 L12 18 L6 22 L8 15 L2 10 L10 9 Z" fill="#3a2a00"/></svg></div><div class="lab"><b>3日連続</b>WEEK STREAK</div></div>
+      <div class="m silver"><div class="badge"><svg viewBox="0 0 24 24" fill="none"><path d="M12 2 L14 9 L22 10 L16 15 L18 22 L12 18 L6 22 L8 15 L2 10 L10 9 Z" fill="#222"/></svg></div><div class="lab"><b>10万kg</b>TOTAL VOLUME</div></div>
+      <div class="m bronze"><div class="badge"><svg viewBox="0 0 24 24" fill="none"><path d="M12 2 L14 9 L22 10 L16 15 L18 22 L12 18 L6 22 L8 15 L2 10 L10 9 Z" fill="#3a1f00"/></svg></div><div class="lab"><b>初挑戦</b>BENCH 80KG</div></div>
+      <div class="m locked"><div class="badge"><svg viewBox="0 0 24 24" fill="none"><path d="M12 2 L14 9 L22 10 L16 15 L18 22 L12 18 L6 22 L8 15 L2 10 L10 9 Z" fill="#444"/></svg></div><div class="lab"><b>--</b>NEXT</div></div>
+    </div>
+  </div>
+
+  <div class="sec"><h2>最近の履歴<small>RECENT</small></h2><a>全履歴 ›</a></div>
+  <div class="recent">
+    <div class="item done"><div class="dot"></div><div class="info"><div class="ttl">胸の日</div><div class="meta">5/8 FRI · 5種目完遂 · 62分</div></div><div class="v"><b>12,450</b><small>KG</small></div></div>
+    <div class="item done"><div class="dot"></div><div class="info"><div class="ttl">脚の日</div><div class="meta">5/5 TUE · 5種目完遂 · 78分</div></div><div class="v"><b>18,100</b><small>KG</small></div></div>
+    <div class="item done"><div class="dot"></div><div class="info"><div class="ttl">背中の日</div><div class="meta">5/7 THU · 4種目完遂 · 65分</div></div><div class="v"><b>14,200</b><small>KG</small></div></div>
+  </div>
+
+</div>
+
+<div class="tab">
+  <a class="on" href="home.html"><span class="ic">⌂</span>ホーム</a>
+  <a><span class="ic">▤</span>記録</a>
+  <a href="pattern-i.html#chest"><span class="ic">☰</span>メニュー</a>
+  <a><span class="ic">◢</span>進捗</a>
+  <a><span class="ic">⚙</span>設定</a>
+</div>
+
+</body></html>

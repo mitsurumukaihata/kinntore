@@ -255,7 +255,7 @@ body{font-family:var(--f-ui),var(--f-jp);color:var(--photo-text);min-height:100v
 
   <!-- 固定ヘッダー (戻る + メニュー) -->
   <div class="topbar">
-    <div class="nav-btn">‹</div>
+    <a class="nav-btn" href="home.html" style="text-decoration:none">‹</a>
     <div class="nav-btn">⋯</div>
   </div>
 
@@ -421,7 +421,7 @@ body{font-family:var(--f-ui),var(--f-jp);color:var(--photo-text);min-height:100v
 
 <!-- タブバー (5タブ: ホーム / 記録 / メニュー / 進捗 / 設定) -->
 <div class="tab">
-  <a><span class="ic">⌂</span>ホーム</a>
+  <a href="home.html"><span class="ic">⌂</span>ホーム</a>
   <a><span class="ic">▤</span>記録</a>
   <a class="on"><span class="ic">☰</span>メニュー</a>
   <a><span class="ic">◢</span>進捗</a>
@@ -588,7 +588,15 @@ document.querySelectorAll('#tagbar .tag').forEach(t => {
   });
 });
 
-render('chest');
+// URLハッシュから初期タグを決定 (例: pattern-i.html#shoulder → 肩)
+const initialTag = (location.hash||'').replace('#','');
+const validTag = DATA[initialTag] ? initialTag : 'chest';
+if (validTag !== 'chest') {
+  document.querySelectorAll('#tagbar .tag').forEach(x => x.classList.remove('on'));
+  const t = document.querySelector(`#tagbar .tag[data-tag="${validTag}"]`);
+  if (t) t.classList.add('on');
+}
+render(validTag);
 
 // プルトゥリフレッシュ
 (function() {
