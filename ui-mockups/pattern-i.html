@@ -611,16 +611,6 @@ function updateTodayStats() {
   el.done.innerHTML = doneEx + '<small>/ ' + (d.items?.length||0) + '種目</small>';
 }
 
-// 日付が変わったら自動で 0 にリフレッシュ (深夜0時を跨いだ場合の保険)
-let _lastDayKey = Store.todayKey();
-setInterval(() => {
-  const today = Store.todayKey();
-  if (today !== _lastDayKey) {
-    _lastDayKey = today;
-    Store.loadDay().finally(() => updateTodayStats());
-  }
-}, 60 * 1000);
-
 // ====== Storage 層 (Cloudflare D1 / kinntore-api Worker) ======
 // オフライン時のフォールバックに localStorage キャッシュを併用
 const Store = {
@@ -906,6 +896,22 @@ $('modal').addEventListener('click', e => { if (e.target.id === 'modal') closeMo
 const initialTag = (location.hash||'').replace('#','');
 const validTag = DATA[initialTag] ? initialTag : 'chest';
 render(validTag);
+
+// 日付が変わったら自動で 0 にリフレッシュ (深夜0時を跨いだ場合の保険) — Store 定義後に配置
+let _lastDayKey = Store.todayKey();
+setInterval(() => {
+  const today = Store.todayKey();
+  if (today !== _lastDayKey) {
+    _lastDayKey = today;
+    Store.loadDay().finally(() => updateTodayStats());
+  }
+}, 60 * 1000);
+
+// ハッシュ変更で部位を切替 (戻る/進むやリンクで)
+window.addEventListener('hashchange', () => {
+  const t = (location.hash||'').replace('#','');
+  if (DATA[t]) render(t);
+});
 // D1から当日データを非同期でロードしてキャッシュ更新
 Store.loadDay().then(() => {
   updateTodayStats();
