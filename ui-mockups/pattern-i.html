@@ -105,7 +105,8 @@ body{font-family:var(--f-ui),var(--f-jp);color:var(--photo-text);min-height:100v
 .ex{background:var(--photo-card);border:1px solid var(--photo-line);border-radius:10px;padding:10px;display:grid;grid-template-columns:48px 1fr 24px;gap:12px;align-items:center;cursor:pointer;transition:.15s}
 .ex:hover{border-color:var(--photo-line-strong);background:#1f1f1f}
 .ex:active{transform:scale(.99)}
-.ex .thumb{width:48px;height:48px;border-radius:8px;background-size:cover;background-position:center;background-color:#0a0a0a;flex-shrink:0}
+.ex .thumb{width:48px;height:48px;border-radius:8px;background-size:cover;background-position:center;background-color:#0a0a0a;flex-shrink:0;border:1px solid var(--photo-line)}
+.ex .thumb.manga{background-color:#fff;background-size:180%;background-position:55% 32%}
 .ex .body{min-width:0}
 .ex .body .name{font-family:var(--f-jp);font-size:13px;font-weight:700;line-height:1.2;color:#fff}
 .ex .body .meta{font-size:11px;color:var(--photo-mute);margin-top:3px;font-weight:500;letter-spacing:.02em;font-family:var(--f-jp)}
@@ -535,9 +536,12 @@ function render(tag) {
   el.muscleList.innerHTML = (d.muscles||[]).map(m => `<div class="mus on">${m}</div>`).join('');
   el.bodyTargetLabel.textContent = d.targetLabel || '';
 
-  el.list.innerHTML = d.items.map((it, i) => `
+  el.list.innerHTML = d.items.map((it, i) => {
+    const thumbSrc = it.manga || it.img || '';
+    const isManga = !!it.manga;
+    return `
     <div class="ex ${it.state==='done'?'done':it.state==='next'?'next':''}" data-tag="${tag}" data-idx="${i}">
-      <div class="thumb" style="${it.img?`background-image:url('${it.img}')`:''}"></div>
+      <div class="thumb ${isManga?'manga':''}" style="${thumbSrc?`background-image:url('${thumbSrc}')`:''}"></div>
       <div class="body">
         <div class="name">${it.name}${it.state==='next'?'<span class="pin">NEXT</span>':''}</div>
         <div class="meta"><b>${it.sets||3}</b>セット × <b>${it.reps||10}</b>回${it.weight?` ・ <b>${it.weight}</b>kg`:''}</div>
