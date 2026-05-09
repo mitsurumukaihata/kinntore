@@ -148,7 +148,15 @@ body{font-family:var(--f-ui),var(--f-jp);color:var(--photo-text);min-height:100v
 .prog-meta{margin-top:8px;font-family:var(--f-display);font-size:11px;letter-spacing:.08em;color:var(--photo-mute)}
 .prog-meta b{color:#fff;font-family:var(--f-mono);font-size:14px;font-weight:600;letter-spacing:-.01em}
 .prog-r{align-self:stretch;width:74px;background:linear-gradient(135deg,var(--photo-red) 0%,#7f1c2a 100%);border-radius:8px;display:flex;align-items:center;justify-content:center;font-family:var(--f-mono);font-weight:600;font-size:32px;color:#fff;letter-spacing:-.02em}
-.prog-r::before{content:'60'}
+.program{cursor:pointer}
+.program:active{transform:scale(.99)}
+.prog-r{font-size:26px}
+.prog-r::before,.prog-r::after{content:none !important}
+.prog-r .pct{font-family:var(--f-display);font-weight:400;font-size:12px;align-self:flex-start;margin-top:7px;margin-left:1px}
+.week .d{cursor:pointer;transition:.15s}
+.week .d:active{transform:scale(.92)}
+.week .d.has-record{border-color:rgba(79,176,122,.5);background:rgba(79,176,122,.08)}
+.week .d.has-record::after{content:'';position:absolute;bottom:-2px;right:-2px;background:var(--ok);width:7px;height:7px;border-radius:50%}
 .prog-r::after{content:'%';font-family:var(--f-display);font-weight:400;font-size:14px;align-self:flex-start;margin-top:10px;margin-left:1px}
 
 /* 週カレンダー */
@@ -351,25 +359,17 @@ body{font-family:var(--f-ui),var(--f-jp);color:var(--photo-text);min-height:100v
 
     <button class="cta-main" id="ctaStart">ワークアウトを開始</button>
 
-    <div class="program">
+    <div class="program" id="progCard">
       <div>
-        <div class="prog-tag">PROGRAM</div>
-        <h3>WEEK 1<small>基礎をつくる週</small></h3>
-        <div class="prog-bar"><div class="prog-fill" style="width:60%"></div></div>
-        <div class="prog-meta"><b>3</b>日達成 / 5日目標</div>
+        <div class="prog-tag" id="progTag">WEEKLY GOAL</div>
+        <h3 id="progTitle">週<span id="progGoal">2</span>回 目標<small id="progSubtitle">タップで目標を変更</small></h3>
+        <div class="prog-bar"><div class="prog-fill" id="progFill" style="width:0%"></div></div>
+        <div class="prog-meta"><b id="progAchieved">0</b>回達成 / <span id="progGoal2">2</span>回目標</div>
       </div>
-      <div class="prog-r"></div>
+      <div class="prog-r" id="progRate"></div>
     </div>
 
-    <div class="week">
-      <div class="d done"><small>MON</small><b>27</b></div>
-      <div class="d"><small>TUE</small><b>28</b></div>
-      <div class="d done"><small>WED</small><b>29</b></div>
-      <div class="d"><small>THU</small><b>30</b></div>
-      <div class="d done"><small>FRI</small><b>1</b></div>
-      <div class="d today on"><small>SAT</small><b>3</b></div>
-      <div class="d"><small>SUN</small><b>4</b></div>
-    </div>
+    <div class="week" id="weekCal"></div>
 
     <div class="chart-block">
       <div class="ttl"><h3>ボリューム推移</h3><small>直近 <b>7日間</b></small></div>
@@ -425,6 +425,37 @@ body{font-family:var(--f-ui),var(--f-jp);color:var(--photo-text);min-height:100v
       <button class="cta-ghost" id="wsCancel">閉じる</button>
       <button class="cta-main" id="wsStart">最初から始める</button>
     </div>
+  </div>
+</div>
+
+<!-- 過去日の履歴モーダル (週カレンダーから開く) -->
+<div class="ws-modal" id="dayModal">
+  <div class="ws-card">
+    <div class="ws-head">
+      <div>
+        <small id="dayModalSub">--</small>
+        <h3 id="dayModalTitle">--</h3>
+      </div>
+      <div class="modal-close" id="dayClose">✕</div>
+    </div>
+    <div id="dayList" class="ws-list"></div>
+    <div class="ws-actions" style="grid-template-columns:1fr">
+      <button class="cta-ghost" id="dayCancel">閉じる</button>
+    </div>
+  </div>
+</div>
+
+<!-- 目標変更モーダル -->
+<div class="ws-modal" id="goalModal">
+  <div class="ws-card" style="max-height:auto">
+    <div class="ws-head">
+      <div>
+        <small>WEEKLY GOAL</small>
+        <h3>週の目標を変更</h3>
+      </div>
+      <div class="modal-close" id="goalClose">✕</div>
+    </div>
+    <div class="ws-list" id="goalChoices"></div>
   </div>
 </div>
 
@@ -591,7 +622,128 @@ function render(tag) {
   el.level.textContent = d.level;
   el.time.textContent = d.time;
   updateTodayStats();
+  // 週カレンダー & プログラム (非同期で取得)
+  loadWeek(tag).then(() => renderWeekAndProgram()).catch(()=>{});
 }
+
+// ===== 週カレンダー + 週次目標プログラム =====
+const WEEKDAYS = ['SUN','MON','TUE','WED','THU','FRI','SAT'];
+function dayKeyOf(d){return d.getFullYear()+'-'+String(d.getMonth()+1).padStart(2,'0')+'-'+String(d.getDate()).padStart(2,'0')}
+function mondayOf(d){const x=new Date(d);const w=x.getDay();const diff=(w===0?-6:1-w);x.setDate(x.getDate()+diff);x.setHours(0,0,0,0);return x}
+function getGoal(tag){const v=+(localStorage.getItem('kinntore_goal_'+tag)||2);return v>0?v:2}
+function setGoal(tag,n){localStorage.setItem('kinntore_goal_'+tag,String(n))}
+
+let _weekCache = {}; // { tag: { 'YYYY-MM-DD': sets[] } }
+async function loadWeek(tag){
+  const mon = mondayOf(new Date());
+  const days=[]; for(let i=0;i<7;i++){const d=new Date(mon);d.setDate(d.getDate()+i);days.push(d)}
+  const results = await Promise.all(days.map(async d => {
+    try {
+      const r = await fetch(Store.API+'/api/sets?day='+dayKeyOf(d)+'&tag='+encodeURIComponent(tag));
+      if(!r.ok) return [];
+      const j = await r.json(); return j.sets||[];
+    } catch { return [] }
+  }));
+  const map={}; days.forEach((d,i)=>{ map[dayKeyOf(d)] = results[i] });
+  _weekCache[tag] = map;
+  return { days, map };
+}
+
+function renderWeekAndProgram(){
+  const tag = currentTag;
+  const cache = _weekCache[tag];
+  if (!cache) return;
+  const today = new Date(); today.setHours(0,0,0,0);
+  const todayKey = dayKeyOf(today);
+  const mon = mondayOf(today);
+  const wkEl = $('weekCal'); if(!wkEl) return;
+  let workoutDays = 0;
+  wkEl.innerHTML = Array.from({length:7}).map((_,i)=>{
+    const d = new Date(mon); d.setDate(d.getDate()+i);
+    const k = dayKeyOf(d);
+    const sets = cache[k] || [];
+    const hasRec = sets.length > 0;
+    if (hasRec) workoutDays++;
+    const isToday = (k === todayKey);
+    return `<div class="d ${hasRec?'has-record':''} ${isToday?'today on':''}" data-day="${k}">
+      <small>${WEEKDAYS[d.getDay()]}</small><b>${d.getDate()}</b>
+    </div>`;
+  }).join('');
+  wkEl.querySelectorAll('.d').forEach(el => {
+    el.addEventListener('click', () => openDayModal(el.dataset.day));
+  });
+  // プログラムカード更新
+  const goal = getGoal(tag);
+  const pct = Math.min(100, Math.round((workoutDays/goal)*100));
+  $('progGoal').textContent = goal;
+  $('progGoal2').textContent = goal;
+  $('progAchieved').textContent = workoutDays;
+  $('progFill').style.width = pct + '%';
+  const r = $('progRate');
+  r.innerHTML = pct + '<span class="pct">%</span>';
+  if (workoutDays >= goal) $('progSubtitle').textContent = '達成 — 今週もよく頑張った';
+  else if (workoutDays > 0) $('progSubtitle').textContent = 'あと' + (goal-workoutDays) + '回で目標達成';
+  else $('progSubtitle').textContent = 'タップで目標を変更';
+}
+
+// 過去日履歴モーダル
+function openDayModal(dayKey) {
+  const cache = _weekCache[currentTag] || {};
+  const sets = cache[dayKey] || [];
+  const d = new Date(dayKey);
+  $('dayModalSub').textContent = (d.getMonth()+1)+'/'+d.getDate()+' '+WEEKDAYS[d.getDay()];
+  const dLabel = DATA[currentTag]?.targetLabel || '';
+  $('dayModalTitle').textContent = sets.length>0 ? `${dLabel}トレ · ${sets.length}セット` : `${dLabel}トレ`;
+  if (sets.length === 0) {
+    $('dayList').innerHTML = `<div style="text-align:center;color:var(--photo-dim);padding:30px 16px;font-size:12px;font-family:var(--f-jp)">この日は記録がありません</div>`;
+  } else {
+    // 種目ごとにグループ化
+    const byEx = {};
+    for (const s of sets) {
+      if (!byEx[s.exercise_name]) byEx[s.exercise_name] = [];
+      byEx[s.exercise_name].push(s);
+    }
+    let totalVol = 0;
+    const html = Object.entries(byEx).map(([name, list]) => {
+      list.sort((a,b)=>a.set_no-b.set_no);
+      const vol = list.reduce((sum,s)=>sum+(+s.weight||0)*(+s.reps||0), 0);
+      totalVol += vol;
+      const setStr = list.map(s => `${s.weight}kg×${s.reps}`).join(' / ');
+      return `<div class="ex" style="cursor:default">
+        <div class="body">
+          <div class="name">${name}<span style="float:right;font-family:var(--f-mono);font-size:11px;color:var(--photo-mute);font-weight:500">${vol.toLocaleString()}kg</span></div>
+          <div class="meta">${list.length}セット ・ ${setStr}</div>
+        </div>
+      </div>`;
+    }).join('');
+    $('dayList').innerHTML = `<div style="font-family:var(--f-display);font-size:10px;letter-spacing:.18em;color:var(--photo-dim);padding:0 4px 8px">合計ボリューム ${totalVol.toLocaleString()} KG</div>` + html;
+  }
+  $('dayModal').classList.add('on');
+}
+$('dayClose').addEventListener('click', () => $('dayModal').classList.remove('on'));
+$('dayCancel').addEventListener('click', () => $('dayModal').classList.remove('on'));
+$('dayModal').addEventListener('click', e => { if (e.target.id === 'dayModal') $('dayModal').classList.remove('on'); });
+
+// 目標変更モーダル
+$('progCard').addEventListener('click', () => {
+  const cur = getGoal(currentTag);
+  $('goalChoices').innerHTML = [1,2,3,4,5,6,7].map(n =>
+    `<div class="ex ${n===cur?'next':''}" data-goal="${n}" style="display:flex;align-items:center;justify-content:space-between;padding:14px 16px">
+      <div class="body"><div class="name">週 ${n} 回</div></div>
+      ${n===cur?'<div class="chev" style="color:var(--photo-red)">●</div>':'<div class="chev">○</div>'}
+    </div>`
+  ).join('');
+  $('goalChoices').querySelectorAll('.ex').forEach(b => {
+    b.addEventListener('click', () => {
+      setGoal(currentTag, +b.dataset.goal);
+      $('goalModal').classList.remove('on');
+      renderWeekAndProgram();
+    });
+  });
+  $('goalModal').classList.add('on');
+});
+$('goalClose').addEventListener('click', () => $('goalModal').classList.remove('on'));
+$('goalModal').addEventListener('click', e => { if (e.target.id === 'goalModal') $('goalModal').classList.remove('on'); });
 
 // 本日のセット記録から VOLUME / SETS / DONE を計算して反映
 // Store.cache は YYYY-MM-DD キーなので日付が変われば自動的に 0 になる
@@ -804,6 +956,8 @@ async function recordSet() {
       refreshHistory();
       if (isExDoneToday(curEx.tag, curEx.item)) curEx.item.state = 'done';
       updateTodayStats();
+      // 週カレンダーを再取得して反映
+      loadWeek(currentTag).then(() => renderWeekAndProgram()).catch(()=>{});
     }, 350);
   } catch (e) {
     console.error(e);
