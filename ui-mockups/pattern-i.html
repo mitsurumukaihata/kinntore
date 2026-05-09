@@ -275,6 +275,13 @@ body{font-family:var(--f-ui),var(--f-jp);color:var(--photo-text);min-height:100v
 .rec-bar-fill{height:100%;background:linear-gradient(90deg,var(--photo-red),#f97484);border-radius:3px;transition:width .35s cubic-bezier(.2,.8,.2,1);box-shadow:0 0 12px rgba(230,57,70,.5);width:0}
 .rec-bar-fill.complete{background:linear-gradient(90deg,var(--ok),#86efac);box-shadow:0 0 12px rgba(79,176,122,.5)}
 
+.prev-hint{margin-bottom:12px;background:linear-gradient(135deg,rgba(230,57,70,0.06),rgba(230,57,70,0.02));border:1px solid rgba(230,57,70,0.18);border-radius:10px;padding:10px 12px;display:flex;align-items:center;gap:10px;font-family:var(--f-jp);font-size:11px;color:var(--photo-mute)}
+.prev-hint .ph-tag{font-family:var(--f-display);font-size:9px;letter-spacing:.18em;color:var(--photo-red);background:rgba(230,57,70,0.12);padding:3px 7px;border-radius:4px;font-weight:600;flex-shrink:0}
+.prev-hint .ph-body{flex:1;min-width:0;line-height:1.5}
+.prev-hint .ph-body b{color:#fff;font-family:var(--f-mono);font-size:13px;font-weight:600;letter-spacing:-.01em;margin:0 2px}
+.prev-hint .ph-body .ph-sep{color:var(--photo-dim);margin:0 4px}
+.prev-hint .ph-body .ph-date{color:var(--photo-dim);font-size:10px;margin-left:4px}
+.prev-hint .ph-detail{font-family:var(--f-mono);font-size:10px;color:var(--photo-dim);letter-spacing:-.01em;margin-top:3px;display:block}
 .rec-inputs{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:14px}
 .rec-input{background:var(--photo-card);border:1px solid var(--photo-line);border-radius:12px;padding:14px 12px}
 .rec-input-label{font-family:var(--f-display);font-size:10px;letter-spacing:.18em;color:var(--photo-dim);text-align:center;margin-bottom:10px}
@@ -303,6 +310,25 @@ body{font-family:var(--f-ui),var(--f-jp);color:var(--photo-text);min-height:100v
 .hist-row .vals .x{color:var(--photo-mute);margin:0 4px;font-family:var(--f-jp)}
 .hist-row .vol{font-family:var(--f-mono);font-size:12px;color:var(--photo-mute);letter-spacing:-.01em}
 .hist-row .t{font-family:var(--f-display);font-size:10px;color:var(--photo-dim);letter-spacing:.05em}
+
+/* 過去日履歴モーダル: 種目グループ + セット別表示 */
+.day-total{font-family:var(--f-display);font-size:11px;letter-spacing:.18em;color:var(--photo-mute);padding:4px 4px 12px;text-align:center;border-bottom:1px solid var(--photo-line);margin-bottom:14px}
+.day-total b{font-family:var(--f-mono);font-size:13px;color:var(--photo-red);font-weight:600;letter-spacing:-.01em;margin:0 4px}
+.day-ex-group{background:var(--photo-card);border:1px solid var(--photo-line);border-radius:10px;margin-bottom:10px;overflow:hidden}
+.day-ex-head{padding:12px 14px;background:#181818;border-bottom:1px solid var(--photo-line);display:flex;justify-content:space-between;align-items:baseline;gap:10px}
+.day-ex-name{font-family:var(--f-jp);font-size:14px;font-weight:700;color:#fff;flex:1;min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.day-ex-meta{font-family:var(--f-jp);font-size:11px;color:var(--photo-mute);white-space:nowrap}
+.day-ex-meta b{color:#fff;font-family:var(--f-mono);font-size:13px;font-weight:600;letter-spacing:-.01em;margin:0 2px}
+.day-set-list{padding:6px 0}
+.day-set-row{display:grid;grid-template-columns:32px 1fr auto auto;gap:10px;align-items:center;padding:9px 14px;border-bottom:1px solid rgba(255,255,255,0.04)}
+.day-set-row:last-child{border-bottom:0}
+.day-set-row .n{font-family:var(--f-display);font-size:13px;color:var(--photo-red);text-align:center;letter-spacing:.05em;font-weight:400}
+.day-set-row .vals{font-family:var(--f-mono);font-size:14px;color:#fff;letter-spacing:-.01em;font-weight:500}
+.day-set-row .vals b{font-weight:600}
+.day-set-row .vals .x{color:var(--photo-mute);margin:0 3px;font-family:var(--f-jp);font-size:11px;font-weight:400}
+.day-set-row .vol{font-family:var(--f-mono);font-size:11px;color:var(--photo-mute);letter-spacing:-.01em;font-weight:500}
+.day-set-row .vol small{font-family:var(--f-display);font-size:9px;letter-spacing:.05em;margin-left:1px}
+.day-set-row .t{font-family:var(--f-display);font-size:10px;color:var(--photo-dim);letter-spacing:.05em;min-width:36px;text-align:right}
 
 /* タブバー (5タブ) */
 .tab{position:fixed;bottom:0;left:50%;transform:translateX(-50%);width:100%;max-width:420px;background:rgba(10,10,10,.95);backdrop-filter:blur(12px);border-top:1px solid var(--photo-line);padding:10px 8px 28px;display:grid;grid-template-columns:repeat(5,1fr);gap:4px;z-index:30}
@@ -475,6 +501,7 @@ body{font-family:var(--f-ui),var(--f-jp);color:var(--photo-text);min-height:100v
         </div>
         <div class="rec-bar"><div class="rec-bar-fill" id="mSetBar"></div></div>
       </div>
+      <div class="prev-hint" id="prevHint" style="display:none"></div>
       <div class="rec-inputs">
         <div class="rec-input">
           <div class="rec-input-label">WEIGHT</div>
@@ -708,15 +735,24 @@ function openDayModal(dayKey) {
       list.sort((a,b)=>a.set_no-b.set_no);
       const vol = list.reduce((sum,s)=>sum+(+s.weight||0)*(+s.reps||0), 0);
       totalVol += vol;
-      const setStr = list.map(s => `${s.weight}kg×${s.reps}`).join(' / ');
-      return `<div class="ex" style="cursor:default">
-        <div class="body">
-          <div class="name">${name}<span style="float:right;font-family:var(--f-mono);font-size:11px;color:var(--photo-mute);font-weight:500">${vol.toLocaleString()}kg</span></div>
-          <div class="meta">${list.length}セット ・ ${setStr}</div>
+      // 各セットを1行ずつ表示 (種目ごとにグループ化)
+      const setRows = list.map(s => `
+        <div class="day-set-row">
+          <span class="n">${s.set_no}</span>
+          <span class="vals"><b>${s.weight}</b><span class="x">kg ×</span><b>${s.reps}</b><span class="x">回</span></span>
+          <span class="vol">${((+s.weight||0)*(+s.reps||0)).toLocaleString()}<small>kg</small></span>
+          ${s.recorded_at ? `<span class="t">${s.recorded_at}</span>` : '<span class="t"></span>'}
         </div>
+      `).join('');
+      return `<div class="day-ex-group">
+        <div class="day-ex-head">
+          <div class="day-ex-name">${name}</div>
+          <div class="day-ex-meta"><b>${list.length}</b>セット ・ <b>${vol.toLocaleString()}</b>kg</div>
+        </div>
+        <div class="day-set-list">${setRows}</div>
       </div>`;
     }).join('');
-    $('dayList').innerHTML = `<div style="font-family:var(--f-display);font-size:10px;letter-spacing:.18em;color:var(--photo-dim);padding:0 4px 8px">合計ボリューム ${totalVol.toLocaleString()} KG</div>` + html;
+    $('dayList').innerHTML = `<div class="day-total">合計ボリューム <b>${totalVol.toLocaleString()}</b> KG</div>` + html;
   }
   $('dayModal').classList.add('on');
 }
@@ -845,6 +881,89 @@ const Store = {
 };
 Store.loadCache();
 
+// ===== 前回セッション検索 (週カレンダーキャッシュ + Storeキャッシュ + 必要なら API取得) =====
+// returns {dayKey, sets:[], lastSet, totalVol} or null
+function findPreviousSession(tag, exName) {
+  const today = Store.todayKey();
+  // 候補ソース: _weekCache[tag] (現在週) + Store.cache (任意日)
+  const allDayKeys = new Set();
+  if (_weekCache[tag]) Object.keys(_weekCache[tag]).forEach(k => allDayKeys.add(k));
+  Object.keys(Store.cache || {}).forEach(k => allDayKeys.add(k));
+  // 今日より前の日付のみ、新しい順
+  const pastDays = [...allDayKeys].filter(k => k < today).sort().reverse();
+  for (const k of pastDays) {
+    let sets = [];
+    // _weekCache の sets は server から (tag/exercise_name 揃ってる)
+    const wk = _weekCache[tag]?.[k];
+    if (wk) sets = wk.filter(s => s.exercise_name === exName);
+    // _weekCache に無ければ Store.cache (本日キャッシュ用なので過去日は普通空)
+    if (!sets.length) {
+      const c = Store.cache?.[k];
+      const list = c?.[Store.exKey(tag, exName)] || [];
+      sets = list;
+    }
+    if (sets.length > 0) {
+      const sorted = [...sets].sort((a,b) => (a.set_no||0) - (b.set_no||0));
+      const lastSet = sorted[sorted.length - 1];
+      const totalVol = sorted.reduce((sum, s) => sum + (+s.weight||0)*(+s.reps||0), 0);
+      return { dayKey: k, sets: sorted, lastSet, totalVol };
+    }
+  }
+  return null;
+}
+
+// _weekCache 範囲外の場合に過去14日分まで API で遡って探す
+async function fetchPreviousSession(tag, exName) {
+  const today = new Date(); today.setHours(0,0,0,0);
+  for (let i = 1; i <= 14; i++) {
+    const d = new Date(today); d.setDate(d.getDate() - i);
+    const k = dayKeyOf(d);
+    if (_weekCache[tag]?.[k]) continue; // 既に確認済
+    try {
+      const r = await fetch(Store.API + '/api/sets?day=' + k + '&tag=' + encodeURIComponent(tag) + '&exercise=' + encodeURIComponent(exName));
+      if (!r.ok) continue;
+      const j = await r.json();
+      const sets = (j.sets || []).filter(s => s.exercise_name === exName);
+      if (sets.length > 0) {
+        const sorted = [...sets].sort((a,b) => (a.set_no||0) - (b.set_no||0));
+        const lastSet = sorted[sorted.length - 1];
+        const totalVol = sorted.reduce((sum, s) => sum + (+s.weight||0)*(+s.reps||0), 0);
+        return { dayKey: k, sets: sorted, lastSet, totalVol };
+      }
+    } catch {}
+  }
+  return null;
+}
+
+function renderPrevHint(prev, item) {
+  const el = $('prevHint');
+  if (!prev) {
+    // 前回データ無し: 種目デフォルトを表示
+    if (item) {
+      el.style.display = 'flex';
+      el.innerHTML = `
+        <div class="ph-tag">RECOMMEND</div>
+        <div class="ph-body">
+          目安 <b>${item.weight ?? '--'}</b><span class="ph-sep">kg</span><b>${item.reps ?? 10}</b>回
+          <span class="ph-detail">前回の記録なし — 軽めから始めよう</span>
+        </div>`;
+    } else {
+      el.style.display = 'none';
+    }
+    return;
+  }
+  const d = new Date(prev.dayKey);
+  const dateLabel = (d.getMonth()+1)+'/'+d.getDate()+' '+WEEKDAYS[d.getDay()];
+  const setStr = prev.sets.map(s => `${s.weight}×${s.reps}`).join(' / ');
+  el.style.display = 'flex';
+  el.innerHTML = `
+    <div class="ph-tag">前回</div>
+    <div class="ph-body">
+      <b>${prev.lastSet.weight}</b><span class="ph-sep">kg ×</span><b>${prev.lastSet.reps}</b>回<span class="ph-date">${dateLabel}</span>
+      <span class="ph-detail">${prev.sets.length}セット ・ ${setStr} ・ 計 ${prev.totalVol.toLocaleString()}kg</span>
+    </div>`;
+}
+
 // 当日完了済みかどうか判定 (種目の sets 数以上記録あれば done)
 function isExDoneToday(tag, item) {
   const sets = Store.getSets(tag, item.name);
@@ -867,11 +986,25 @@ function openModal(tag, idx) {
     wrap.innerHTML = `<div class="modal-manga empty">漫画画像が未生成です</div>`;
   }
 
-  // 入力プリフィル: 直近のセット → なければデフォルト
-  const sets = Store.getSets(tag, it.name);
-  const last = sets[sets.length - 1];
-  $('mWeightVal').textContent = last?.weight ?? it.weight ?? 0;
-  $('mRepsVal').textContent = last?.reps ?? it.reps ?? 10;
+  // 入力プリフィル: 当日の直近 → 過去日の最終セット → デフォルト
+  const todaySets = Store.getSets(tag, it.name);
+  const todayLast = todaySets[todaySets.length - 1];
+  // 過去日のヒント情報も合わせて取得
+  const prev = todayLast ? null : findPreviousSession(tag, it.name);
+  if (todayLast) {
+    $('mWeightVal').textContent = todayLast.weight;
+    $('mRepsVal').textContent = todayLast.reps;
+  } else if (prev) {
+    $('mWeightVal').textContent = prev.lastSet.weight;
+    $('mRepsVal').textContent = prev.lastSet.reps;
+  } else {
+    $('mWeightVal').textContent = it.weight ?? 0;
+    $('mRepsVal').textContent = it.reps ?? 10;
+  }
+  // 前回セッションのヒントを表示 (本日記録なし & 過去記録あり の場合のみ)
+  renderPrevHint(prev, it);
+  // バックグラウンドで過去14日まで遡って前回データを取得 (キャッシュに無い場合の保険)
+  if (!todayLast && !prev) fetchPreviousSession(tag, it.name).then(p => { if (p) renderPrevHint(p, it); });
   $('mDone').classList.remove('success');
   $('mDone').disabled = false;
 
