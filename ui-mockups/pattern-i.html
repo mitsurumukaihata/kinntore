@@ -124,7 +124,8 @@ body{font-family:var(--f-ui),var(--f-jp);color:var(--photo-text);min-height:100v
 .ex{background:var(--photo-card);border:1px solid var(--photo-line);border-radius:10px;padding:10px;display:grid;grid-template-columns:48px 1fr 24px;gap:12px;align-items:center;cursor:pointer;transition:.15s}
 .ex:hover{border-color:var(--photo-line-strong);background:#1f1f1f}
 .ex:active{transform:scale(.99)}
-.ex .thumb{width:48px;height:48px;border-radius:8px;background-size:cover;background-position:center;background-color:#0a0a0a;flex-shrink:0;border:1px solid var(--photo-line)}
+.ex{overflow:hidden}
+.ex .thumb{width:48px;height:48px;min-width:48px;max-width:48px;border-radius:8px;background-size:cover;background-position:center;background-color:#0a0a0a;flex-shrink:0;border:1px solid var(--photo-line);box-sizing:border-box}
 .ex .thumb.manga{background-color:#fff;background-size:180%;background-position:55% 32%}
 .ex .body{min-width:0}
 .ex .body .name{font-family:var(--f-jp);font-size:13px;font-weight:700;line-height:1.2;color:#fff}
@@ -344,9 +345,9 @@ body{font-family:var(--f-ui),var(--f-jp);color:var(--photo-text);min-height:100v
     </div>
 
     <div class="stats">
-      <div class="s"><div class="l">VOLUME</div><div class="v" id="statVol">12,450<small>KG</small></div></div>
-      <div class="s r"><div class="l">CALORIES</div><div class="v">520<small>KCAL</small></div></div>
-      <div class="s"><div class="l">TIME</div><div class="v">42<small>MIN</small></div></div>
+      <div class="s"><div class="l">TODAY VOL</div><div class="v" id="statVol">0<small>KG</small></div></div>
+      <div class="s r"><div class="l">SETS</div><div class="v" id="statSets">0<small>本日</small></div></div>
+      <div class="s"><div class="l">DONE</div><div class="v" id="statDone">0<small>/ 0種目</small></div></div>
     </div>
 
     <button class="cta-main" id="ctaStart">ワークアウトを開始</button>
@@ -393,17 +394,6 @@ body{font-family:var(--f-ui),var(--f-jp);color:var(--photo-text);min-height:100v
       </svg>
       <div class="chart-axis"><span>4/27</span><span>4/28</span><span>4/29</span><span>4/30</span><span>5/1</span><span>5/2</span><span class="on">5/3</span></div>
       <div class="chart-foot">12,450 <small>過去7日最高</small></div>
-    </div>
-
-    <div class="body-block">
-      <div class="ttl"><h3>本日のターゲット</h3><small id="bodyTargetLabel">胸</small></div>
-      <div class="body-row">
-        <div class="body-img" id="bodyImg" style="background-image:url('img/target-chest.png')"></div>
-        <div class="body-info">
-          <div class="muscles" id="muscleList"></div>
-          <div class="body-cta">推定消費カロリー<b>520 kcal</b></div>
-        </div>
-      </div>
     </div>
 
     <div class="medals">
@@ -583,8 +573,7 @@ const el = {
   img:$('heroImg'), machoBg:$('machoBg'), title:$('heroTitle'),
   level:$('heroLevel'), time:$('heroTime'),
   badge:document.querySelector('.hero-label .day'),
-  vol:$('statVol'),
-  bodyImg:$('bodyImg'), muscleList:$('muscleList'), bodyTargetLabel:$('bodyTargetLabel'),
+  vol:$('statVol'), sets:$('statSets'), done:$('statDone'),
 };
 
 function render(tag) {
@@ -602,18 +591,35 @@ function render(tag) {
   el.title.innerHTML = d.title;
   el.level.textContent = d.level;
   el.time.textContent = d.time;
-  el.vol.innerHTML = d.vol + '<small>KG</small>';
-
-  // 本日のターゲット画像差替 (フェード)
-  el.bodyImg.style.opacity = '0';
-  setTimeout(() => {
-    el.bodyImg.style.backgroundImage = `url('img/target-${tag}.png')`;
-    el.bodyImg.style.opacity = '1';
-  }, 150);
-  el.muscleList.innerHTML = (d.muscles||[]).map(m => `<div class="mus on">${m}</div>`).join('');
-  el.bodyTargetLabel.textContent = d.targetLabel || '';
-
+  updateTodayStats();
 }
+
+// 本日のセット記録から VOLUME / SETS / DONE を計算して反映
+// Store.cache は YYYY-MM-DD キーなので日付が変われば自動的に 0 になる
+function updateTodayStats() {
+  const d = DATA[currentTag];
+  if (!d) return;
+  let vol = 0, sets = 0, doneEx = 0;
+  for (const it of (d.items || [])) {
+    const recorded = Store.getSets(currentTag, it.name); // 本日分のみ
+    sets += recorded.length;
+    for (const s of recorded) vol += (Number(s.weight)||0) * (Number(s.reps)||0);
+    if (recorded.length >= (it.sets || 3)) doneEx++;
+  }
+  el.vol.innerHTML = vol.toLocaleString() + '<small>KG</small>';
+  el.sets.innerHTML = sets + '<small>本日</small>';
+  el.done.innerHTML = doneEx + '<small>/ ' + (d.items?.length||0) + '種目</small>';
+}
+
+// 日付が変わったら自動で 0 にリフレッシュ (深夜0時を跨いだ場合の保険)
+let _lastDayKey = Store.todayKey();
+setInterval(() => {
+  const today = Store.todayKey();
+  if (today !== _lastDayKey) {
+    _lastDayKey = today;
+    Store.loadDay().finally(() => updateTodayStats());
+  }
+}, 60 * 1000);
 
 // ====== Storage 層 (Cloudflare D1 / kinntore-api Worker) ======
 // オフライン時のフォールバックに localStorage キャッシュを併用
@@ -808,6 +814,7 @@ async function recordSet() {
       refreshProgress();
       refreshHistory();
       if (isExDoneToday(curEx.tag, curEx.item)) curEx.item.state = 'done';
+      updateTodayStats();
     }, 350);
   } catch (e) {
     console.error(e);
@@ -901,6 +908,7 @@ const validTag = DATA[initialTag] ? initialTag : 'chest';
 render(validTag);
 // D1から当日データを非同期でロードしてキャッシュ更新
 Store.loadDay().then(() => {
+  updateTodayStats();
   // ロード後、開いてるモーダル/シートがあれば再描画
   if (curEx) { refreshProgress(); refreshHistory(); }
 });
