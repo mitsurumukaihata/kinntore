@@ -608,40 +608,88 @@ function render(tag) {
 
 }
 
-// ====== Storage 層 (Phase 2: localStorage / Phase 2b で D1 に差替予定) ======
+// ====== Storage 層 (Cloudflare D1 / kinntore-api Worker) ======
+// オフライン時のフォールバックに localStorage キャッシュを併用
 const Store = {
-  KEY: 'kinntore_logs',
-  load() { try { return JSON.parse(localStorage.getItem(this.KEY) || '{}'); } catch { return {}; } },
-  save(d) { localStorage.setItem(this.KEY, JSON.stringify(d)); },
+  API: 'https://kinntore-api.33322666666mm.workers.dev',
+  CACHE_KEY: 'kinntore_cache',
+  cache: {},  // { 'YYYY-MM-DD': { 'tag/name': [{id,weight,reps,time}] } }
+
   todayKey() {
     const d = new Date();
     return d.getFullYear() + '-' + String(d.getMonth()+1).padStart(2,'0') + '-' + String(d.getDate()).padStart(2,'0');
   },
   exKey(tag, name) { return tag + '/' + name; },
+
+  // ローカルキャッシュ復元 (オフライン用)
+  loadCache() {
+    try { this.cache = JSON.parse(localStorage.getItem(this.CACHE_KEY) || '{}'); } catch { this.cache = {}; }
+  },
+  saveCache() {
+    try { localStorage.setItem(this.CACHE_KEY, JSON.stringify(this.cache)); } catch {}
+  },
+
+  // D1から当日データ取得 → キャッシュ
+  async loadDay(day = this.todayKey()) {
+    try {
+      const r = await fetch(this.API + '/api/sets?day=' + day);
+      if (!r.ok) throw new Error('API ' + r.status);
+      const j = await r.json();
+      const byEx = {};
+      for (const s of j.sets || []) {
+        const k = this.exKey(s.tag, s.exercise_name);
+        if (!byEx[k]) byEx[k] = [];
+        byEx[k].push({ id: s.id, weight: s.weight, reps: s.reps, time: s.recorded_at });
+      }
+      this.cache[day] = byEx;
+      this.saveCache();
+      return byEx;
+    } catch (e) {
+      console.warn('[kinntore] loadDay failed (offline?), using cache:', e);
+      return this.cache[day] || {};
+    }
+  },
+
+  // 同期getter (キャッシュ参照)
   getSets(tag, name, day = this.todayKey()) {
-    const all = this.load();
-    return (all[day] && all[day][this.exKey(tag, name)]) || [];
+    return (this.cache[day] && this.cache[day][this.exKey(tag, name)]) || [];
   },
-  addSet(tag, name, set) {
-    const all = this.load();
+
+  // セット追加 (D1へPOST + キャッシュ更新)
+  async addSet(tag, name, set) {
+    const r = await fetch(this.API + '/api/sets', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ tag, exercise_name: name, weight: set.weight, reps: set.reps, recorded_at: set.time }),
+    });
+    if (!r.ok) throw new Error('API ' + r.status);
+    const j = await r.json();
     const day = this.todayKey();
-    if (!all[day]) all[day] = {};
+    if (!this.cache[day]) this.cache[day] = {};
     const k = this.exKey(tag, name);
-    if (!all[day][k]) all[day][k] = [];
-    all[day][k].push(set);
-    this.save(all);
+    if (!this.cache[day][k]) this.cache[day][k] = [];
+    this.cache[day][k].push({ id: j.id, weight: set.weight, reps: set.reps, time: set.time });
+    this.saveCache();
+    return j;
   },
-  popSet(tag, name) {
-    const all = this.load();
+
+  // 直近セット削除 (Undo用)
+  async popSet(tag, name) {
+    const r = await fetch(this.API + '/api/sets/last', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ tag, exercise_name: name }),
+    });
+    if (!r.ok) throw new Error('API ' + r.status);
     const day = this.todayKey();
     const k = this.exKey(tag, name);
-    if (all[day] && all[day][k]) {
-      all[day][k].pop();
-      if (all[day][k].length === 0) delete all[day][k];
-      this.save(all);
+    if (this.cache[day]?.[k]) {
+      this.cache[day][k].pop();
+      this.saveCache();
     }
   },
 };
+Store.loadCache();
 
 // 当日完了済みかどうか判定 (種目の sets 数以上記録あれば done)
 function isExDoneToday(tag, item) {
@@ -736,25 +784,29 @@ function refreshHistory() {
     : '';
 }
 
-function recordSet() {
+async function recordSet() {
   if (!curEx) return;
   const weight = +$('mWeightVal').textContent;
   const reps = +$('mRepsVal').textContent;
   const now = new Date();
   const time = String(now.getHours()).padStart(2,'0') + ':' + String(now.getMinutes()).padStart(2,'0');
-  Store.addSet(curEx.tag, curEx.item.name, { weight, reps, time });
-  // 完了アニメ
-  $('mDone').classList.add('success');
-  $('mDone').textContent = '✓ 記録しました';
-  setTimeout(() => {
-    $('mDone').classList.remove('success');
-    refreshProgress();
-    refreshHistory();
-    // 全セット完了したら DATA も更新
-    if (isExDoneToday(curEx.tag, curEx.item)) {
-      curEx.item.state = 'done';
-    }
-  }, 350);
+  $('mDone').disabled = true;
+  $('mDone').textContent = '保存中…';
+  try {
+    await Store.addSet(curEx.tag, curEx.item.name, { weight, reps, time });
+    $('mDone').classList.add('success');
+    $('mDone').textContent = '✓ 記録しました';
+    setTimeout(() => {
+      $('mDone').classList.remove('success');
+      refreshProgress();
+      refreshHistory();
+      if (isExDoneToday(curEx.tag, curEx.item)) curEx.item.state = 'done';
+    }, 350);
+  } catch (e) {
+    console.error(e);
+    $('mDone').textContent = '保存失敗 (再試行)';
+    $('mDone').disabled = false;
+  }
 }
 
 function adjustVal(id, delta, min = 0) {
@@ -840,6 +892,11 @@ $('modal').addEventListener('click', e => { if (e.target.id === 'modal') closeMo
 const initialTag = (location.hash||'').replace('#','');
 const validTag = DATA[initialTag] ? initialTag : 'chest';
 render(validTag);
+// D1から当日データを非同期でロードしてキャッシュ更新
+Store.loadDay().then(() => {
+  // ロード後、開いてるモーダル/シートがあれば再描画
+  if (curEx) { refreshProgress(); refreshHistory(); }
+});
 
 // プルトゥリフレッシュ
 (function() {
@@ -886,14 +943,13 @@ render(validTag);
     setLabel('更新中…', true);
     page.classList.remove('pulling');
     page.style.transform='translateY(60px)';
-    setTimeout(() => {
-      const at = document.querySelector('#tagbar .tag.on');
-      if (at) render(at.dataset.tag);
+    Store.loadDay().finally(() => {
+      render(currentTag);
       ptr.classList.remove('loading');
       loading=false;
       reset();
       toast('最新の状態に更新しました');
-    }, 900);
+    });
   }
   function toast(msg) {
     const t=document.createElement('div');

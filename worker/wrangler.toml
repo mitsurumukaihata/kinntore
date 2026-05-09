@@ -1,0 +1,8 @@
+name = "kinntore-api"
+main = "src/index.js"
+compatibility_date = "2024-12-01"
+
+[[d1_databases]]
+binding = "DB"
+database_name = "kinntore-db"
+database_id = "7131df1a-559e-470f-9ba4-44049598921d"

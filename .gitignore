@@ -9,6 +9,9 @@ node_modules/
 ui-mockups/node_modules/
 ui-mockups/package.json
 ui-mockups/package-lock.json
+worker/node_modules/
+worker/.wrangler/
+worker/dist/
 
 # OS
 .DS_Store
