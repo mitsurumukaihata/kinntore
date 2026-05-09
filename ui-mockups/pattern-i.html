@@ -264,8 +264,9 @@ body{font-family:var(--f-ui),var(--f-jp);color:var(--photo-text);min-height:100v
     <div class="tag on" data-tag="chest">胸</div>
     <div class="tag" data-tag="shoulder">肩</div>
     <div class="tag" data-tag="back">背中</div>
-    <div class="tag" data-tag="hip">お尻</div>
     <div class="tag" data-tag="leg">脚</div>
+    <div class="tag" data-tag="abs">腹</div>
+    <div class="tag" data-tag="hip">お尻</div>
   </div>
 
   <!-- ★ ページ本体 (プル時に下に動く) -->
@@ -353,7 +354,7 @@ body{font-family:var(--f-ui),var(--f-jp);color:var(--photo-text);min-height:100v
           <path data-part="chest" d="M 35,58 Q 50,62 60,62 Q 70,62 85,58 L 86,90 Q 60,96 60,96 Q 60,96 34,90 Z" fill="#1f1f1f" stroke="#333" stroke-width="1"/>
           <path d="M 28,55 Q 22,80 22,110 L 30,110 Q 32,80 36,58 Z" fill="#181818" stroke="#2a2a2a" stroke-width="1"/>
           <path d="M 92,55 Q 98,80 98,110 L 90,110 Q 88,80 84,58 Z" fill="#181818" stroke="#2a2a2a" stroke-width="1"/>
-          <path d="M 40,90 Q 60,98 80,90 L 82,125 Q 60,128 38,125 Z" fill="#181818" stroke="#2a2a2a" stroke-width="1"/>
+          <path data-part="abs" d="M 40,90 Q 60,98 80,90 L 82,125 Q 60,128 38,125 Z" fill="#181818" stroke="#2a2a2a" stroke-width="1"/>
           <path data-part="back" d="M 35,55 Q 60,52 85,55 L 86,90 Q 60,93 34,90 Z" fill="transparent" stroke="transparent"/>
           <path data-part="hip" d="M 38,125 Q 60,130 82,125 L 80,148 Q 60,152 40,148 Z" fill="#1f1f1f" stroke="#333" stroke-width="1"/>
           <path data-part="leg" d="M 40,148 Q 60,152 80,148 L 78,200 Q 70,210 60,210 Q 50,210 42,200 Z M 40,148 L 42,200 Q 50,210 60,210 Z" fill="#1f1f1f" stroke="#333" stroke-width="1"/>
@@ -441,6 +442,7 @@ const DATA = {
       {name:'ダンベルプレス',       sub:'大胸筋', sets:4, reps:10, weight:25, state:'done', img:'img/465BA571-0D63-4E6B-8CB4-5BDA94C4C8A4.jpg', manga:'img/manga/dumbbell-press.png'},
       {name:'インクラインダンベル', sub:'大胸筋 上部', sets:3, reps:10, weight:30, state:'done', img:'img/465BA571-0D63-4E6B-8CB4-5BDA94C4C8A4.jpg', manga:'img/manga/incline-dumbbell.png'},
       {name:'ダンベルフライ',       sub:'大胸筋 外側', sets:3, reps:12, weight:15, state:'next', manga:'img/manga/dumbbell-fly.png'},
+      {name:'ペックフライ',         sub:'大胸筋 内側', sets:3, reps:12, weight:30, state:'wait', manga:'img/manga/pec-fly.png'},
       {name:'ケーブルフライ',       sub:'大胸筋 内側', sets:3, reps:12, weight:20, state:'wait', manga:'img/manga/cable-fly.png'},
       {name:'ディップス',           sub:'大胸筋 下部', sets:3, reps:10, state:'wait', manga:'img/manga/dips.png'},
       {name:'プッシュアップ',       sub:'大胸筋', sets:3, reps:15, state:'wait', manga:'img/manga/push-up.png'},
@@ -499,6 +501,20 @@ const DATA = {
       {name:'レッグエクステンション', sub:'大腿四頭筋',     sets:3, reps:12, weight:50,  state:'wait', img:'img/5F71EEA8-9B40-4278-B01D-812D7473ED79.jpg', manga:'img/manga/leg-extension.png'},
       {name:'レッグカール',           sub:'ハムストリング', sets:3, reps:12, weight:40,  state:'wait', img:'img/3D95FF56-1292-4915-97CD-0FA0C257B44E.jpg', manga:'img/manga/leg-curl.png'},
       {name:'カーフレイズ',           sub:'カーフ',        sets:3, reps:20, weight:60,  state:'wait', manga:'img/manga/calf-raise.png'},
+    ],
+  },
+  abs: {
+    img:'img/part-abs.png', badge:'ABS DAY · DAY 028',
+    title:'腹を<em>割る日</em>', level:'中級者向け', time:'約30分',
+    vol:'2,400', bodyParts:['abs'],
+    muscles:['腹直筋','腹斜筋','腹横筋'],
+    targetLabel:'腹',
+    items:[
+      {name:'アブクランチ',           sub:'腹直筋',     sets:4, reps:15, weight:30, state:'next', manga:'img/manga/ab-crunch.png'},
+      {name:'レッグレイズ',           sub:'腹直筋 下部', sets:3, reps:15, state:'wait', manga:'img/manga/leg-raise.png'},
+      {name:'プランク',               sub:'腹横筋',     sets:3, reps:60, state:'wait', manga:'img/manga/plank.png'},
+      {name:'ロシアンツイスト',       sub:'腹斜筋',     sets:3, reps:20, weight:10, state:'wait', manga:'img/manga/russian-twist.png'},
+      {name:'ハンギングレッグレイズ', sub:'腹直筋 下部', sets:3, reps:12, state:'wait', manga:'img/manga/hanging-leg-raise.png'},
     ],
   },
 };

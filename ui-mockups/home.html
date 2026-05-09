@@ -59,21 +59,15 @@ body{font-family:var(--f-ui),var(--f-jp);color:var(--photo-text);min-height:100v
 .sec h2 small{font-family:var(--f-display);font-size:10px;color:var(--photo-dim);letter-spacing:.18em;font-weight:400;margin-left:8px}
 .sec a{color:var(--photo-mute);text-decoration:none;font-size:11px;font-family:var(--f-jp);font-weight:600;cursor:pointer}
 
-/* 部位ボタングリッド */
+/* 部位ボタングリッド (各カードにラベル・矢印焼込済) */
 .parts{padding:0 16px;display:grid;grid-template-columns:1fr 1fr;gap:10px}
-.parts .p{aspect-ratio:1.05;border-radius:14px;overflow:hidden;position:relative;cursor:pointer;transition:.18s;background:var(--photo-card);text-decoration:none;display:block}
+.parts .p{aspect-ratio:418/627;border-radius:14px;overflow:hidden;position:relative;cursor:pointer;transition:.18s;background:var(--photo-card);text-decoration:none;display:block}
 .parts .p:active{transform:scale(.98)}
 .parts .p:hover{box-shadow:0 0 0 2px var(--photo-red-soft)}
-.parts .p img{width:100%;height:100%;object-fit:cover;object-position:center 20%;display:block}
-.parts .p::after{content:'';position:absolute;inset:0;background:linear-gradient(180deg,rgba(0,0,0,.15) 30%,rgba(0,0,0,.85) 100%);pointer-events:none}
-.parts .p .lbl{position:absolute;left:14px;right:14px;bottom:12px;z-index:2;color:#fff;display:flex;justify-content:space-between;align-items:flex-end}
-.parts .p .lbl .nm{font-family:var(--f-jp);font-size:22px;font-weight:900;line-height:1;letter-spacing:-.01em;text-shadow:0 2px 14px rgba(0,0,0,.6)}
-.parts .p .lbl .nm small{display:block;font-family:var(--f-display);font-size:9px;color:rgba(255,255,255,.7);letter-spacing:.2em;margin-top:6px;font-weight:400;text-shadow:none}
-.parts .p .lbl .arr{font-family:var(--f-display);font-size:18px;color:var(--photo-red);background:#fff;width:28px;height:28px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-weight:400;line-height:1}
-.parts .p.next-up{box-shadow:inset 0 0 0 2px var(--photo-red)}
+.parts .p img{width:100%;height:100%;object-fit:cover;object-position:center;display:block}
+.parts .p.next-up{box-shadow:0 0 0 2px var(--photo-red),0 0 18px rgba(230,57,70,.35)}
 .parts .p.next-up::before{content:'NEXT';position:absolute;top:10px;right:10px;background:var(--photo-red);color:#fff;font-family:var(--f-display);font-size:9px;letter-spacing:.18em;padding:3px 6px;border-radius:3px;z-index:3}
 .parts .p .stat{position:absolute;top:10px;left:10px;z-index:3;font-family:var(--f-mono);font-size:11px;color:#fff;background:rgba(0,0,0,.55);backdrop-filter:blur(6px);padding:3px 7px;border-radius:50px;font-weight:500;letter-spacing:-.01em}
-.parts .p.full{grid-column:1 / -1;aspect-ratio:2.5}
 
 /* 統計2列 */
 .stats2{margin:0 16px 14px;display:grid;grid-template-columns:1fr 1fr 1fr;gap:8px}
@@ -166,28 +160,27 @@ body{font-family:var(--f-ui),var(--f-jp);color:var(--photo-text);min-height:100v
   <div class="parts">
     <a class="p next-up" href="pattern-i.html#chest">
       <div class="stat">3日前</div>
-      <img src="img/hero-chest.png" alt="胸">
-      <div class="lbl"><div class="nm">胸<small>CHEST</small></div><div class="arr">›</div></div>
+      <img src="img/part-chest.png" alt="胸">
     </a>
     <a class="p" href="pattern-i.html#shoulder">
       <div class="stat">5日前</div>
-      <img src="img/hero-shoulder.png" alt="肩">
-      <div class="lbl"><div class="nm">肩<small>SHOULDER</small></div><div class="arr">›</div></div>
+      <img src="img/part-shoulder.png" alt="肩">
     </a>
     <a class="p" href="pattern-i.html#back">
       <div class="stat">2日前</div>
-      <img src="img/hero-back.png" alt="背中">
-      <div class="lbl"><div class="nm">背中<small>BACK</small></div><div class="arr">›</div></div>
+      <img src="img/part-back.png" alt="背中">
+    </a>
+    <a class="p" href="pattern-i.html#leg">
+      <div class="stat">4日前</div>
+      <img src="img/part-leg.png" alt="脚">
+    </a>
+    <a class="p" href="pattern-i.html#abs">
+      <div class="stat">6日前</div>
+      <img src="img/part-abs.png" alt="腹">
     </a>
     <a class="p" href="pattern-i.html#hip">
       <div class="stat">7日前</div>
-      <img src="img/hero-hip.png" alt="お尻">
-      <div class="lbl"><div class="nm">お尻<small>HIP</small></div><div class="arr">›</div></div>
-    </a>
-    <a class="p full" href="pattern-i.html#leg">
-      <div class="stat">4日前</div>
-      <img src="img/hero-leg.png" alt="脚">
-      <div class="lbl"><div class="nm">脚<small>LEG</small></div><div class="arr">›</div></div>
+      <img src="img/part-hip.png" alt="お尻">
     </a>
   </div>
 
