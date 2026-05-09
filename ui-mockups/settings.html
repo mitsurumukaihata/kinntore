@@ -9,6 +9,7 @@
 <link rel="manifest" href="manifest.json">
 <link rel="apple-touch-icon" href="img/icon-192.png">
 <title>kinntore — 設定</title>
+<script>(function(){var t=localStorage.getItem('kinntore_theme');if(t==='light')document.documentElement.dataset.theme='light';})();</script>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Inter+Tight:wght@400;500;600;700;800;900&family=JetBrains+Mono:wght@400;500;600&family=Zen+Kaku+Gothic+New:wght@400;500;700;900&display=swap" rel="stylesheet">
@@ -24,6 +25,16 @@
   --f-display:'Bebas Neue','Inter Tight',system-ui,sans-serif;
   --f-mono:'JetBrains Mono',ui-monospace,monospace;
 }
+:root[data-theme="light"]{
+  --photo-bg:#f4f4f5;--photo-card:#fff;--photo-card-2:#fafafa;
+  --photo-line:rgba(0,0,0,0.08);--photo-line-strong:rgba(0,0,0,0.16);
+  --photo-text:#0a0a0a;--photo-mute:#5e5e5e;--photo-dim:#9a9a9a;
+}
+:root[data-theme="light"] html,:root[data-theme="light"] body{background:#e8e8ea}
+:root[data-theme="light"] .tab{background:rgba(255,255,255,.95);border-top-color:rgba(0,0,0,.08)}
+:root[data-theme="light"] .row select,:root[data-theme="light"] .row input,:root[data-theme="light"] .seg,:root[data-theme="light"] .btn,:root[data-theme="light"] .goal-cell,:root[data-theme="light"] .goal-cell button{background:#fafafa}
+:root[data-theme="light"] .about .logo{background:#fff}
+:root[data-theme="light"] .confirm-card{background:#fff}
 *{box-sizing:border-box;margin:0;padding:0;-webkit-tap-highlight-color:transparent}
 html,body{background:#000;overscroll-behavior-y:contain;-webkit-text-size-adjust:100%;text-size-adjust:100%;touch-action:manipulation}
 button,a,input,select{touch-action:manipulation;-webkit-touch-callout:none}
@@ -119,6 +130,25 @@ body{font-family:var(--f-ui),var(--f-jp);color:var(--photo-text);min-height:100v
           <div class="desc">ホーム画面の挨拶に使用</div>
         </div>
         <div class="r"><input type="text" id="setName" placeholder="名前" maxlength="20"></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- 表示設定 -->
+  <div class="section">
+    <div class="section-title">APPEARANCE</div>
+    <div class="card">
+      <div class="row">
+        <div class="l">
+          <div class="nm">テーマ</div>
+          <div class="desc">ダーク / ライト 切替</div>
+        </div>
+        <div class="r">
+          <div class="seg" id="segTheme">
+            <button data-v="dark" class="on">ダーク</button>
+            <button data-v="light">ライト</button>
+          </div>
+        </div>
       </div>
     </div>
   </div>
@@ -309,6 +339,21 @@ function bindSeg(segId, key, def) {
     };
   });
 }
+// テーマ切替 (即座に反映)
+(function() {
+  const cur = localStorage.getItem('kinntore_theme') || 'dark';
+  document.querySelectorAll('#segTheme button').forEach(b => {
+    b.classList.toggle('on', b.dataset.v === cur);
+    b.onclick = () => {
+      document.querySelectorAll('#segTheme button').forEach(x=>x.classList.remove('on'));
+      b.classList.add('on');
+      localStorage.setItem('kinntore_theme', b.dataset.v);
+      if (b.dataset.v === 'light') document.documentElement.dataset.theme = 'light';
+      else delete document.documentElement.dataset.theme;
+      toast(b.dataset.v==='light' ? 'ライトモードに切替えました' : 'ダークモードに切替えました');
+    };
+  });
+})();
 bindSeg('segUnit','unit','kg');
 bindSeg('segWStep','weight_step','2.5');
 bindSeg('segRStep','rep_step','1');

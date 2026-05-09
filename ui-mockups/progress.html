@@ -9,6 +9,7 @@
 <link rel="manifest" href="manifest.json">
 <link rel="apple-touch-icon" href="img/icon-192.png">
 <title>kinntore — 進捗</title>
+<script>(function(){var t=localStorage.getItem('kinntore_theme');if(t==='light')document.documentElement.dataset.theme='light';})();</script>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Inter+Tight:wght@400;500;600;700;800;900&family=JetBrains+Mono:wght@400;500;600&family=Zen+Kaku+Gothic+New:wght@400;500;700;900&display=swap" rel="stylesheet">
@@ -24,6 +25,14 @@
   --f-display:'Bebas Neue','Inter Tight',system-ui,sans-serif;
   --f-mono:'JetBrains Mono',ui-monospace,monospace;
 }
+:root[data-theme="light"]{
+  --photo-bg:#f4f4f5;--photo-card:#fff;--photo-card-2:#fafafa;
+  --photo-line:rgba(0,0,0,0.08);--photo-line-strong:rgba(0,0,0,0.16);
+  --photo-text:#0a0a0a;--photo-mute:#5e5e5e;--photo-dim:#9a9a9a;
+}
+:root[data-theme="light"] html,:root[data-theme="light"] body{background:#e8e8ea}
+:root[data-theme="light"] .tab{background:rgba(255,255,255,.95);border-top-color:rgba(0,0,0,.08)}
+:root[data-theme="light"] .ex-select,:root[data-theme="light"] .ex-stat{background:#fafafa}
 *{box-sizing:border-box;margin:0;padding:0;-webkit-tap-highlight-color:transparent}
 html,body{background:#000;overscroll-behavior-y:contain;-webkit-text-size-adjust:100%;text-size-adjust:100%;touch-action:manipulation}
 button,a,select{touch-action:manipulation;-webkit-touch-callout:none;-webkit-user-select:none;user-select:none}
@@ -173,12 +182,22 @@ async function load() {
   $('content').style.display = 'none';
   const today = new Date(); today.setHours(0,0,0,0);
   const days = []; for (let i=0;i<period;i++){const d=new Date(today);d.setDate(d.getDate()-i);days.push(fmt(d))}
-  // 5並列で取得
-  const chunks=[]; for(let i=0;i<days.length;i+=5) chunks.push(days.slice(i,i+5));
   allData = [];
-  for (const c of chunks) {
-    const r = await Promise.all(c.map(d => fetchDay(d).then(sets=>({day:d,sets}))));
-    allData.push(...r);
+  // 先読みキャッシュを優先利用 (90日分・5分以内)
+  let pre = null;
+  try {
+    const c = JSON.parse(sessionStorage.getItem('kinntore_prefetch_90d')||'null');
+    if (c && (Date.now() - c.ts) < 5*60*1000 && Array.isArray(c.data)) pre = c.data;
+  } catch {}
+  if (pre && period <= 90) {
+    const want = new Set(days);
+    allData = pre.filter(d => want.has(d.day));
+  } else {
+    const chunks=[]; for(let i=0;i<days.length;i+=5) chunks.push(days.slice(i,i+5));
+    for (const c of chunks) {
+      const r = await Promise.all(c.map(d => fetchDay(d).then(sets=>({day:d,sets}))));
+      allData.push(...r);
+    }
   }
   render();
   $('loading').style.display = 'none';
