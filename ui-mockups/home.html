@@ -26,6 +26,48 @@
 }
 *{box-sizing:border-box;margin:0;padding:0;-webkit-tap-highlight-color:transparent}
 html,body{background:#000;overscroll-behavior-y:contain;-webkit-text-size-adjust:100%;text-size-adjust:100%;touch-action:manipulation}
+
+/* ===== Bachiluck スプラッシュスクリーン ===== */
+.splash{position:fixed;inset:0;background:radial-gradient(ellipse at center, #1a0a0c 0%, #000 70%);z-index:200;display:flex;align-items:center;justify-content:center;overflow:hidden;animation:splash-out .55s cubic-bezier(.4,0,.6,1) 1.7s forwards}
+.splash.skip{display:none}
+.splash-logo{position:relative;max-width:78%;max-height:58vh;width:auto;height:auto;opacity:0;transform:scale(.88) translateY(20px);animation:splash-logo-in .85s cubic-bezier(.2,.8,.2,1) .15s forwards, splash-logo-pulse 2s ease-in-out 1s;filter:drop-shadow(0 8px 32px rgba(230,57,70,.35)) drop-shadow(0 0 60px rgba(230,57,70,.15));z-index:2}
+.splash-glow{position:absolute;width:75vw;height:75vw;max-width:600px;max-height:600px;background:radial-gradient(circle,rgba(230,57,70,.32) 0%,rgba(230,57,70,.08) 35%,transparent 65%);filter:blur(40px);animation:splash-glow 2.4s cubic-bezier(.2,.8,.2,1) forwards;opacity:0;z-index:1;pointer-events:none}
+.splash-particles{position:absolute;inset:0;pointer-events:none;z-index:1}
+.splash-particles span{position:absolute;width:3px;height:3px;background:#E63946;border-radius:50%;opacity:0;animation:splash-particle 2.2s ease-out forwards;box-shadow:0 0 8px rgba(230,57,70,.8)}
+.splash-particles span:nth-child(1){left:18%;top:30%;animation-delay:.2s}
+.splash-particles span:nth-child(2){left:82%;top:25%;animation-delay:.35s;width:2px;height:2px}
+.splash-particles span:nth-child(3){left:25%;top:75%;animation-delay:.5s;width:4px;height:4px}
+.splash-particles span:nth-child(4){left:78%;top:70%;animation-delay:.65s}
+.splash-particles span:nth-child(5){left:15%;top:55%;animation-delay:.4s;width:2px;height:2px}
+.splash-particles span:nth-child(6){left:88%;top:45%;animation-delay:.55s}
+.splash-particles span:nth-child(7){left:50%;top:18%;animation-delay:.3s;width:2px;height:2px}
+.splash-particles span:nth-child(8){left:50%;top:85%;animation-delay:.7s;width:3px;height:3px}
+@keyframes splash-logo-in{
+  0%{opacity:0;transform:scale(.88) translateY(20px)}
+  60%{opacity:1;transform:scale(1.02) translateY(-2px)}
+  100%{opacity:1;transform:scale(1) translateY(0)}
+}
+@keyframes splash-logo-pulse{
+  0%,100%{filter:drop-shadow(0 8px 32px rgba(230,57,70,.35)) drop-shadow(0 0 60px rgba(230,57,70,.15))}
+  50%{filter:drop-shadow(0 8px 40px rgba(230,57,70,.55)) drop-shadow(0 0 80px rgba(230,57,70,.3))}
+}
+@keyframes splash-glow{
+  0%{opacity:0;transform:scale(.6)}
+  35%{opacity:1;transform:scale(1)}
+  100%{opacity:0;transform:scale(1.4)}
+}
+@keyframes splash-particle{
+  0%{opacity:0;transform:translateY(0) scale(.5)}
+  30%{opacity:1;transform:translateY(-12px) scale(1)}
+  100%{opacity:0;transform:translateY(-40px) scale(.3)}
+}
+@keyframes splash-out{
+  to{opacity:0;visibility:hidden;pointer-events:none;transform:scale(1.04)}
+}
+/* ダッシュボード本体は最初に薄く出して、スプラッシュ消える瞬間に滑らかに登場 */
+.app{opacity:0;animation:app-in .6s cubic-bezier(.2,.8,.2,1) 1.6s forwards}
+.splash.skip ~ .app{opacity:1;animation:none}
+@keyframes app-in{from{opacity:0;transform:translateY(8px)}to{opacity:1;transform:translateY(0)}}
 button,a,.card,.btn,.tab a{touch-action:manipulation;-webkit-touch-callout:none;-webkit-user-select:none;user-select:none}
 /* テキスト切れ防止: flex/grid 子要素の最小幅を 0 に */
 .streak > *,.last > *,.stats > *,.parts > * > *,.charts-swipe > * > *,.head > *,.last-row > *{min-width:0}
@@ -147,6 +189,17 @@ body{font-family:var(--f-ui),var(--f-jp);color:var(--photo-text);min-height:100v
 </style>
 </head>
 <body>
+
+<!-- スプラッシュスクリーン (Bachiluck ロゴ) -->
+<div class="splash" id="splash">
+  <div class="splash-glow"></div>
+  <div class="splash-particles">
+    <span></span><span></span><span></span><span></span><span></span>
+    <span></span><span></span><span></span>
+  </div>
+  <img class="splash-logo" src="img/bachiluck-logo.png" alt="Bachiluck">
+</div>
+
 <div class="app">
 
   <div class="head">
@@ -295,6 +348,20 @@ swipe.addEventListener('scroll', () => {
 </div>
 
 <script>
+// ===== Bachiluck スプラッシュ制御 (セッション中は1回だけ表示) =====
+(function() {
+  const splash = document.getElementById('splash');
+  if (!splash) return;
+  if (sessionStorage.getItem('kinntore_splash_done') === '1') {
+    // 既に見せた → 即スキップ (タブ復帰や記録→ホーム遷移時)
+    splash.classList.add('skip');
+  } else {
+    sessionStorage.setItem('kinntore_splash_done', '1');
+    // アニメ終了後にDOMから完全除去
+    setTimeout(() => splash.remove(), 2400);
+  }
+})();
+
 // ===== 前回 / 本日のトレーニングカード =====
 // 本日にセットがあれば「本日のトレーニング」、無ければ過去14日で直近の日を「前回のトレーニング」として表示
 (async function() {

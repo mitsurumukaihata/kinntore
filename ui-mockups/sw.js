@@ -1,5 +1,5 @@
 // kinntore PWA service worker
-const VERSION = 'v6';
+const VERSION = 'v7';
 const CACHE = `kinntore-${VERSION}`;
 const PRECACHE = [
   './',
@@ -10,7 +10,8 @@ const PRECACHE = [
   'settings.html',
   'manifest.json',
   'img/icon-192.png',
-  'img/icon-512.png'
+  'img/icon-512.png',
+  'img/bachiluck-logo.png'
 ];
 
 self.addEventListener('install', (e) => {
