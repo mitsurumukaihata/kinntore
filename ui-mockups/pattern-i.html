@@ -259,16 +259,6 @@ body{font-family:var(--f-ui),var(--f-jp);color:var(--photo-text);min-height:100v
     <div class="nav-btn">⋯</div>
   </div>
 
-  <!-- 固定タグバー -->
-  <div class="tagbar" id="tagbar">
-    <div class="tag on" data-tag="chest">胸</div>
-    <div class="tag" data-tag="shoulder">肩</div>
-    <div class="tag" data-tag="back">背中</div>
-    <div class="tag" data-tag="leg">脚</div>
-    <div class="tag" data-tag="abs">腹</div>
-    <div class="tag" data-tag="hip">お尻</div>
-  </div>
-
   <!-- ★ ページ本体 (プル時に下に動く) -->
   <div class="page-content" id="pageContent">
 
@@ -365,11 +355,6 @@ body{font-family:var(--f-ui),var(--f-jp);color:var(--photo-text);min-height:100v
         </div>
       </div>
     </div>
-
-    <div class="sec"><h2>種目一覧</h2><a>すべて表示 ›</a></div>
-    <div class="list" id="exList"></div>
-
-    <div style="height:14px"></div>
 
     <div class="motiv">
       <img src="img/asset-bodybuilder-full.png" alt="">
@@ -524,7 +509,7 @@ const el = {
   img:$('heroImg'), machoBg:$('machoBg'), title:$('heroTitle'),
   level:$('heroLevel'), time:$('heroTime'),
   badge:document.querySelector('.hero-label .day'),
-  list:$('exList'), vol:$('statVol'),
+  vol:$('statVol'),
   bodySvg:$('bodySvg'), muscleList:$('muscleList'), bodyTargetLabel:$('bodyTargetLabel'),
 };
 
@@ -552,23 +537,6 @@ function render(tag) {
   el.muscleList.innerHTML = (d.muscles||[]).map(m => `<div class="mus on">${m}</div>`).join('');
   el.bodyTargetLabel.textContent = d.targetLabel || '';
 
-  el.list.innerHTML = d.items.map((it, i) => {
-    const thumbSrc = it.manga || it.img || '';
-    const isManga = !!it.manga;
-    return `
-    <div class="ex ${it.state==='done'?'done':it.state==='next'?'next':''}" data-tag="${tag}" data-idx="${i}">
-      <div class="thumb ${isManga?'manga':''}" style="${thumbSrc?`background-image:url('${thumbSrc}')`:''}"></div>
-      <div class="body">
-        <div class="name">${it.name}${it.state==='next'?'<span class="pin">NEXT</span>':''}</div>
-        <div class="meta"><b>${it.sets||3}</b>セット × <b>${it.reps||10}</b>回${it.weight?` ・ <b>${it.weight}</b>kg`:''}</div>
-      </div>
-      <div class="chev">›</div>
-    </div>
-  `).join('');
-  // 種目カードのタップでモーダル
-  el.list.querySelectorAll('.ex').forEach(card => {
-    card.addEventListener('click', () => openModal(card.dataset.tag, +card.dataset.idx));
-  });
 }
 
 // ====== 種目モーダル ======
@@ -596,22 +564,9 @@ $('mClose').addEventListener('click', closeModal);
 $('mCancel').addEventListener('click', closeModal);
 $('modal').addEventListener('click', e => { if (e.target.id === 'modal') closeModal(); });
 
-document.querySelectorAll('#tagbar .tag').forEach(t => {
-  t.addEventListener('click', () => {
-    document.querySelectorAll('#tagbar .tag').forEach(x => x.classList.remove('on'));
-    t.classList.add('on');
-    render(t.dataset.tag);
-  });
-});
-
 // URLハッシュから初期タグを決定 (例: pattern-i.html#shoulder → 肩)
 const initialTag = (location.hash||'').replace('#','');
 const validTag = DATA[initialTag] ? initialTag : 'chest';
-if (validTag !== 'chest') {
-  document.querySelectorAll('#tagbar .tag').forEach(x => x.classList.remove('on'));
-  const t = document.querySelector(`#tagbar .tag[data-tag="${validTag}"]`);
-  if (t) t.classList.add('on');
-}
 render(validTag);
 
 // プルトゥリフレッシュ
