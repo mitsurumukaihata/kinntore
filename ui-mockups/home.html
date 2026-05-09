@@ -1,5 +1,13 @@
 <!DOCTYPE html>
-<html lang="ja"><head><meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<html lang="ja"><head><meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,minimum-scale=1,user-scalable=no,viewport-fit=cover">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="apple-mobile-web-app-title" content="kinntore">
+<meta name="theme-color" content="#0a0a0a">
+<link rel="manifest" href="manifest.json">
+<link rel="apple-touch-icon" href="img/icon-192.png">
 <title>kinntore — ホーム</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -17,7 +25,13 @@
   --f-mono:'JetBrains Mono',ui-monospace,monospace;
 }
 *{box-sizing:border-box;margin:0;padding:0;-webkit-tap-highlight-color:transparent}
-html,body{background:#000;overscroll-behavior-y:contain}
+html,body{background:#000;overscroll-behavior-y:contain;-webkit-text-size-adjust:100%;text-size-adjust:100%;touch-action:manipulation}
+button,a,.card,.btn,.tab a{touch-action:manipulation;-webkit-touch-callout:none;-webkit-user-select:none;user-select:none}
+/* テキスト切れ防止: flex/grid 子要素の最小幅を 0 に */
+.streak > *,.last > *,.stats > *,.parts > * > *,.charts-swipe > * > *,.head > *,.last-row > *{min-width:0}
+/* セーフエリア (iPhone notch / home indicator) */
+.app{padding-top:env(safe-area-inset-top);padding-bottom:calc(90px + env(safe-area-inset-bottom))}
+.tab{padding-bottom:calc(28px + env(safe-area-inset-bottom)) !important}
 body{font-family:var(--f-ui),var(--f-jp);color:var(--photo-text);min-height:100vh;-webkit-font-smoothing:antialiased;letter-spacing:-0.01em}
 .app{max-width:420px;margin:0 auto;min-height:100vh;background:var(--photo-bg);padding-bottom:90px;position:relative}
 
@@ -280,4 +294,21 @@ swipe.addEventListener('scroll', () => {
   <a><span class="ic">⚙</span>設定</a>
 </div>
 
+<script>
+// PWA: Service Worker 登録
+if ('serviceWorker' in navigator) {
+  window.addEventListener('load', () => {
+    navigator.serviceWorker.register('sw.js').catch(()=>{});
+  });
+}
+// iOS: ダブルタップズーム抑止 (viewport user-scalable=no と二段構え)
+document.addEventListener('dblclick', e => e.preventDefault(), {passive:false});
+let _lastTap = 0;
+document.addEventListener('touchend', e => {
+  const now = Date.now();
+  if (now - _lastTap < 300) e.preventDefault();
+  _lastTap = now;
+}, {passive:false});
+document.addEventListener('gesturestart', e => e.preventDefault(), {passive:false});
+</script>
 </body></html>

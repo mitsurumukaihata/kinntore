@@ -1,5 +1,13 @@
 <!DOCTYPE html>
-<html lang="ja"><head><meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<html lang="ja"><head><meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,minimum-scale=1,user-scalable=no,viewport-fit=cover">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="apple-mobile-web-app-title" content="kinntore">
+<meta name="theme-color" content="#0a0a0a">
+<link rel="manifest" href="manifest.json">
+<link rel="apple-touch-icon" href="img/icon-192.png">
 <title>kinntore</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -27,7 +35,18 @@
   --f-mono:'JetBrains Mono',ui-monospace,monospace;
 }
 *{box-sizing:border-box;margin:0;padding:0;-webkit-tap-highlight-color:transparent}
-html,body{background:#000;overscroll-behavior-y:contain}
+html,body{background:#000;overscroll-behavior-y:contain;-webkit-text-size-adjust:100%;text-size-adjust:100%;touch-action:manipulation}
+button,a,.tag,.ex,.nav-btn,.modal-close,.cta-main,.cta-ghost,.rec-btn,.rec-cta,.motiv-cta,.tab a{touch-action:manipulation;-webkit-touch-callout:none;-webkit-user-select:none;user-select:none}
+input,textarea{touch-action:manipulation}
+.rec-value,.rec-unit,.rec-prog-label,.rec-prog-label b{-webkit-user-select:none;user-select:none}
+/* テキスト切れ防止: flex/grid 子要素の最小幅 */
+.stats > *,.hero-label > *,.modal-head > *,.rec-prog-row > *,.rec-input-row > *,.hist-row > *,.tab a{min-width:0}
+.hero-label h1{overflow-wrap:anywhere}
+.modal-head h3{flex:1;min-width:0;overflow-wrap:anywhere}
+/* セーフエリア (iPhone notch / home indicator) */
+.app{padding-top:env(safe-area-inset-top);padding-bottom:calc(90px + env(safe-area-inset-bottom))}
+.tab{padding-bottom:calc(28px + env(safe-area-inset-bottom)) !important}
+.topbar{padding-top:calc(14px + env(safe-area-inset-top)) !important}
 body{font-family:var(--f-ui),var(--f-jp);color:var(--photo-text);min-height:100vh;-webkit-font-smoothing:antialiased;letter-spacing:-0.01em}
 .app{max-width:420px;margin:0 auto;min-height:100vh;background:var(--photo-bg);padding-bottom:90px;position:relative}
 
@@ -957,5 +976,22 @@ Store.loadDay().then(() => {
   window.addEventListener('mousemove', e=>{if(md)onMove(e.clientY, e);});
   window.addEventListener('mouseup',   ()=>{md=false;onEnd();});
 })();
+
+// PWA: Service Worker 登録
+if ('serviceWorker' in navigator) {
+  window.addEventListener('load', () => {
+    navigator.serviceWorker.register('sw.js').catch(()=>{});
+  });
+}
+// iOS: ダブルタップ拡大抑止 (+/- 連打対策)
+document.addEventListener('dblclick', e => e.preventDefault(), {passive:false});
+let _lastTap2 = 0;
+document.addEventListener('touchend', e => {
+  const now = Date.now();
+  if (now - _lastTap2 < 300) e.preventDefault();
+  _lastTap2 = now;
+}, {passive:false});
+// ピンチズーム抑止
+document.addEventListener('gesturestart', e => e.preventDefault(), {passive:false});
 </script>
 </body></html>
