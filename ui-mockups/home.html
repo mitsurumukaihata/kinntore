@@ -165,15 +165,15 @@ body{font-family:var(--f-ui),var(--f-jp);color:var(--photo-text);min-height:100v
     </div>
   </div>
 
-  <div class="last">
-    <div class="ttl"><h3>前回のトレーニング</h3><small>5/8 FRI · 19:30</small></div>
+  <div class="last" id="lastCard">
+    <div class="ttl"><h3 id="lastTitle">前回のトレーニング</h3><small id="lastDate">--</small></div>
     <div class="row">
-      <div class="ic">▣</div>
+      <div class="ic" id="lastIc">▣</div>
       <div class="info">
-        <div class="nm">胸の日 · 5種目完遂</div>
-        <div class="meta">所要 <b>62分</b> ・ 消費 <b>520kcal</b> ・ ボリューム <b>12,450kg</b></div>
+        <div class="nm" id="lastName">記録がありません</div>
+        <div class="meta" id="lastMeta">セットを記録すると表示されます</div>
       </div>
-      <div class="v"><b>+1.2k</b><small>VS PREV</small></div>
+      <div class="v"><b id="lastVol">--</b><small id="lastVolLabel">VOLUME</small></div>
     </div>
   </div>
 
@@ -295,6 +295,79 @@ swipe.addEventListener('scroll', () => {
 </div>
 
 <script>
+// ===== 前回 / 本日のトレーニングカード =====
+// 本日にセットがあれば「本日のトレーニング」、無ければ過去14日で直近の日を「前回のトレーニング」として表示
+(async function() {
+  const API = 'https://kinntore-api.33322666666mm.workers.dev';
+  const TAG_LABEL = { chest:'胸', shoulder:'肩', back:'背中', leg:'脚', abs:'腹', hip:'お尻' };
+  const dayKey = (d) => d.getFullYear()+'-'+String(d.getMonth()+1).padStart(2,'0')+'-'+String(d.getDate()).padStart(2,'0');
+  const fmtMD = (d) => (d.getMonth()+1)+'/'+d.getDate();
+  const wkdays = ['SUN','MON','TUE','WED','THU','FRI','SAT'];
+
+  function summarize(sets) {
+    const byTag = {};
+    let vol = 0, count = 0;
+    for (const s of sets) {
+      vol += (Number(s.weight)||0) * (Number(s.reps)||0);
+      count++;
+      byTag[s.tag] = (byTag[s.tag]||0) + 1;
+    }
+    const topTag = Object.entries(byTag).sort((a,b)=>b[1]-a[1])[0]?.[0] || null;
+    const exSet = new Set(sets.map(s => s.tag+'/'+s.exercise_name));
+    return { vol, count, topTag, exCount: exSet.size, sets };
+  }
+  async function fetchDay(d) {
+    try {
+      const r = await fetch(API + '/api/sets?day=' + dayKey(d));
+      if (!r.ok) return null;
+      const j = await r.json();
+      return (j.sets || []);
+    } catch { return null; }
+  }
+
+  const today = new Date();
+  const todaySets = await fetchDay(today);
+  let target = null, isToday = false, dateLabel = '';
+
+  if (todaySets && todaySets.length > 0) {
+    target = summarize(todaySets);
+    isToday = true;
+    dateLabel = fmtMD(today) + ' ' + wkdays[today.getDay()] + ' · 本日';
+  } else {
+    // 過去14日でセットがある最新の日を探す
+    for (let i = 1; i <= 14; i++) {
+      const d = new Date(today); d.setDate(d.getDate() - i);
+      const sets = await fetchDay(d);
+      if (sets && sets.length > 0) {
+        target = summarize(sets);
+        dateLabel = fmtMD(d) + ' ' + wkdays[d.getDay()];
+        break;
+      }
+    }
+  }
+
+  const $ = id => document.getElementById(id);
+  if (target) {
+    $('lastTitle').textContent = isToday ? '本日のトレーニング' : '前回のトレーニング';
+    $('lastDate').textContent = dateLabel;
+    $('lastIc').textContent = isToday ? '●' : '▣';
+    $('lastIc').style.background = isToday ? 'var(--photo-red)' : 'var(--photo-red-soft)';
+    $('lastIc').style.color = isToday ? '#fff' : 'var(--photo-red)';
+    const partLabel = TAG_LABEL[target.topTag] || '';
+    $('lastName').textContent = (partLabel ? partLabel + 'の日' : 'トレーニング') + ' · ' + target.exCount + '種目';
+    $('lastMeta').innerHTML = (isToday ? '進行中' : '') + (isToday?' ・ ':'') + 'セット <b>' + target.count + '</b> ・ ボリューム <b>' + target.vol.toLocaleString() + 'kg</b>';
+    $('lastVol').textContent = target.vol.toLocaleString();
+    $('lastVolLabel').textContent = 'KG';
+  } else {
+    $('lastTitle').textContent = 'トレーニング記録';
+    $('lastDate').textContent = '--';
+    $('lastName').textContent = '記録がありません';
+    $('lastMeta').textContent = '部位を選んでセットを記録すると表示されます';
+    $('lastVol').textContent = '--';
+    $('lastVolLabel').textContent = '';
+  }
+})();
+
 // PWA: Service Worker 登録
 if ('serviceWorker' in navigator) {
   window.addEventListener('load', () => {
