@@ -1,8 +1,8 @@
-# 参考用画像 (ChatGPT生成のスクショ系。実装時に自前生成画像へ差し替え後、個別にaddする)
+# 旧参考用画像 (初期のChatGPT生成スクショ)
 ui-mockups/img/reference.png
 ui-mockups/img/hero.png
-ui-mockups/img/hero-*.png
 ui-mockups/img/tile-*.png
+# hero-*.png は受領した正規アセットなのでコミット対象
 
 # Node
 node_modules/
