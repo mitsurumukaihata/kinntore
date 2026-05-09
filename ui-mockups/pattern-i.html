@@ -62,11 +62,23 @@ body{font-family:var(--f-ui),var(--f-jp);color:var(--photo-text);min-height:100v
 .tag.on{background:var(--photo-red);border-color:var(--photo-red);color:#fff;box-shadow:0 4px 14px rgba(230,57,70,.4)}
 .tag:active{transform:scale(.96)}
 
-/* ヒーロー (受領した部位ページのトップ画像をそのまま表示。
-   画像にタグバー/タイトル/メタ/レッド斜め accent が焼込済なのでHTML側のオーバーレイは非表示) */
-.hero{position:relative;aspect-ratio:351/330;overflow:hidden}
-.hero img{width:100%;height:100%;object-fit:cover;object-position:center top;display:block;transition:opacity .35s}
-.hero .grad,.hero .slash,.hero-label{display:none}
+/* ヒーロー (キャラクターのみの画像 + HTML側で文字オーバーレイ + 赤ストリップアクセント) */
+.hero{position:relative;height:300px;overflow:hidden}
+.hero img{width:100%;height:100%;object-fit:cover;object-position:center 35%;display:block;transition:opacity .35s}
+/* 暗グラデで下部にテキスト乗せやすくする */
+.hero .grad{position:absolute;inset:0;background:linear-gradient(180deg,rgba(0,0,0,.35) 0%,transparent 28%,transparent 50%,rgba(10,10,10,.75) 85%,var(--photo-bg) 100%);pointer-events:none;z-index:1}
+/* 赤い斜めスラッシュ (全部位共通アクセント、腹も含む) */
+.hero .slash{position:absolute;right:-30px;top:0;width:180px;height:300px;pointer-events:none;z-index:1}
+.hero .slash svg{width:100%;height:100%}
+/* ヒーロー上のラベル (クリーン版: BADGE + 大タイトル + メタ) */
+.hero-label{position:absolute;left:0;right:0;bottom:18px;z-index:2;padding:0 22px;pointer-events:none}
+.hero-label .day{display:inline-block;background:var(--photo-red);color:#fff;font-family:var(--f-display);font-size:11px;letter-spacing:.18em;padding:5px 10px;font-weight:400;border-radius:4px}
+.hero-label h1{font-family:var(--f-display);font-weight:400;font-size:64px;line-height:.92;letter-spacing:.02em;margin-top:10px;color:#fff;text-shadow:0 2px 16px rgba(0,0,0,.6)}
+.hero-label h1 small{display:block;font-family:var(--f-jp);font-weight:700;font-size:18px;color:#fff;letter-spacing:-.01em;margin-top:6px;opacity:.95}
+.hero-label .meta{display:flex;gap:12px;font-size:12px;color:rgba(255,255,255,.85);font-family:var(--f-jp);margin-top:10px;font-weight:600;align-items:center}
+.hero-label .meta .it{display:flex;align-items:center;gap:5px}
+.hero-label .meta .ic{color:var(--photo-red);font-family:var(--f-display);font-size:13px;letter-spacing:0}
+.hero-label .meta .sep{width:3px;height:3px;border-radius:50%;background:var(--photo-mute)}
 
 /* ステータス3カード */
 .stats{padding:14px 16px 8px;display:grid;grid-template-columns:1fr 1fr 1fr;gap:8px}
@@ -200,6 +212,17 @@ body{font-family:var(--f-ui),var(--f-jp);color:var(--photo-text);min-height:100v
 .medals .m .lab{font-size:10px;color:var(--photo-mute);margin-top:6px;line-height:1.2;font-family:var(--f-jp)}
 .medals .m .lab b{color:#fff;display:block;font-size:11px;font-weight:700}
 
+/* ワークアウトを開始 → 種目シート (ボトムシート) */
+.ws-modal{position:fixed;inset:0;z-index:75;background:rgba(0,0,0,.7);backdrop-filter:blur(6px);display:none;align-items:flex-end;justify-content:center}
+.ws-modal.on{display:flex;animation:mfade .2s ease}
+.ws-card{background:var(--photo-bg);border-top:1px solid var(--photo-line);border-radius:16px 16px 0 0;width:100%;max-width:420px;max-height:88vh;overflow-y:auto;animation:mslide .28s cubic-bezier(.2,.8,.2,1);position:relative;display:flex;flex-direction:column}
+.ws-head{padding:16px 18px 12px;display:flex;justify-content:space-between;align-items:flex-start;position:sticky;top:0;background:var(--photo-bg);z-index:2;border-bottom:1px solid var(--photo-line)}
+.ws-head small{font-family:var(--f-display);font-size:10px;color:var(--photo-mute);letter-spacing:.18em;font-weight:400;display:block;margin-bottom:2px}
+.ws-head h3{font-family:var(--f-jp);font-size:18px;font-weight:900;letter-spacing:-.01em}
+.ws-list{padding:14px 16px;display:flex;flex-direction:column;gap:8px;flex:1}
+.ws-actions{padding:14px 16px 24px;display:grid;grid-template-columns:1fr 1.5fr;gap:10px;border-top:1px solid var(--photo-line);background:var(--photo-bg)}
+.ws-actions button{margin:0;width:100%}
+
 /* 種目モーダル (タップ時に開く) */
 .modal{position:fixed;inset:0;z-index:80;background:rgba(0,0,0,.7);backdrop-filter:blur(8px);display:none;align-items:flex-end;justify-content:center}
 .modal.on{display:flex;animation:mfade .2s ease}
@@ -255,17 +278,18 @@ body{font-family:var(--f-ui),var(--f-jp);color:var(--photo-text);min-height:100v
       <img id="heroImg" src="img/hero-chest.png" alt="">
       <div class="grad"></div>
       <div class="slash">
-        <svg viewBox="0 0 200 340" preserveAspectRatio="none">
-          <path d="M120 0 L200 0 L200 340 L40 340 Z" fill="var(--photo-red)" opacity="0.7"/>
-          <path d="M100 0 L130 0 L70 340 L40 340 Z" fill="#000" opacity="0.4"/>
+        <svg viewBox="0 0 180 300" preserveAspectRatio="none">
+          <path d="M105 0 L180 0 L180 300 L25 300 Z" fill="var(--photo-red)" opacity="0.32"/>
+          <path d="M88 0 L110 0 L60 300 L40 300 Z" fill="#000" opacity="0.5"/>
         </svg>
       </div>
       <div class="hero-label" id="heroLabel">
-        <span class="day">CHEST DAY · DAY 023</span>
-        <h1 id="heroTitle">胸を<em>破壊する日</em></h1>
-        <div class="meta" id="heroMeta">
-          <span class="it"><span class="ic">▣</span><span id="heroLevel">中級者向け</span></span>
-          <span class="it"><span class="ic">◷</span><span id="heroTime">約60分</span></span>
+        <span class="day" id="heroBadge">CHEST DAY · DAY 023</span>
+        <h1 id="heroTitle">CHEST<small>胸トレ</small></h1>
+        <div class="meta">
+          <span class="it"><span id="heroLevel">中級</span></span>
+          <span class="sep"></span>
+          <span class="it"><span id="heroTime">約60分</span></span>
         </div>
       </div>
     </div>
@@ -276,7 +300,7 @@ body{font-family:var(--f-ui),var(--f-jp);color:var(--photo-text);min-height:100v
       <div class="s"><div class="l">TIME</div><div class="v">42<small>MIN</small></div></div>
     </div>
 
-    <button class="cta-main">ワークアウトを開始</button>
+    <button class="cta-main" id="ctaStart">ワークアウトを開始</button>
 
     <div class="program">
       <div>
@@ -371,6 +395,24 @@ body{font-family:var(--f-ui),var(--f-jp);color:var(--photo-text);min-height:100v
 
 </div>
 
+<!-- ワークアウト種目シート (CTAから開く) -->
+<div class="ws-modal" id="wsModal">
+  <div class="ws-card">
+    <div class="ws-head">
+      <div>
+        <small>本日のメニュー</small>
+        <h3 id="wsTitle">胸トレ · 5種目</h3>
+      </div>
+      <div class="modal-close" id="wsClose">✕</div>
+    </div>
+    <div id="wsList" class="ws-list"></div>
+    <div class="ws-actions">
+      <button class="cta-ghost" id="wsCancel">閉じる</button>
+      <button class="cta-main" id="wsStart">最初から始める</button>
+    </div>
+  </div>
+</div>
+
 <!-- 種目モーダル -->
 <div class="modal" id="modal">
   <div class="modal-card" id="modalCard">
@@ -406,7 +448,7 @@ body{font-family:var(--f-ui),var(--f-jp);color:var(--photo-text);min-height:100v
 const DATA = {
   chest: {
     img:'img/hero-chest.png', badge:'CHEST DAY · DAY 023',
-    title:'胸を<em>破壊する日</em>', level:'中級者向け', time:'約60分',
+    title:'CHEST<small>胸トレ</small>', level:'中級', time:'約60分',
     vol:'12,450', bodyParts:['chest','shoulder'],
     muscles:['大胸筋 (上部)','大胸筋 (下部)','前鋸筋','三角筋 前部'],
     targetLabel:'胸',
@@ -423,7 +465,7 @@ const DATA = {
   },
   shoulder: {
     img:'img/hero-shoulder.png', badge:'SHOULDER DAY · DAY 024',
-    title:'肩を<em>盛る日</em>', level:'中級者向け', time:'約45分',
+    title:'SHOULDER<small>肩トレ</small>', level:'中級', time:'約45分',
     vol:'8,200', bodyParts:['shoulder'],
     muscles:['三角筋 前部','三角筋 中部','三角筋 後部','僧帽筋'],
     targetLabel:'肩',
@@ -437,7 +479,7 @@ const DATA = {
   },
   back: {
     img:'img/hero-back.png', badge:'BACK DAY · DAY 025',
-    title:'背中を<em>引き裂く日</em>', level:'上級者向け', time:'約70分',
+    title:'BACK<small>背中トレ</small>', level:'上級', time:'約70分',
     vol:'14,800', bodyParts:['back','shoulder'],
     muscles:['広背筋','僧帽筋','脊柱起立筋','大円筋'],
     targetLabel:'背中',
@@ -451,7 +493,7 @@ const DATA = {
   },
   hip: {
     img:'img/hero-hip.png', badge:'HIP DAY · DAY 026',
-    title:'お尻を<em>仕上げる日</em>', level:'中級者向け', time:'約50分',
+    title:'HIP<small>尻トレ</small>', level:'中級', time:'約50分',
     vol:'11,400', bodyParts:['hip'],
     muscles:['大殿筋','中殿筋','小殿筋','ハムストリング'],
     targetLabel:'お尻',
@@ -464,7 +506,7 @@ const DATA = {
   },
   leg: {
     img:'img/hero-leg.png', badge:'LEG DAY · DAY 027',
-    title:'脚を<em>潰す日</em>', level:'上級者向け', time:'約75分',
+    title:'LEG<small>脚トレ</small>', level:'上級', time:'約75分',
     vol:'18,600', bodyParts:['leg','hip'],
     muscles:['大腿四頭筋','ハムストリング','カーフ','内転筋'],
     targetLabel:'脚',
@@ -478,7 +520,7 @@ const DATA = {
   },
   abs: {
     img:'img/part-abs.png', badge:'ABS DAY · DAY 028',
-    title:'腹を<em>割る日</em>', level:'中級者向け', time:'約30分',
+    title:'ABS<small>腹トレ</small>', level:'中級', time:'約30分',
     vol:'2,400', bodyParts:['abs'],
     muscles:['腹直筋','腹斜筋','腹横筋'],
     targetLabel:'腹',
@@ -502,6 +544,7 @@ const el = {
 };
 
 function render(tag) {
+  currentTag = tag;
   const d = DATA[tag];
   el.img.style.opacity='0';
   el.machoBg.style.opacity='0';
@@ -548,6 +591,48 @@ function closeModal() {
   $('modal').classList.remove('on');
   document.body.style.overflow = '';
 }
+// ====== ワークアウト種目シート (CTA → 種目リスト) ======
+let currentTag = 'chest';
+function openWorkoutSheet() {
+  const d = DATA[currentTag];
+  $('wsTitle').textContent = `${d.targetLabel}トレ · ${d.items.length}種目`;
+  $('wsList').innerHTML = d.items.map((it, i) => {
+    const thumbSrc = it.manga || it.img || '';
+    const isManga = !!it.manga;
+    return `
+      <div class="ex ${it.state==='done'?'done':it.state==='next'?'next':''}" data-tag="${currentTag}" data-idx="${i}">
+        <div class="thumb ${isManga?'manga':''}" style="${thumbSrc?`background-image:url('${thumbSrc}')`:''}"></div>
+        <div class="body">
+          <div class="name">${it.name}${it.state==='next'?'<span class="pin">NEXT</span>':''}</div>
+          <div class="meta"><b>${it.sets||3}</b>セット × <b>${it.reps||10}</b>回${it.weight?` ・ <b>${it.weight}</b>kg`:''}</div>
+        </div>
+        <div class="chev">›</div>
+      </div>`;
+  }).join('');
+  $('wsList').querySelectorAll('.ex').forEach(card => {
+    card.addEventListener('click', () => {
+      closeWorkoutSheet();
+      setTimeout(() => openModal(card.dataset.tag, +card.dataset.idx), 250);
+    });
+  });
+  $('wsModal').classList.add('on');
+  document.body.style.overflow = 'hidden';
+}
+function closeWorkoutSheet() {
+  $('wsModal').classList.remove('on');
+  document.body.style.overflow = '';
+}
+$('ctaStart').addEventListener('click', openWorkoutSheet);
+$('wsClose').addEventListener('click', closeWorkoutSheet);
+$('wsCancel').addEventListener('click', closeWorkoutSheet);
+$('wsStart').addEventListener('click', () => {
+  // Phase 1: 最初の種目をモーダルで開く (Phase 2でセット記録UI予定)
+  const idx = DATA[currentTag].items.findIndex(it => it.state !== 'done');
+  closeWorkoutSheet();
+  setTimeout(() => openModal(currentTag, idx >= 0 ? idx : 0), 250);
+});
+$('wsModal').addEventListener('click', e => { if (e.target.id === 'wsModal') closeWorkoutSheet(); });
+
 $('mClose').addEventListener('click', closeModal);
 $('mCancel').addEventListener('click', closeModal);
 $('modal').addEventListener('click', e => { if (e.target.id === 'modal') closeModal(); });

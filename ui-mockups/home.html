@@ -77,18 +77,26 @@ body{font-family:var(--f-ui),var(--f-jp);color:var(--photo-text);min-height:100v
 .stats2 .s .v small{font-size:10px;color:var(--photo-mute);font-family:var(--f-display);font-weight:400;margin-left:2px;letter-spacing:.05em}
 .stats2 .s.r .v{color:var(--photo-red)}
 
-/* ボリュームグラフ (全体) */
-.chart-block{margin:0 16px 14px;background:var(--photo-card);border:1px solid var(--photo-line);border-radius:12px;padding:14px 16px}
-.chart-block .ttl{display:flex;justify-content:space-between;align-items:center;margin-bottom:10px}
-.chart-block .ttl h3{font-family:var(--f-jp);font-size:13px;font-weight:700}
-.chart-block .ttl small{font-family:var(--f-display);font-size:11px;color:var(--photo-mute);letter-spacing:.05em}
-.chart-block .ttl small b{color:var(--photo-red)}
-.line-chart{width:100%;height:120px;display:block}
+/* ボリューム推移 (部位別 横スワイプ) */
+.charts-swipe{padding:0 16px;display:flex;gap:10px;overflow-x:auto;scroll-snap-type:x mandatory;scrollbar-width:none;scroll-padding:0 16px}
+.charts-swipe::-webkit-scrollbar{display:none}
+.chart-card{flex:0 0 calc(100% - 4px);scroll-snap-align:center;background:var(--photo-card);border:1px solid var(--photo-line);border-radius:12px;padding:14px 16px}
+.chart-card .ttl{display:flex;justify-content:space-between;align-items:baseline;margin-bottom:10px}
+.chart-card .ttl h3{font-family:var(--f-jp);font-size:13px;font-weight:700}
+.chart-card .ttl h3 span{color:var(--photo-red);margin-right:4px}
+.chart-card .ttl small{font-family:var(--f-display);font-size:11px;color:var(--photo-mute);letter-spacing:.05em}
+.line-chart{width:100%;height:110px;display:block}
 .chart-axis{display:flex;justify-content:space-between;font-family:var(--f-display);font-size:9px;color:var(--photo-dim);letter-spacing:.05em;margin-top:6px;padding:0 4px}
 .chart-axis span.on{color:var(--photo-red)}
-.chart-foot{margin-top:10px;display:flex;justify-content:space-between;align-items:center}
-.chart-foot b{font-family:var(--f-mono);font-weight:500;font-size:22px;color:#fff;letter-spacing:-.01em}
-.chart-foot small{font-family:var(--f-jp);font-size:11px;color:var(--ok);font-weight:600}
+.chart-foot{margin-top:10px;display:flex;justify-content:space-between;align-items:baseline}
+.chart-foot b{font-family:var(--f-mono);font-weight:500;font-size:20px;color:#fff;letter-spacing:-.01em}
+.chart-foot b small{color:var(--photo-mute);font-family:var(--f-display);font-size:10px;font-weight:400;margin-left:3px;letter-spacing:.05em}
+.chart-foot .delta{font-family:var(--f-jp);font-size:11px;color:var(--ok);font-weight:600}
+.chart-foot .delta.neg{color:var(--photo-red)}
+/* ドットインジケータ */
+.dots{display:flex;justify-content:center;gap:6px;margin:10px 0 18px}
+.dots .d{width:6px;height:6px;border-radius:50%;background:var(--photo-line);transition:.2s}
+.dots .d.on{background:var(--photo-red);width:18px;border-radius:3px}
 
 /* 実績 (コンパクト) */
 .medals{margin:0 16px 14px;background:var(--photo-card);border:1px solid var(--photo-line);border-radius:12px;padding:14px 16px}
@@ -191,24 +199,8 @@ body{font-family:var(--f-ui),var(--f-jp);color:var(--photo-text);min-height:100v
     <div class="s"><div class="l">SESSIONS</div><div class="v">5<small>/7</small></div></div>
   </div>
 
-  <div class="chart-block">
-    <div class="ttl"><h3>ボリューム推移</h3><small>直近 <b>30日間</b></small></div>
-    <svg class="line-chart" viewBox="0 0 320 120" preserveAspectRatio="none">
-      <defs><linearGradient id="grad-line" x1="0" y1="0" x2="0" y2="1">
-        <stop offset="0%" stop-color="#E63946" stop-opacity=".5"/>
-        <stop offset="100%" stop-color="#E63946" stop-opacity="0"/>
-      </linearGradient></defs>
-      <line x1="0" y1="106" x2="320" y2="106" stroke="rgba(255,255,255,0.06)" stroke-width="1"/>
-      <line x1="0" y1="76" x2="320" y2="76" stroke="rgba(255,255,255,0.04)" stroke-width="1" stroke-dasharray="2 4"/>
-      <line x1="0" y1="46" x2="320" y2="46" stroke="rgba(255,255,255,0.04)" stroke-width="1" stroke-dasharray="2 4"/>
-      <line x1="0" y1="16" x2="320" y2="16" stroke="rgba(255,255,255,0.04)" stroke-width="1" stroke-dasharray="2 4"/>
-      <path d="M 5,90 L 25,75 L 45,82 L 65,68 L 85,90 L 105,72 L 125,55 L 145,80 L 165,62 L 185,78 L 205,52 L 225,65 L 245,40 L 265,55 L 285,32 L 315,18 L 315,106 L 5,106 Z" fill="url(#grad-line)"/>
-      <polyline points="5,90 25,75 45,82 65,68 85,90 105,72 125,55 145,80 165,62 185,78 205,52 225,65 245,40 265,55 285,32 315,18" fill="none" stroke="#E63946" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"/>
-      <circle cx="315" cy="18" r="4" fill="#fff" stroke="#E63946" stroke-width="2"/>
-    </svg>
-    <div class="chart-axis"><span>4月</span><span>4月中旬</span><span>5月</span><span class="on">本日</span></div>
-    <div class="chart-foot"><b>278,400 kg</b><small>▲ 過去30日累計 / 先月比 +12%</small></div>
-  </div>
+  <div class="charts-swipe" id="chartsSwipe"></div>
+  <div class="dots" id="chartsDots"></div>
 
   <div class="sec"><h2>実績<small>ACHIEVEMENTS</small></h2><a>すべて見る ›</a></div>
   <div class="medals">
@@ -228,6 +220,57 @@ body{font-family:var(--f-ui),var(--f-jp);color:var(--photo-text);min-height:100v
   </div>
 
 </div>
+
+<script>
+// ====== 部位別ボリューム推移 (6枚スワイプ) ======
+const PARTS = [
+  { tag:'chest',    label:'胸',   total:65200,  delta:'+8%',  points:[80,75,68,72,55,60,48,40,52,42,38,32,25,30,22,18] },
+  { tag:'shoulder', label:'肩',   total:38400,  delta:'+3%',  points:[85,80,82,75,72,68,70,65,62,58,55,52,48,45,42,38] },
+  { tag:'back',     label:'背中', total:58800,  delta:'+12%', points:[90,85,80,75,70,62,58,52,48,45,40,35,28,25,20,15] },
+  { tag:'leg',      label:'脚',   total:74100,  delta:'+5%',  points:[78,72,68,65,60,58,52,48,45,40,38,32,28,24,20,16] },
+  { tag:'abs',      label:'腹',   total:14200,  delta:'-2%',  points:[60,62,58,55,60,58,55,52,55,50,52,48,50,52,48,50], neg:true },
+  { tag:'hip',      label:'お尻', total:32500,  delta:'+15%', points:[88,82,75,72,68,60,55,50,45,40,35,30,25,20,15,10] },
+];
+
+function buildChart(p, i) {
+  const w=320, h=110;
+  const xs = p.points.map((_,j) => 5 + j*(w-10)/(p.points.length-1));
+  const ys = p.points;
+  const polyline = xs.map((x,j) => `${x},${ys[j]}`).join(' ');
+  const path = `M ${xs[0]},${ys[0]} ` + xs.slice(1).map((x,j) => `L ${x},${ys[j+1]}`).join(' ') + ` L ${xs[xs.length-1]},${h-4} L ${xs[0]},${h-4} Z`;
+  const lastX = xs[xs.length-1], lastY = ys[ys.length-1];
+  return `
+    <div class="chart-card" data-tag="${p.tag}">
+      <div class="ttl"><h3><span>●</span>${p.label} ボリューム</h3><small>直近30日</small></div>
+      <svg class="line-chart" viewBox="0 0 ${w} ${h}" preserveAspectRatio="none">
+        <defs><linearGradient id="g${i}" x1="0" y1="0" x2="0" y2="1">
+          <stop offset="0%" stop-color="#E63946" stop-opacity=".45"/>
+          <stop offset="100%" stop-color="#E63946" stop-opacity="0"/>
+        </linearGradient></defs>
+        <line x1="0" y1="${h-4}" x2="${w}" y2="${h-4}" stroke="rgba(255,255,255,0.06)" stroke-width="1"/>
+        <line x1="0" y1="${h*0.6}" x2="${w}" y2="${h*0.6}" stroke="rgba(255,255,255,0.04)" stroke-width="1" stroke-dasharray="2 4"/>
+        <line x1="0" y1="${h*0.3}" x2="${w}" y2="${h*0.3}" stroke="rgba(255,255,255,0.04)" stroke-width="1" stroke-dasharray="2 4"/>
+        <path d="${path}" fill="url(#g${i})"/>
+        <polyline points="${polyline}" fill="none" stroke="#E63946" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"/>
+        <circle cx="${lastX}" cy="${lastY}" r="4" fill="#fff" stroke="#E63946" stroke-width="2"/>
+      </svg>
+      <div class="chart-axis"><span>4月</span><span>中旬</span><span>5月</span><span class="on">本日</span></div>
+      <div class="chart-foot">
+        <b>${p.total.toLocaleString()}<small>kg</small></b>
+        <span class="delta ${p.neg?'neg':''}">${p.delta} <span style="opacity:.7">先月比</span></span>
+      </div>
+    </div>`;
+}
+const swipe = document.getElementById('chartsSwipe');
+const dots = document.getElementById('chartsDots');
+swipe.innerHTML = PARTS.map(buildChart).join('');
+dots.innerHTML = PARTS.map((_,i) => `<div class="d ${i===0?'on':''}"></div>`).join('');
+swipe.addEventListener('scroll', () => {
+  const w = swipe.clientWidth;
+  const idx = Math.round(swipe.scrollLeft / w);
+  dots.querySelectorAll('.d').forEach((d,i) => d.classList.toggle('on', i===idx));
+}, { passive: true });
+</script>
 
 <div class="tab">
   <a class="on" href="home.html"><span class="ic">⌂</span>ホーム</a>
