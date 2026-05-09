@@ -211,6 +211,30 @@ body{font-family:var(--f-ui),var(--f-jp);color:var(--photo-text);min-height:100v
 .medals .m .lab{font-size:10px;color:var(--photo-mute);margin-top:6px;line-height:1.2;font-family:var(--f-jp)}
 .medals .m .lab b{color:#fff;display:block;font-size:11px;font-weight:700}
 
+/* 種目モーダル (タップ時に開く) */
+.modal{position:fixed;inset:0;z-index:80;background:rgba(0,0,0,.7);backdrop-filter:blur(8px);display:none;align-items:flex-end;justify-content:center}
+.modal.on{display:flex;animation:mfade .2s ease}
+@keyframes mfade{from{opacity:0}to{opacity:1}}
+.modal-card{background:var(--photo-bg);border-top:1px solid var(--photo-line);border-radius:16px 16px 0 0;width:100%;max-width:420px;max-height:92vh;overflow-y:auto;animation:mslide .28s cubic-bezier(.2,.8,.2,1);position:relative}
+@keyframes mslide{from{transform:translateY(100%)}to{transform:translateY(0)}}
+.modal-head{padding:14px 16px 8px;display:flex;justify-content:space-between;align-items:center;position:sticky;top:0;background:var(--photo-bg);z-index:2;border-bottom:1px solid var(--photo-line)}
+.modal-head h3{font-family:var(--f-jp);font-size:15px;font-weight:700}
+.modal-head h3 small{display:block;font-family:var(--f-display);font-size:10px;color:var(--photo-mute);letter-spacing:.18em;margin-top:2px;font-weight:400}
+.modal-close{width:32px;height:32px;border-radius:50%;background:var(--photo-card);border:1px solid var(--photo-line);display:flex;align-items:center;justify-content:center;cursor:pointer;color:#fff;font-size:16px}
+.modal-close:active{background:#2a2a2a}
+.modal-manga{margin:14px 14px 0;background:#fff;border:2px solid #000;border-radius:8px;overflow:hidden;box-shadow:0 4px 0 #000;position:relative}
+.modal-manga img{width:100%;height:auto;display:block}
+.modal-manga.empty{background:var(--photo-card);border:1px dashed var(--photo-line);box-shadow:none;padding:40px 20px;text-align:center;color:var(--photo-dim);font-size:12px;font-family:var(--f-jp)}
+.modal-info{padding:14px 18px 0}
+.modal-stats{display:grid;grid-template-columns:1fr 1fr 1fr;gap:8px;margin-top:14px}
+.modal-stats .s{background:var(--photo-card);border:1px solid var(--photo-line);padding:12px;border-radius:10px;text-align:center}
+.modal-stats .s .l{font-family:var(--f-display);font-size:9px;color:var(--photo-dim);letter-spacing:.18em}
+.modal-stats .s .v{font-family:var(--f-mono);font-weight:500;font-size:22px;color:#fff;line-height:1.1;margin-top:4px}
+.modal-stats .s .v small{font-size:11px;color:var(--photo-mute);font-family:var(--f-display);font-weight:400;margin-left:2px;letter-spacing:.05em}
+.modal-actions{padding:18px 18px 26px;display:grid;grid-template-columns:1fr 1fr;gap:10px}
+.modal-actions .cta-main{margin:0;width:100%}
+.modal-actions .cta-ghost{margin:0;width:100%}
+
 /* タブバー (5タブ) */
 .tab{position:fixed;bottom:0;left:50%;transform:translateX(-50%);width:100%;max-width:420px;background:rgba(10,10,10,.95);backdrop-filter:blur(12px);border-top:1px solid var(--photo-line);padding:10px 8px 28px;display:grid;grid-template-columns:repeat(5,1fr);gap:4px;z-index:30}
 .tab a{display:flex;flex-direction:column;align-items:center;gap:4px;font-size:10px;color:var(--photo-dim);text-decoration:none;letter-spacing:.04em;cursor:pointer;font-family:var(--f-jp);font-weight:700;padding:4px 0}
@@ -357,20 +381,6 @@ body{font-family:var(--f-ui),var(--f-jp);color:var(--photo-text);min-height:100v
       </div>
     </div>
 
-    <div class="manga">
-      <div class="manga-head">
-        <h3>本日のひとコマ</h3>
-        <span class="tag-r">REAR DELT</span>
-      </div>
-      <div class="manga-frame">
-        <img src="img/manga-rear-delt.png" alt="ペックデック リアの一コマ">
-      </div>
-      <div class="manga-foot">
-        <div class="ex-name">ペックデック (リア)<small>三角筋 後部</small></div>
-        <div class="ex-action">記録する ›</div>
-      </div>
-    </div>
-
     <div class="medals">
       <div class="ttl"><h3>実績</h3><small>3 / 12 獲得</small></div>
       <div class="row">
@@ -384,6 +394,28 @@ body{font-family:var(--f-ui),var(--f-jp);color:var(--photo-text);min-height:100v
   </div>
   <!-- /page-content -->
 
+</div>
+
+<!-- 種目モーダル -->
+<div class="modal" id="modal">
+  <div class="modal-card" id="modalCard">
+    <div class="modal-head">
+      <h3 id="mTitle">種目<small id="mSub"></small></h3>
+      <div class="modal-close" id="mClose">✕</div>
+    </div>
+    <div id="mMangaWrap"></div>
+    <div class="modal-info">
+      <div class="modal-stats">
+        <div class="s"><div class="l">SETS</div><div class="v" id="mSets">3</div></div>
+        <div class="s"><div class="l">REPS</div><div class="v" id="mReps">10</div></div>
+        <div class="s"><div class="l">WEIGHT</div><div class="v" id="mWeight">--<small>KG</small></div></div>
+      </div>
+    </div>
+    <div class="modal-actions">
+      <button class="cta-ghost" id="mCancel">閉じる</button>
+      <button class="cta-main" id="mStart">記録する</button>
+    </div>
+  </div>
 </div>
 
 <!-- タブバー (5タブ: ホーム / 記録 / メニュー / 進捗 / 設定) -->
@@ -404,11 +436,11 @@ const DATA = {
     muscles:['大胸筋 (上部)','大胸筋 (下部)','前鋸筋','三角筋 前部'],
     targetLabel:'胸',
     items:[
-      {name:'ベンチプレス',         sets:4, reps:8,  weight:80, state:'done', img:'img/465BA571-0D63-4E6B-8CB4-5BDA94C4C8A4.jpg'},
-      {name:'インクラインダンベル', sets:3, reps:10, weight:30, state:'done', img:'img/465BA571-0D63-4E6B-8CB4-5BDA94C4C8A4.jpg'},
-      {name:'ケーブルフライ',       sets:3, reps:12, weight:20, state:'done', img:'img/465BA571-0D63-4E6B-8CB4-5BDA94C4C8A4.jpg'},
-      {name:'ディップス',           sets:3, reps:10, state:'next'},
-      {name:'プッシュアップ',       sets:3, reps:15, state:'wait'},
+      {name:'ベンチプレス',         sub:'大胸筋', sets:4, reps:8,  weight:80, state:'done', img:'img/465BA571-0D63-4E6B-8CB4-5BDA94C4C8A4.jpg', manga:'img/manga/bench-press.png'},
+      {name:'インクラインダンベル', sub:'大胸筋 上部', sets:3, reps:10, weight:30, state:'done', img:'img/465BA571-0D63-4E6B-8CB4-5BDA94C4C8A4.jpg', manga:'img/manga/incline-dumbbell.png'},
+      {name:'ケーブルフライ',       sub:'大胸筋 内側', sets:3, reps:12, weight:20, state:'done', img:'img/465BA571-0D63-4E6B-8CB4-5BDA94C4C8A4.jpg', manga:'img/manga/cable-fly.png'},
+      {name:'ディップス',           sub:'大胸筋 下部', sets:3, reps:10, state:'next', manga:'img/manga/dips.png'},
+      {name:'プッシュアップ',       sub:'大胸筋', sets:3, reps:15, state:'wait', manga:'img/manga/push-up.png'},
     ],
   },
   shoulder: {
@@ -418,10 +450,11 @@ const DATA = {
     muscles:['三角筋 前部','三角筋 中部','三角筋 後部','僧帽筋'],
     targetLabel:'肩',
     items:[
-      {name:'ショルダープレス', sets:4, reps:10, weight:40, state:'next'},
-      {name:'サイドレイズ',     sets:3, reps:15, weight:10, state:'wait'},
-      {name:'リアレイズ',       sets:3, reps:15, weight:8,  state:'wait'},
-      {name:'フェイスプル',     sets:3, reps:15, weight:20, state:'wait'},
+      {name:'ショルダープレス',   sub:'三角筋 前部', sets:4, reps:10, weight:40, state:'next', manga:'img/manga/shoulder-press.png'},
+      {name:'サイドレイズ',       sub:'三角筋 中部', sets:3, reps:15, weight:10, state:'wait', manga:'img/manga/side-raise.png'},
+      {name:'ペックデック (リア)', sub:'三角筋 後部', sets:3, reps:15, weight:25, state:'wait', manga:'img/manga-rear-delt.png'},
+      {name:'リアレイズ',         sub:'三角筋 後部', sets:3, reps:15, weight:8,  state:'wait', manga:'img/manga/rear-raise.png'},
+      {name:'フェイスプル',       sub:'僧帽筋',     sets:3, reps:15, weight:20, state:'wait', manga:'img/manga/face-pull.png'},
     ],
   },
   back: {
@@ -431,11 +464,11 @@ const DATA = {
     muscles:['広背筋','僧帽筋','脊柱起立筋','大円筋'],
     targetLabel:'背中',
     items:[
-      {name:'デッドリフト',       sets:4, reps:5,  weight:120, state:'next'},
-      {name:'ラットプルダウン',   sets:4, reps:10, weight:60,  state:'wait', img:'img/AD446C5E-A969-469F-87BB-A72EA669D4DC.jpg'},
-      {name:'ベントオーバーロウ', sets:3, reps:10, weight:60,  state:'wait'},
-      {name:'シーテッドロウ',     sets:3, reps:12, weight:50,  state:'wait'},
-      {name:'アシステッド懸垂',   sets:3, reps:8,  state:'wait', img:'img/EC4D2BDF-0485-41C6-B5F4-05A8C715B8CD.jpg'},
+      {name:'デッドリフト',       sub:'脊柱起立筋・全身', sets:4, reps:5,  weight:120, state:'next', manga:'img/manga/deadlift.png'},
+      {name:'ラットプルダウン',   sub:'広背筋',       sets:4, reps:10, weight:60,  state:'wait', img:'img/AD446C5E-A969-469F-87BB-A72EA669D4DC.jpg', manga:'img/manga/lat-pulldown.png'},
+      {name:'ベントオーバーロウ', sub:'広背筋・僧帽筋', sets:3, reps:10, weight:60,  state:'wait', manga:'img/manga/bent-over-row.png'},
+      {name:'シーテッドロウ',     sub:'広背筋・大円筋', sets:3, reps:12, weight:50,  state:'wait', manga:'img/manga/seated-row.png'},
+      {name:'アシステッド懸垂',   sub:'広背筋',       sets:3, reps:8,  state:'wait', img:'img/EC4D2BDF-0485-41C6-B5F4-05A8C715B8CD.jpg', manga:'img/manga/pullup.png'},
     ],
   },
   hip: {
@@ -445,10 +478,10 @@ const DATA = {
     muscles:['大殿筋','中殿筋','小殿筋','ハムストリング'],
     targetLabel:'お尻',
     items:[
-      {name:'ヒップスラスト',         sets:4, reps:10, weight:80, state:'next'},
-      {name:'ブルガリアンスクワット', sets:3, reps:12, weight:20, state:'wait'},
-      {name:'グルートブリッジ',       sets:3, reps:15, weight:40, state:'wait'},
-      {name:'ケーブルキックバック',   sets:3, reps:15, weight:15, state:'wait'},
+      {name:'ヒップスラスト',         sub:'大殿筋', sets:4, reps:10, weight:80, state:'next', manga:'img/manga/hip-thrust.png'},
+      {name:'ブルガリアンスクワット', sub:'大殿筋・ハム', sets:3, reps:12, weight:20, state:'wait', manga:'img/manga/bulgarian-squat.png'},
+      {name:'グルートブリッジ',       sub:'大殿筋', sets:3, reps:15, weight:40, state:'wait', manga:'img/manga/glute-bridge.png'},
+      {name:'ケーブルキックバック',   sub:'中殿筋', sets:3, reps:15, weight:15, state:'wait', manga:'img/manga/cable-kickback.png'},
     ],
   },
   leg: {
@@ -458,11 +491,11 @@ const DATA = {
     muscles:['大腿四頭筋','ハムストリング','カーフ','内転筋'],
     targetLabel:'脚',
     items:[
-      {name:'バーベルスクワット',     sets:4, reps:8,  weight:100, state:'next'},
-      {name:'レッグプレス',           sets:4, reps:10, weight:180, state:'wait'},
-      {name:'レッグエクステンション', sets:3, reps:12, weight:50,  state:'wait', img:'img/5F71EEA8-9B40-4278-B01D-812D7473ED79.jpg'},
-      {name:'レッグカール',           sets:3, reps:12, weight:40,  state:'wait', img:'img/3D95FF56-1292-4915-97CD-0FA0C257B44E.jpg'},
-      {name:'カーフレイズ',           sets:3, reps:20, weight:60,  state:'wait'},
+      {name:'バーベルスクワット',     sub:'大腿四頭筋・大殿筋', sets:4, reps:8,  weight:100, state:'next', manga:'img/manga/barbell-squat.png'},
+      {name:'レッグプレス',           sub:'大腿四頭筋',     sets:4, reps:10, weight:180, state:'wait', manga:'img/manga/leg-press.png'},
+      {name:'レッグエクステンション', sub:'大腿四頭筋',     sets:3, reps:12, weight:50,  state:'wait', img:'img/5F71EEA8-9B40-4278-B01D-812D7473ED79.jpg', manga:'img/manga/leg-extension.png'},
+      {name:'レッグカール',           sub:'ハムストリング', sets:3, reps:12, weight:40,  state:'wait', img:'img/3D95FF56-1292-4915-97CD-0FA0C257B44E.jpg', manga:'img/manga/leg-curl.png'},
+      {name:'カーフレイズ',           sub:'カーフ',        sets:3, reps:20, weight:60,  state:'wait', manga:'img/manga/calf-raise.png'},
     ],
   },
 };
@@ -500,8 +533,8 @@ function render(tag) {
   el.muscleList.innerHTML = (d.muscles||[]).map(m => `<div class="mus on">${m}</div>`).join('');
   el.bodyTargetLabel.textContent = d.targetLabel || '';
 
-  el.list.innerHTML = d.items.map(it => `
-    <div class="ex ${it.state==='done'?'done':it.state==='next'?'next':''}">
+  el.list.innerHTML = d.items.map((it, i) => `
+    <div class="ex ${it.state==='done'?'done':it.state==='next'?'next':''}" data-tag="${tag}" data-idx="${i}">
       <div class="thumb" style="${it.img?`background-image:url('${it.img}')`:''}"></div>
       <div class="body">
         <div class="name">${it.name}${it.state==='next'?'<span class="pin">NEXT</span>':''}</div>
@@ -510,7 +543,36 @@ function render(tag) {
       <div class="chev">›</div>
     </div>
   `).join('');
+  // 種目カードのタップでモーダル
+  el.list.querySelectorAll('.ex').forEach(card => {
+    card.addEventListener('click', () => openModal(card.dataset.tag, +card.dataset.idx));
+  });
 }
+
+// ====== 種目モーダル ======
+function openModal(tag, idx) {
+  const it = DATA[tag].items[idx];
+  $('mTitle').innerHTML = it.name + (it.sub ? `<small>${it.sub}</small>` : '');
+  $('mSets').textContent = it.sets || 3;
+  $('mReps').textContent = it.reps || 10;
+  $('mWeight').innerHTML = it.weight ? `${it.weight}<small>KG</small>` : '自重';
+  // 漫画画像 (無ければプレースホルダ表示)
+  const wrap = $('mMangaWrap');
+  if (it.manga) {
+    wrap.innerHTML = `<div class="modal-manga"><img src="${it.manga}" alt="${it.name}" onerror="this.parentElement.outerHTML='<div class=\\'modal-manga empty\\'>漫画画像が未生成です<br><small style=\\'opacity:.6;font-size:10px\\'>${it.manga}</small></div>'"></div>`;
+  } else {
+    wrap.innerHTML = `<div class="modal-manga empty">漫画画像が未生成です</div>`;
+  }
+  $('modal').classList.add('on');
+  document.body.style.overflow = 'hidden';
+}
+function closeModal() {
+  $('modal').classList.remove('on');
+  document.body.style.overflow = '';
+}
+$('mClose').addEventListener('click', closeModal);
+$('mCancel').addEventListener('click', closeModal);
+$('modal').addEventListener('click', e => { if (e.target.id === 'modal') closeModal(); });
 
 document.querySelectorAll('#tagbar .tag').forEach(t => {
   t.addEventListener('click', () => {
