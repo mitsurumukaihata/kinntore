@@ -52,22 +52,22 @@ body{font-family:var(--f-ui),var(--f-jp);color:var(--photo-text);min-height:100v
 .row{padding:14px 16px;display:flex;align-items:center;justify-content:space-between;gap:14px;border-bottom:1px solid var(--photo-line);min-height:56px}
 .row:last-child{border-bottom:0}
 .row .l{flex:1;min-width:0}
-.row .l .nm{font-family:var(--f-jp);font-size:13px;font-weight:700;color:#fff}
+.row .l .nm{font-family:var(--f-jp);font-size:13px;font-weight:700;color:var(--photo-text)}
 .row .l .desc{font-family:var(--f-jp);font-size:11px;color:var(--photo-mute);margin-top:2px;line-height:1.4}
 .row .r{flex-shrink:0}
 
 /* セレクト */
-.row select,.row input[type=text],.row input[type=number]{background:#0a0a0a;border:1px solid var(--photo-line);color:#fff;font-family:var(--f-jp);font-size:13px;font-weight:600;padding:8px 28px 8px 12px;border-radius:8px;-webkit-appearance:none;appearance:none;background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='10' height='6' viewBox='0 0 10 6'%3E%3Cpath fill='%239a9a9a' d='M0 0l5 6 5-6z'/%3E%3C/svg%3E");background-repeat:no-repeat;background-position:right 10px center;background-size:8px;min-width:120px}
+.row select,.row input[type=text],.row input[type=number]{background:#0a0a0a;border:1px solid var(--photo-line);color:var(--photo-text);font-family:var(--f-jp);font-size:13px;font-weight:600;padding:8px 28px 8px 12px;border-radius:8px;-webkit-appearance:none;appearance:none;background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='10' height='6' viewBox='0 0 10 6'%3E%3Cpath fill='%239a9a9a' d='M0 0l5 6 5-6z'/%3E%3C/svg%3E");background-repeat:no-repeat;background-position:right 10px center;background-size:8px;min-width:120px}
 .row input[type=text],.row input[type=number]{background-image:none;padding:8px 12px;text-align:right}
 .row input[type=number]{font-family:var(--f-mono);width:90px}
 
 /* セグメント */
 .seg{display:flex;background:#0a0a0a;border:1px solid var(--photo-line);border-radius:50px;padding:3px;gap:0}
 .seg button{background:transparent;border:0;color:var(--photo-mute);font-family:var(--f-jp);font-size:11px;font-weight:700;padding:6px 12px;border-radius:50px;cursor:pointer;letter-spacing:.04em;transition:.15s;min-width:42px}
-.seg button.on{background:var(--photo-red);color:#fff}
+.seg button.on{background:var(--photo-red);color:var(--photo-text)}
 
 /* ボタン */
-.btn{background:#0a0a0a;border:1px solid var(--photo-line);color:#fff;font-family:var(--f-jp);font-size:12px;font-weight:700;padding:9px 16px;border-radius:50px;cursor:pointer;transition:.15s}
+.btn{background:#0a0a0a;border:1px solid var(--photo-line);color:var(--photo-text);font-family:var(--f-jp);font-size:12px;font-weight:700;padding:9px 16px;border-radius:50px;cursor:pointer;transition:.15s}
 .btn:active{transform:scale(.95)}
 .btn.ghost{background:transparent}
 .btn.danger{background:transparent;color:var(--warn);border-color:rgba(230,57,70,.4)}
@@ -79,9 +79,9 @@ body{font-family:var(--f-ui),var(--f-jp);color:var(--photo-text);min-height:100v
 .goal-cell{background:#0a0a0a;border:1px solid var(--photo-line);border-radius:8px;padding:10px;text-align:center}
 .goal-cell .lbl{font-family:var(--f-jp);font-size:11px;color:var(--photo-mute);font-weight:700;margin-bottom:6px}
 .goal-cell .ctrl{display:flex;align-items:center;justify-content:center;gap:6px}
-.goal-cell button{width:24px;height:24px;border-radius:50%;background:#1a1a1a;border:1px solid var(--photo-line);color:#fff;font-size:14px;cursor:pointer;display:flex;align-items:center;justify-content:center;line-height:1;font-family:var(--f-display);padding:0}
+.goal-cell button{width:24px;height:24px;border-radius:50%;background:#1a1a1a;border:1px solid var(--photo-line);color:var(--photo-text);font-size:14px;cursor:pointer;display:flex;align-items:center;justify-content:center;line-height:1;font-family:var(--f-display);padding:0}
 .goal-cell button:active{background:var(--photo-red-soft);border-color:var(--photo-red)}
-.goal-cell .v{font-family:var(--f-mono);font-size:18px;color:#fff;font-weight:600;min-width:18px;text-align:center}
+.goal-cell .v{font-family:var(--f-mono);font-size:18px;color:var(--photo-text);font-weight:600;min-width:18px;text-align:center}
 
 /* 危険セクション */
 .danger-zone{margin-top:24px}
@@ -90,14 +90,14 @@ body{font-family:var(--f-ui),var(--f-jp);color:var(--photo-text);min-height:100v
 /* アプリ情報 */
 .about{padding:18px;text-align:center}
 .about .logo{width:54px;height:54px;border-radius:14px;background:#0a0a0a;border:2px solid var(--photo-red);display:inline-flex;align-items:center;justify-content:center;font-family:var(--f-display);font-size:30px;color:var(--photo-red);margin-bottom:10px;font-weight:400}
-.about .nm{font-family:var(--f-display);font-size:18px;letter-spacing:.1em;color:#fff;font-weight:400}
+.about .nm{font-family:var(--f-display);font-size:18px;letter-spacing:.1em;color:var(--photo-text);font-weight:400}
 .about .ver{font-family:var(--f-mono);font-size:11px;color:var(--photo-mute);margin-top:4px}
 .about .links{display:flex;justify-content:center;gap:10px;margin-top:14px;flex-wrap:wrap}
 .about .links a{font-family:var(--f-jp);font-size:11px;color:var(--photo-mute);text-decoration:none;padding:6px 12px;border:1px solid var(--photo-line);border-radius:50px}
-.about .links a:active{color:#fff;border-color:var(--photo-red)}
+.about .links a:active{color:var(--photo-text);border-color:var(--photo-red)}
 
 /* トースト */
-.toast{position:fixed;bottom:120px;left:50%;transform:translateX(-50%);background:var(--photo-card);border:1px solid var(--photo-line);color:#fff;padding:10px 18px;border-radius:50px;font-size:12px;font-weight:600;z-index:80;box-shadow:0 6px 20px rgba(0,0,0,.4);opacity:0;transition:opacity .25s;font-family:var(--f-jp);pointer-events:none}
+.toast{position:fixed;bottom:120px;left:50%;transform:translateX(-50%);background:var(--photo-card);border:1px solid var(--photo-line);color:var(--photo-text);padding:10px 18px;border-radius:50px;font-size:12px;font-weight:600;z-index:80;box-shadow:0 6px 20px rgba(0,0,0,.4);opacity:0;transition:opacity .25s;font-family:var(--f-jp);pointer-events:none}
 .toast.on{opacity:1}
 
 /* 確認ダイアログ */

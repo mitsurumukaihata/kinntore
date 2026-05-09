@@ -111,7 +111,7 @@ body{font-family:var(--f-ui),var(--f-jp);color:var(--photo-text);min-height:100v
 .head .gr .lead{font-family:var(--f-display);font-size:11px;letter-spacing:.18em;color:var(--photo-mute);margin-bottom:4px}
 .head .gr h1{font-family:var(--f-jp);font-size:24px;font-weight:900;letter-spacing:-.01em;line-height:1.1}
 .head .gr h1 em{font-style:normal;color:var(--photo-red)}
-.head .av{width:42px;height:42px;border-radius:50%;background:linear-gradient(135deg,#2a2a2a,#0a0a0a);display:flex;align-items:center;justify-content:center;border:1px solid var(--photo-line);font-family:var(--f-jp);font-weight:700;color:#fff;font-size:16px}
+.head .av{width:42px;height:42px;border-radius:50%;background:linear-gradient(135deg,#2a2a2a,#0a0a0a);display:flex;align-items:center;justify-content:center;border:1px solid var(--photo-line);font-family:var(--f-jp);font-weight:700;color:var(--photo-text);font-size:16px}
 
 /* 連続記録ストリップ */
 .streak{margin:8px 16px 16px;background:linear-gradient(135deg,#1a0a0c,var(--photo-card) 70%);border:1px solid rgba(230,57,70,.2);border-radius:12px;padding:14px 16px;display:flex;align-items:center;gap:14px;position:relative;overflow:hidden}
@@ -119,7 +119,7 @@ body{font-family:var(--f-ui),var(--f-jp);color:var(--photo-text);min-height:100v
 .streak .num{font-family:var(--f-mono);font-weight:600;font-size:38px;color:var(--photo-red);line-height:.95;letter-spacing:-.02em}
 .streak .num small{display:block;font-family:var(--f-display);font-size:10px;color:var(--photo-mute);letter-spacing:.18em;margin-top:2px;font-weight:400}
 .streak .desc{flex:1}
-.streak .desc b{font-family:var(--f-jp);font-size:14px;font-weight:700;color:#fff;display:block}
+.streak .desc b{font-family:var(--f-jp);font-size:14px;font-weight:700;color:var(--photo-text);display:block}
 .streak .desc span{font-size:11px;color:var(--photo-mute);font-family:var(--f-jp);margin-top:3px;display:block}
 
 /* 前回トレ カード */
@@ -130,11 +130,11 @@ body{font-family:var(--f-ui),var(--f-jp);color:var(--photo-text);min-height:100v
 .last .row{display:flex;align-items:center;gap:12px}
 .last .row .ic{width:48px;height:48px;border-radius:8px;background:var(--photo-red-soft);display:flex;align-items:center;justify-content:center;color:var(--photo-red);font-family:var(--f-display);font-size:20px}
 .last .row .info{flex:1;min-width:0}
-.last .row .info .nm{font-family:var(--f-jp);font-size:14px;font-weight:700;color:#fff}
+.last .row .info .nm{font-family:var(--f-jp);font-size:14px;font-weight:700;color:var(--photo-text)}
 .last .row .info .meta{font-size:11px;color:var(--photo-mute);margin-top:3px;font-family:var(--f-jp)}
-.last .row .info .meta b{color:#fff;font-weight:700}
+.last .row .info .meta b{color:var(--photo-text);font-weight:700}
 .last .row .v{text-align:right}
-.last .row .v b{font-family:var(--f-mono);font-size:18px;color:#fff;font-weight:500;letter-spacing:-.01em}
+.last .row .v b{font-family:var(--f-mono);font-size:18px;color:var(--photo-text);font-weight:500;letter-spacing:-.01em}
 .last .row .v small{font-family:var(--f-display);font-size:9px;color:var(--photo-mute);letter-spacing:.18em;display:block;margin-top:2px;font-weight:400}
 
 /* セクション見出し */
@@ -150,14 +150,14 @@ body{font-family:var(--f-ui),var(--f-jp);color:var(--photo-text);min-height:100v
 .parts .p:hover{box-shadow:0 0 0 2px var(--photo-red-soft)}
 .parts .p img{width:100%;height:100%;object-fit:cover;object-position:center;display:block}
 .parts .p.next-up{box-shadow:0 0 0 2px var(--photo-red),0 0 18px rgba(230,57,70,.35)}
-.parts .p.next-up::before{content:'NEXT';position:absolute;top:10px;right:10px;background:var(--photo-red);color:#fff;font-family:var(--f-display);font-size:9px;letter-spacing:.18em;padding:3px 6px;border-radius:3px;z-index:3}
-.parts .p .stat{position:absolute;top:10px;left:10px;z-index:3;font-family:var(--f-mono);font-size:11px;color:#fff;background:rgba(0,0,0,.55);backdrop-filter:blur(6px);padding:3px 7px;border-radius:50px;font-weight:500;letter-spacing:-.01em}
+.parts .p.next-up::before{content:'NEXT';position:absolute;top:10px;right:10px;background:var(--photo-red);color:var(--photo-text);font-family:var(--f-display);font-size:9px;letter-spacing:.18em;padding:3px 6px;border-radius:3px;z-index:3}
+.parts .p .stat{position:absolute;top:10px;left:10px;z-index:3;font-family:var(--f-mono);font-size:11px;color:var(--photo-text);background:rgba(0,0,0,.55);backdrop-filter:blur(6px);padding:3px 7px;border-radius:50px;font-weight:500;letter-spacing:-.01em}
 
 /* 統計2列 */
 .stats2{margin:0 16px 14px;display:grid;grid-template-columns:1fr 1fr 1fr;gap:8px}
 .stats2 .s{background:var(--photo-card);border:1px solid var(--photo-line);padding:12px;border-radius:10px}
 .stats2 .s .l{font-family:var(--f-display);font-size:9px;color:var(--photo-dim);letter-spacing:.18em}
-.stats2 .s .v{font-family:var(--f-mono);font-weight:500;font-size:20px;color:#fff;line-height:1.1;margin-top:4px;letter-spacing:-.01em}
+.stats2 .s .v{font-family:var(--f-mono);font-weight:500;font-size:20px;color:var(--photo-text);line-height:1.1;margin-top:4px;letter-spacing:-.01em}
 .stats2 .s .v small{font-size:10px;color:var(--photo-mute);font-family:var(--f-display);font-weight:400;margin-left:2px;letter-spacing:.05em}
 .stats2 .s.r .v{color:var(--photo-red)}
 
@@ -173,7 +173,7 @@ body{font-family:var(--f-ui),var(--f-jp);color:var(--photo-text);min-height:100v
 .chart-axis{display:flex;justify-content:space-between;font-family:var(--f-display);font-size:9px;color:var(--photo-dim);letter-spacing:.05em;margin-top:6px;padding:0 4px}
 .chart-axis span.on{color:var(--photo-red)}
 .chart-foot{margin-top:10px;display:flex;justify-content:space-between;align-items:baseline}
-.chart-foot b{font-family:var(--f-mono);font-weight:500;font-size:20px;color:#fff;letter-spacing:-.01em}
+.chart-foot b{font-family:var(--f-mono);font-weight:500;font-size:20px;color:var(--photo-text);letter-spacing:-.01em}
 .chart-foot b small{color:var(--photo-mute);font-family:var(--f-display);font-size:10px;font-weight:400;margin-left:3px;letter-spacing:.05em}
 .chart-foot .delta{font-family:var(--f-jp);font-size:11px;color:var(--ok);font-weight:600}
 .chart-foot .delta.neg{color:var(--photo-red)}
@@ -196,7 +196,7 @@ body{font-family:var(--f-ui),var(--f-jp);color:var(--photo-text);min-height:100v
 .medals .m.bronze .badge{background:linear-gradient(135deg,#C8895A,#6A3F1A);border-color:var(--bronze)}
 .medals .m.locked .badge{opacity:.35}
 .medals .m .lab{font-size:10px;color:var(--photo-mute);margin-top:6px;line-height:1.2;font-family:var(--f-jp)}
-.medals .m .lab b{color:#fff;display:block;font-size:11px;font-weight:700}
+.medals .m .lab b{color:var(--photo-text);display:block;font-size:11px;font-weight:700}
 
 /* 最近の履歴 */
 .recent{margin:0 16px 14px;display:flex;flex-direction:column;gap:8px}
@@ -206,7 +206,7 @@ body{font-family:var(--f-ui),var(--f-jp);color:var(--photo-text);min-height:100v
 .recent .item .info .ttl{font-family:var(--f-jp);font-size:13px;font-weight:700}
 .recent .item .info .meta{font-size:11px;color:var(--photo-mute);margin-top:2px;font-family:var(--f-jp)}
 .recent .item .v{text-align:right}
-.recent .item .v b{font-family:var(--f-mono);font-size:14px;color:#fff;font-weight:500;letter-spacing:-.01em}
+.recent .item .v b{font-family:var(--f-mono);font-size:14px;color:var(--photo-text);font-weight:500;letter-spacing:-.01em}
 .recent .item .v small{display:block;font-family:var(--f-display);font-size:9px;color:var(--photo-mute);letter-spacing:.15em;font-weight:400;margin-top:1px}
 
 /* タブバー */
