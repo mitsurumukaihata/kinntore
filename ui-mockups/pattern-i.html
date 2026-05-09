@@ -154,15 +154,13 @@ body{font-family:var(--f-ui),var(--f-jp);color:var(--photo-text);min-height:100v
 .chart-foot{margin-top:10px;font-family:var(--f-mono);font-weight:500;font-size:22px;letter-spacing:-.01em;color:#fff}
 .chart-foot small{font-family:var(--f-jp);font-size:11px;color:var(--ok);font-weight:600;margin-left:8px}
 
-/* 人体図 */
+/* 人体図 (画像ベース) */
 .body-block{margin:0 16px 14px;background:var(--photo-card);border:1px solid var(--photo-line);border-radius:12px;padding:14px 16px}
 .body-block .ttl{display:flex;justify-content:space-between;align-items:center;margin-bottom:12px}
 .body-block .ttl h3{font-family:var(--f-jp);font-size:13px;font-weight:700;letter-spacing:-.01em}
 .body-block .ttl small{font-family:var(--f-display);font-size:14px;color:var(--photo-red);letter-spacing:.05em}
 .body-row{display:grid;grid-template-columns:120px 1fr;gap:14px;align-items:center}
-.body-svg{width:120px;height:auto}
-.body-svg [data-part]{transition:fill .3s,stroke .3s}
-.body-svg [data-part].on{fill:var(--photo-red);stroke:#fca5af;filter:drop-shadow(0 0 6px rgba(230,57,70,.6))}
+.body-img{width:120px;aspect-ratio:467/561;border-radius:8px;background:#0a0a0a;background-size:cover;background-position:center;transition:opacity .3s}
 .body-info{display:flex;flex-direction:column;gap:8px}
 .muscles{display:flex;flex-wrap:wrap;gap:5px}
 .mus{background:#0e0e0e;border:1px solid var(--photo-line);color:var(--photo-mute);padding:4px 10px;border-radius:50px;font-size:11px;font-weight:600;font-family:var(--f-jp)}
@@ -381,18 +379,7 @@ body{font-family:var(--f-ui),var(--f-jp);color:var(--photo-text);min-height:100v
     <div class="body-block">
       <div class="ttl"><h3>本日のターゲット</h3><small id="bodyTargetLabel">胸</small></div>
       <div class="body-row">
-        <svg class="body-svg" viewBox="0 0 120 220" id="bodySvg">
-          <ellipse cx="60" cy="20" rx="13" ry="16" fill="#1f1f1f" stroke="#333" stroke-width="1"/>
-          <rect x="54" y="33" width="12" height="8" fill="#1f1f1f"/>
-          <path data-part="shoulder" d="M 30,50 Q 40,42 60,42 Q 80,42 90,50 L 88,62 Q 75,55 60,55 Q 45,55 32,62 Z" fill="#1f1f1f" stroke="#333" stroke-width="1"/>
-          <path data-part="chest" d="M 35,58 Q 50,62 60,62 Q 70,62 85,58 L 86,90 Q 60,96 60,96 Q 60,96 34,90 Z" fill="#1f1f1f" stroke="#333" stroke-width="1"/>
-          <path d="M 28,55 Q 22,80 22,110 L 30,110 Q 32,80 36,58 Z" fill="#181818" stroke="#2a2a2a" stroke-width="1"/>
-          <path d="M 92,55 Q 98,80 98,110 L 90,110 Q 88,80 84,58 Z" fill="#181818" stroke="#2a2a2a" stroke-width="1"/>
-          <path data-part="abs" d="M 40,90 Q 60,98 80,90 L 82,125 Q 60,128 38,125 Z" fill="#181818" stroke="#2a2a2a" stroke-width="1"/>
-          <path data-part="back" d="M 35,55 Q 60,52 85,55 L 86,90 Q 60,93 34,90 Z" fill="transparent" stroke="transparent"/>
-          <path data-part="hip" d="M 38,125 Q 60,130 82,125 L 80,148 Q 60,152 40,148 Z" fill="#1f1f1f" stroke="#333" stroke-width="1"/>
-          <path data-part="leg" d="M 40,148 Q 60,152 80,148 L 78,200 Q 70,210 60,210 Q 50,210 42,200 Z M 40,148 L 42,200 Q 50,210 60,210 Z" fill="#1f1f1f" stroke="#333" stroke-width="1"/>
-        </svg>
+        <div class="body-img" id="bodyImg" style="background-image:url('img/target-chest.png')"></div>
         <div class="body-info">
           <div class="muscles" id="muscleList"></div>
           <div class="body-cta">推定消費カロリー<b>520 kcal</b></div>
@@ -578,7 +565,7 @@ const el = {
   level:$('heroLevel'), time:$('heroTime'),
   badge:document.querySelector('.hero-label .day'),
   vol:$('statVol'),
-  bodySvg:$('bodySvg'), muscleList:$('muscleList'), bodyTargetLabel:$('bodyTargetLabel'),
+  bodyImg:$('bodyImg'), muscleList:$('muscleList'), bodyTargetLabel:$('bodyTargetLabel'),
 };
 
 function render(tag) {
@@ -598,11 +585,12 @@ function render(tag) {
   el.time.textContent = d.time;
   el.vol.innerHTML = d.vol + '<small>KG</small>';
 
-  el.bodySvg.querySelectorAll('[data-part]').forEach(e => e.classList.remove('on'));
-  (d.bodyParts||[]).forEach(p => {
-    const e = el.bodySvg.querySelector(`[data-part="${p}"]`);
-    if (e) e.classList.add('on');
-  });
+  // 本日のターゲット画像差替 (フェード)
+  el.bodyImg.style.opacity = '0';
+  setTimeout(() => {
+    el.bodyImg.style.backgroundImage = `url('img/target-${tag}.png')`;
+    el.bodyImg.style.opacity = '1';
+  }, 150);
   el.muscleList.innerHTML = (d.muscles||[]).map(m => `<div class="mus on">${m}</div>`).join('');
   el.bodyTargetLabel.textContent = d.targetLabel || '';
 
