@@ -1,10 +1,13 @@
 // kinntore PWA service worker
-const VERSION = 'v5';
+const VERSION = 'v6';
 const CACHE = `kinntore-${VERSION}`;
 const PRECACHE = [
   './',
   'home.html',
   'pattern-i.html',
+  'record.html',
+  'progress.html',
+  'settings.html',
   'manifest.json',
   'img/icon-192.png',
   'img/icon-512.png'

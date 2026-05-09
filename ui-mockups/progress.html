@@ -1,0 +1,345 @@
+<!DOCTYPE html>
+<html lang="ja"><head><meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,minimum-scale=1,user-scalable=no,viewport-fit=cover">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="apple-mobile-web-app-title" content="kinntore">
+<meta name="theme-color" content="#0a0a0a">
+<link rel="manifest" href="manifest.json">
+<link rel="apple-touch-icon" href="img/icon-192.png">
+<title>kinntore — 進捗</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Inter+Tight:wght@400;500;600;700;800;900&family=JetBrains+Mono:wght@400;500;600&family=Zen+Kaku+Gothic+New:wght@400;500;700;900&display=swap" rel="stylesheet">
+<style>
+:root{
+  --photo-bg:#0a0a0a;--photo-card:#1a1a1a;--photo-card-2:#232323;
+  --photo-line:rgba(255,255,255,0.08);--photo-line-strong:rgba(255,255,255,0.16);
+  --photo-text:#fff;--photo-mute:#9a9a9a;--photo-dim:#5e5e5e;
+  --photo-red:#E63946;--photo-red-deep:#B22838;--photo-red-soft:rgba(230,57,70,0.15);
+  --gold:#D4A04B;--silver:#A8A8A8;--bronze:#8C5A2A;--ok:#4FB07A;
+  --f-ui:'Inter Tight',-apple-system,system-ui,sans-serif;
+  --f-jp:'Zen Kaku Gothic New',-apple-system,'Hiragino Kaku Gothic ProN',sans-serif;
+  --f-display:'Bebas Neue','Inter Tight',system-ui,sans-serif;
+  --f-mono:'JetBrains Mono',ui-monospace,monospace;
+}
+*{box-sizing:border-box;margin:0;padding:0;-webkit-tap-highlight-color:transparent}
+html,body{background:#000;overscroll-behavior-y:contain;-webkit-text-size-adjust:100%;text-size-adjust:100%;touch-action:manipulation}
+button,a,select{touch-action:manipulation;-webkit-touch-callout:none;-webkit-user-select:none;user-select:none}
+body{font-family:var(--f-ui),var(--f-jp);color:var(--photo-text);min-height:100vh;-webkit-font-smoothing:antialiased;letter-spacing:-0.01em}
+.app{max-width:420px;margin:0 auto;min-height:100vh;background:var(--photo-bg);padding-top:env(safe-area-inset-top);padding-bottom:calc(90px + env(safe-area-inset-bottom));position:relative}
+
+.head{padding:22px 20px 12px}
+.head h1{font-family:var(--f-jp);font-size:24px;font-weight:900;letter-spacing:-.01em}
+.head h1 small{display:block;font-family:var(--f-display);font-size:10px;color:var(--photo-mute);letter-spacing:.18em;margin-top:2px;font-weight:400}
+
+.seg-period{margin:6px 16px 18px;background:var(--photo-card);border:1px solid var(--photo-line);border-radius:50px;padding:4px;display:grid;grid-template-columns:1fr 1fr 1fr;gap:0}
+.seg-period button{background:transparent;border:0;color:var(--photo-mute);font-family:var(--f-jp);font-size:12px;font-weight:700;padding:9px 0;border-radius:50px;cursor:pointer;letter-spacing:.04em;transition:.15s}
+.seg-period button.on{background:var(--photo-red);color:#fff;box-shadow:0 2px 8px rgba(230,57,70,.3)}
+
+.section{padding:0 16px;margin-bottom:22px}
+.section-head{display:flex;justify-content:space-between;align-items:baseline;margin-bottom:10px;padding:0 2px}
+.section-head h2{font-family:var(--f-jp);font-size:16px;font-weight:900;letter-spacing:-.01em}
+.section-head h2 small{font-family:var(--f-display);font-size:9px;color:var(--photo-dim);letter-spacing:.18em;margin-left:8px;font-weight:400}
+.section-head .h-meta{font-family:var(--f-mono);font-size:11px;color:var(--photo-mute);letter-spacing:-.01em}
+.section-head .h-meta b{color:#fff;font-size:13px;font-weight:600;margin:0 2px}
+
+/* 部位別ボリューム推移 - 6カードを縦並び */
+.parts-vols{display:flex;flex-direction:column;gap:10px}
+.part-vol{background:var(--photo-card);border:1px solid var(--photo-line);border-radius:12px;padding:14px 16px;position:relative;overflow:hidden}
+.part-vol-head{display:flex;justify-content:space-between;align-items:baseline;margin-bottom:10px}
+.part-vol-name{font-family:var(--f-jp);font-size:14px;font-weight:700;color:#fff}
+.part-vol-name .delta{font-family:var(--f-mono);font-size:10px;font-weight:600;letter-spacing:-.01em;margin-left:8px;padding:2px 7px;border-radius:50px;background:var(--photo-red-soft);color:var(--photo-red)}
+.part-vol-name .delta.up{background:rgba(79,176,122,.15);color:var(--ok)}
+.part-vol-name .delta.flat{background:rgba(255,255,255,.05);color:var(--photo-mute)}
+.part-vol-total{font-family:var(--f-mono);font-size:14px;color:#fff;font-weight:600;letter-spacing:-.01em}
+.part-vol-total small{font-family:var(--f-display);font-size:9px;color:var(--photo-mute);letter-spacing:.18em;margin-left:2px;font-weight:400}
+.spark{width:100%;height:48px;display:block}
+.spark-empty{height:48px;display:flex;align-items:center;justify-content:center;color:var(--photo-dim);font-size:11px;font-family:var(--f-jp)}
+
+/* 種目別重量伸び */
+.ex-prog-card{background:var(--photo-card);border:1px solid var(--photo-line);border-radius:12px;padding:16px}
+.ex-select{background:#0a0a0a;border:1px solid var(--photo-line);color:#fff;font-family:var(--f-jp);font-size:13px;font-weight:600;padding:10px 30px 10px 14px;border-radius:8px;width:100%;-webkit-appearance:none;appearance:none;background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='10' height='6' viewBox='0 0 10 6'%3E%3Cpath fill='%239a9a9a' d='M0 0l5 6 5-6z'/%3E%3C/svg%3E");background-repeat:no-repeat;background-position:right 12px center;background-size:8px;margin-bottom:14px}
+.ex-stats{display:grid;grid-template-columns:1fr 1fr 1fr;gap:8px;margin-bottom:14px}
+.ex-stat{background:#0a0a0a;border:1px solid var(--photo-line);border-radius:8px;padding:10px 8px;text-align:center}
+.ex-stat .l{font-family:var(--f-display);font-size:9px;color:var(--photo-dim);letter-spacing:.18em;margin-bottom:4px}
+.ex-stat .v{font-family:var(--f-mono);font-size:18px;font-weight:600;color:#fff;letter-spacing:-.01em;line-height:1}
+.ex-stat .v small{font-family:var(--f-display);font-size:9px;color:var(--photo-mute);letter-spacing:.1em;margin-left:1px;font-weight:400}
+.ex-stat.r .v{color:var(--photo-red)}
+.ex-stat.g .v{color:var(--ok)}
+.ex-chart{width:100%;height:140px;display:block}
+.ex-chart-empty{height:140px;display:flex;align-items:center;justify-content:center;color:var(--photo-dim);font-size:12px;font-family:var(--f-jp)}
+
+/* PR一覧 */
+.pr-list{display:flex;flex-direction:column;gap:8px}
+.pr-row{background:var(--photo-card);border:1px solid var(--photo-line);border-radius:10px;padding:12px 14px;display:grid;grid-template-columns:32px 1fr auto;gap:12px;align-items:center}
+.pr-row .medal{width:32px;height:32px;border-radius:50%;background:linear-gradient(135deg,var(--gold),var(--bronze));display:flex;align-items:center;justify-content:center;font-family:var(--f-display);font-size:12px;color:#3a2a00;font-weight:600}
+.pr-row.silver .medal{background:linear-gradient(135deg,var(--silver),#666);color:#222}
+.pr-row.bronze .medal{background:linear-gradient(135deg,var(--bronze),#3a1f00);color:#fff}
+.pr-row .info{min-width:0}
+.pr-row .info .nm{font-family:var(--f-jp);font-size:13px;font-weight:700;color:#fff;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.pr-row .info .meta{font-family:var(--f-display);font-size:9px;color:var(--photo-dim);letter-spacing:.18em;margin-top:2px}
+.pr-row .v{text-align:right}
+.pr-row .v b{font-family:var(--f-mono);font-size:18px;font-weight:600;color:#fff;letter-spacing:-.01em;display:block;line-height:1}
+.pr-row .v small{font-family:var(--f-display);font-size:9px;color:var(--photo-mute);letter-spacing:.18em;font-weight:400;margin-top:2px;display:block}
+
+.empty-msg{text-align:center;color:var(--photo-dim);padding:30px 16px;font-family:var(--f-jp);font-size:13px;background:var(--photo-card);border:1px dashed var(--photo-line);border-radius:12px}
+.empty-msg .ic{font-size:28px;display:block;margin-bottom:10px;opacity:.4}
+.loading{text-align:center;padding:40px 20px;color:var(--photo-mute);font-family:var(--f-display);font-size:11px;letter-spacing:.18em}
+
+.tab{position:fixed;bottom:0;left:50%;transform:translateX(-50%);width:100%;max-width:420px;background:rgba(10,10,10,.95);backdrop-filter:blur(12px);border-top:1px solid var(--photo-line);padding:10px 8px calc(28px + env(safe-area-inset-bottom));display:grid;grid-template-columns:repeat(5,1fr);gap:4px;z-index:30}
+.tab a{display:flex;flex-direction:column;align-items:center;gap:4px;font-size:10px;color:var(--photo-dim);text-decoration:none;letter-spacing:.04em;cursor:pointer;font-family:var(--f-jp);font-weight:700;padding:4px 0;touch-action:manipulation;-webkit-touch-callout:none;user-select:none}
+.tab a.on{color:var(--photo-red)}
+.tab a .ic{font-size:18px;line-height:1;font-family:var(--f-ui)}
+</style>
+</head>
+<body>
+<div class="app">
+  <div class="head">
+    <h1>進捗<small>PROGRESS</small></h1>
+  </div>
+
+  <div class="seg-period">
+    <button data-p="30">月</button>
+    <button data-p="90" class="on">3ヶ月</button>
+    <button data-p="365">年</button>
+  </div>
+
+  <div id="loading" class="loading">データ読込中…</div>
+
+  <div id="content" style="display:none">
+    <!-- 部位別ボリューム推移 -->
+    <div class="section">
+      <div class="section-head">
+        <h2>部位別ボリューム推移<small>VOLUME TREND</small></h2>
+        <div class="h-meta">合計 <b id="totalVol">0</b>kg</div>
+      </div>
+      <div class="parts-vols" id="partsVols"></div>
+    </div>
+
+    <!-- 種目別重量伸び -->
+    <div class="section">
+      <div class="section-head">
+        <h2>種目別の伸び<small>EXERCISE PROGRESSION</small></h2>
+      </div>
+      <div class="ex-prog-card">
+        <select class="ex-select" id="exSelect"></select>
+        <div class="ex-stats">
+          <div class="ex-stat"><div class="l">FIRST</div><div class="v" id="exFirst">--<small>kg</small></div></div>
+          <div class="ex-stat g"><div class="l">CURRENT</div><div class="v" id="exCurrent">--<small>kg</small></div></div>
+          <div class="ex-stat r"><div class="l">DELTA</div><div class="v" id="exDelta">--<small></small></div></div>
+        </div>
+        <svg class="ex-chart" id="exChart" viewBox="0 0 380 140" preserveAspectRatio="none"></svg>
+        <div class="ex-chart-empty" id="exEmpty" style="display:none">この種目の記録は1回しかありません</div>
+      </div>
+    </div>
+
+    <!-- PR一覧 -->
+    <div class="section">
+      <div class="section-head">
+        <h2>PR (自己ベスト)<small>PERSONAL RECORDS</small></h2>
+        <div class="h-meta"><b id="prCount">0</b>種目</div>
+      </div>
+      <div class="pr-list" id="prList"></div>
+    </div>
+  </div>
+</div>
+
+<div class="tab">
+  <a href="home.html"><span class="ic">⌂</span>ホーム</a>
+  <a href="record.html"><span class="ic">▤</span>記録</a>
+  <a href="pattern-i.html#chest"><span class="ic">☰</span>メニュー</a>
+  <a class="on"><span class="ic">◢</span>進捗</a>
+  <a href="settings.html"><span class="ic">⚙</span>設定</a>
+</div>
+
+<script>
+const API = 'https://kinntore-api.33322666666mm.workers.dev';
+const TAG_LABEL = { chest:'胸', shoulder:'肩', back:'背中', leg:'脚', abs:'腹', hip:'お尻' };
+const TAGS = ['chest','shoulder','back','leg','abs','hip'];
+const $ = id => document.getElementById(id);
+const fmt = d => d.getFullYear()+'-'+String(d.getMonth()+1).padStart(2,'0')+'-'+String(d.getDate()).padStart(2,'0');
+
+let allData = []; // [{day, sets}]
+let period = 90;
+
+async function fetchDay(d) {
+  try { const r = await fetch(API+'/api/sets?day='+d); if(!r.ok)return []; return (await r.json()).sets||[]; } catch{return []}
+}
+
+async function load() {
+  $('loading').style.display = '';
+  $('content').style.display = 'none';
+  const today = new Date(); today.setHours(0,0,0,0);
+  const days = []; for (let i=0;i<period;i++){const d=new Date(today);d.setDate(d.getDate()-i);days.push(fmt(d))}
+  // 5並列で取得
+  const chunks=[]; for(let i=0;i<days.length;i+=5) chunks.push(days.slice(i,i+5));
+  allData = [];
+  for (const c of chunks) {
+    const r = await Promise.all(c.map(d => fetchDay(d).then(sets=>({day:d,sets}))));
+    allData.push(...r);
+  }
+  render();
+  $('loading').style.display = 'none';
+  $('content').style.display = '';
+}
+
+function render() {
+  renderPartsVols();
+  renderExSelect();
+  renderPR();
+}
+
+// 期間半分前の比較で前期間比を計算
+function renderPartsVols() {
+  const half = Math.floor(period/2);
+  let total = 0;
+  const cards = TAGS.map(tag => {
+    // 各日のボリューム
+    const series = allData.map(d => {
+      let v = 0; for (const s of d.sets) if (s.tag===tag) v += (+s.weight||0)*(+s.reps||0);
+      return v;
+    });
+    const vol = series.reduce((a,b)=>a+b,0);
+    total += vol;
+    const recent = series.slice(0, half).reduce((a,b)=>a+b,0);
+    const past = series.slice(half).reduce((a,b)=>a+b,0);
+    let delta = '--', deltaCls = 'flat';
+    if (past > 0) {
+      const pct = Math.round(((recent-past)/past)*100);
+      delta = (pct>=0?'+':'')+pct+'%';
+      deltaCls = pct>=5 ? 'up' : (pct<=-5 ? '' : 'flat');
+    } else if (recent > 0) { delta = 'NEW'; deltaCls = 'up'; }
+    // sparkline (newest right, so reverse)
+    const sparkVals = series.slice(0, period).reverse();
+    const max = Math.max(1, ...sparkVals);
+    const points = sparkVals.map((v,i) => {
+      const x = (i/(sparkVals.length-1||1))*340;
+      const y = 44 - (v/max)*40;
+      return `${x.toFixed(1)},${y.toFixed(1)}`;
+    }).join(' ');
+    const hasData = vol > 0;
+    return `<div class="part-vol">
+      <div class="part-vol-head">
+        <div class="part-vol-name">${TAG_LABEL[tag]} <span class="delta ${deltaCls}">${delta}</span></div>
+        <div class="part-vol-total">${vol.toLocaleString()}<small>KG</small></div>
+      </div>
+      ${hasData ? `<svg class="spark" viewBox="0 0 340 48" preserveAspectRatio="none">
+        <defs><linearGradient id="g${tag}" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#E63946" stop-opacity=".4"/><stop offset="1" stop-color="#E63946" stop-opacity="0"/></linearGradient></defs>
+        <polyline points="${points}" fill="none" stroke="#E63946" stroke-width="2" stroke-linejoin="round" stroke-linecap="round"/>
+        <polygon points="0,48 ${points} 340,48" fill="url(#g${tag})"/>
+      </svg>` : '<div class="spark-empty">期間内に記録なし</div>'}
+    </div>`;
+  }).join('');
+  $('partsVols').innerHTML = cards;
+  $('totalVol').textContent = total.toLocaleString();
+}
+
+function renderExSelect() {
+  const exMap = {}; // name -> [{day, weight, reps, vol}, ...]
+  for (const d of allData) {
+    for (const s of d.sets) {
+      if (!exMap[s.exercise_name]) exMap[s.exercise_name] = [];
+      exMap[s.exercise_name].push({ day: d.day, weight: +s.weight||0, reps: +s.reps||0, vol: (+s.weight||0)*(+s.reps||0) });
+    }
+  }
+  const names = Object.keys(exMap).sort();
+  if (names.length === 0) {
+    $('exSelect').innerHTML = '<option>記録なし</option>';
+    $('exChart').style.display='none'; $('exEmpty').style.display=''; $('exEmpty').textContent='この期間の記録がありません';
+    return;
+  }
+  $('exSelect').innerHTML = names.map(n => `<option>${n}</option>`).join('');
+  function renderEx(name) {
+    const sets = exMap[name].sort((a,b)=>a.day.localeCompare(b.day));
+    // 日ごとの最大重量を取る
+    const byDay = {};
+    for (const s of sets) {
+      if (!byDay[s.day] || byDay[s.day] < s.weight) byDay[s.day] = s.weight;
+    }
+    const days = Object.keys(byDay).sort();
+    const weights = days.map(d => byDay[d]);
+    if (weights.length < 2) {
+      $('exChart').style.display='none'; $('exEmpty').style.display='flex';
+      $('exFirst').innerHTML = (weights[0]||'--')+'<small>kg</small>';
+      $('exCurrent').innerHTML = (weights[0]||'--')+'<small>kg</small>';
+      $('exDelta').innerHTML = '--<small></small>';
+      return;
+    }
+    $('exChart').style.display='block'; $('exEmpty').style.display='none';
+    const first = weights[0], cur = weights[weights.length-1];
+    const delta = cur - first;
+    $('exFirst').innerHTML = first+'<small>kg</small>';
+    $('exCurrent').innerHTML = cur+'<small>kg</small>';
+    $('exDelta').innerHTML = (delta>=0?'+':'')+delta.toFixed(1)+'<small>kg</small>';
+    const max = Math.max(...weights), min = Math.min(...weights);
+    const range = Math.max(1, max-min);
+    const points = weights.map((w,i) => {
+      const x = (i/(weights.length-1))*360+10;
+      const y = 130 - ((w-min)/range)*100;
+      return `${x.toFixed(1)},${y.toFixed(1)}`;
+    }).join(' ');
+    const dots = weights.map((w,i) => {
+      const x = (i/(weights.length-1))*360+10;
+      const y = 130 - ((w-min)/range)*100;
+      return `<circle cx="${x.toFixed(1)}" cy="${y.toFixed(1)}" r="3" fill="#E63946"/>`;
+    }).join('');
+    $('exChart').innerHTML = `<defs><linearGradient id="exg" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#E63946" stop-opacity=".3"/><stop offset="1" stop-color="#E63946" stop-opacity="0"/></linearGradient></defs>
+      <polygon points="10,140 ${points} 370,140" fill="url(#exg)"/>
+      <polyline points="${points}" fill="none" stroke="#E63946" stroke-width="2" stroke-linejoin="round"/>
+      ${dots}`;
+  }
+  $('exSelect').onchange = () => renderEx($('exSelect').value);
+  renderEx(names[0]);
+}
+
+function renderPR() {
+  // 種目ごとの最大重量+その日のreps+日付
+  const exMap = {};
+  for (const d of allData) {
+    for (const s of d.sets) {
+      const w = +s.weight||0, r = +s.reps||0;
+      if (!exMap[s.exercise_name] || w > exMap[s.exercise_name].weight) {
+        exMap[s.exercise_name] = { weight: w, reps: r, day: d.day, tag: s.tag };
+      }
+    }
+  }
+  const list = Object.entries(exMap).sort((a,b)=>b[1].weight-a[1].weight);
+  $('prCount').textContent = list.length;
+  if (list.length === 0) {
+    $('prList').innerHTML = '<div class="empty-msg"><span class="ic">🏆</span>まだPRがありません<br>セットを記録すると自動的に集計されます</div>';
+    return;
+  }
+  $('prList').innerHTML = list.map(([name, pr], i) => {
+    const cls = i===0?'gold':(i===1?'silver':(i===2?'bronze':''));
+    const medal = i<3 ? '★' : (i+1);
+    const d = new Date(pr.day);
+    return `<div class="pr-row ${cls}">
+      <div class="medal">${medal}</div>
+      <div class="info">
+        <div class="nm">${name}</div>
+        <div class="meta">${TAG_LABEL[pr.tag]||pr.tag} · ${(d.getMonth()+1)}/${d.getDate()} · ${pr.reps}回</div>
+      </div>
+      <div class="v"><b>${pr.weight}</b><small>KG</small></div>
+    </div>`;
+  }).join('');
+}
+
+document.querySelectorAll('.seg-period button').forEach(b => {
+  b.onclick = () => {
+    document.querySelectorAll('.seg-period button').forEach(x=>x.classList.remove('on'));
+    b.classList.add('on');
+    period = +b.dataset.p;
+    load();
+  };
+});
+
+if ('serviceWorker' in navigator) window.addEventListener('load', () => navigator.serviceWorker.register('sw.js').catch(()=>{}));
+document.addEventListener('dblclick', e => e.preventDefault(), {passive:false});
+let _lt=0; document.addEventListener('touchend', e => { const n=Date.now(); if(n-_lt<300)e.preventDefault(); _lt=n; }, {passive:false});
+document.addEventListener('gesturestart', e => e.preventDefault(), {passive:false});
+
+load();
+</script>
+</body></html>

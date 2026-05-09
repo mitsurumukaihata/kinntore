@@ -1,0 +1,406 @@
+<!DOCTYPE html>
+<html lang="ja"><head><meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,minimum-scale=1,user-scalable=no,viewport-fit=cover">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="apple-mobile-web-app-title" content="kinntore">
+<meta name="theme-color" content="#0a0a0a">
+<link rel="manifest" href="manifest.json">
+<link rel="apple-touch-icon" href="img/icon-192.png">
+<title>kinntore — 設定</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Inter+Tight:wght@400;500;600;700;800;900&family=JetBrains+Mono:wght@400;500;600&family=Zen+Kaku+Gothic+New:wght@400;500;700;900&display=swap" rel="stylesheet">
+<style>
+:root{
+  --photo-bg:#0a0a0a;--photo-card:#1a1a1a;--photo-card-2:#232323;
+  --photo-line:rgba(255,255,255,0.08);--photo-line-strong:rgba(255,255,255,0.16);
+  --photo-text:#fff;--photo-mute:#9a9a9a;--photo-dim:#5e5e5e;
+  --photo-red:#E63946;--photo-red-deep:#B22838;--photo-red-soft:rgba(230,57,70,0.15);
+  --ok:#4FB07A;--warn:#E63946;
+  --f-ui:'Inter Tight',-apple-system,system-ui,sans-serif;
+  --f-jp:'Zen Kaku Gothic New',-apple-system,'Hiragino Kaku Gothic ProN',sans-serif;
+  --f-display:'Bebas Neue','Inter Tight',system-ui,sans-serif;
+  --f-mono:'JetBrains Mono',ui-monospace,monospace;
+}
+*{box-sizing:border-box;margin:0;padding:0;-webkit-tap-highlight-color:transparent}
+html,body{background:#000;overscroll-behavior-y:contain;-webkit-text-size-adjust:100%;text-size-adjust:100%;touch-action:manipulation}
+button,a,input,select{touch-action:manipulation;-webkit-touch-callout:none}
+button,a{-webkit-user-select:none;user-select:none}
+body{font-family:var(--f-ui),var(--f-jp);color:var(--photo-text);min-height:100vh;-webkit-font-smoothing:antialiased;letter-spacing:-0.01em}
+.app{max-width:420px;margin:0 auto;min-height:100vh;background:var(--photo-bg);padding-top:env(safe-area-inset-top);padding-bottom:calc(90px + env(safe-area-inset-bottom));position:relative}
+
+.head{padding:22px 20px 12px}
+.head h1{font-family:var(--f-jp);font-size:24px;font-weight:900;letter-spacing:-.01em}
+.head h1 small{display:block;font-family:var(--f-display);font-size:10px;color:var(--photo-mute);letter-spacing:.18em;margin-top:2px;font-weight:400}
+
+.section{margin:18px 16px 0}
+.section-title{font-family:var(--f-display);font-size:10px;color:var(--photo-dim);letter-spacing:.18em;margin:0 4px 8px}
+.card{background:var(--photo-card);border:1px solid var(--photo-line);border-radius:12px;overflow:hidden}
+.row{padding:14px 16px;display:flex;align-items:center;justify-content:space-between;gap:14px;border-bottom:1px solid var(--photo-line);min-height:56px}
+.row:last-child{border-bottom:0}
+.row .l{flex:1;min-width:0}
+.row .l .nm{font-family:var(--f-jp);font-size:13px;font-weight:700;color:#fff}
+.row .l .desc{font-family:var(--f-jp);font-size:11px;color:var(--photo-mute);margin-top:2px;line-height:1.4}
+.row .r{flex-shrink:0}
+
+/* セレクト */
+.row select,.row input[type=text],.row input[type=number]{background:#0a0a0a;border:1px solid var(--photo-line);color:#fff;font-family:var(--f-jp);font-size:13px;font-weight:600;padding:8px 28px 8px 12px;border-radius:8px;-webkit-appearance:none;appearance:none;background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='10' height='6' viewBox='0 0 10 6'%3E%3Cpath fill='%239a9a9a' d='M0 0l5 6 5-6z'/%3E%3C/svg%3E");background-repeat:no-repeat;background-position:right 10px center;background-size:8px;min-width:120px}
+.row input[type=text],.row input[type=number]{background-image:none;padding:8px 12px;text-align:right}
+.row input[type=number]{font-family:var(--f-mono);width:90px}
+
+/* セグメント */
+.seg{display:flex;background:#0a0a0a;border:1px solid var(--photo-line);border-radius:50px;padding:3px;gap:0}
+.seg button{background:transparent;border:0;color:var(--photo-mute);font-family:var(--f-jp);font-size:11px;font-weight:700;padding:6px 12px;border-radius:50px;cursor:pointer;letter-spacing:.04em;transition:.15s;min-width:42px}
+.seg button.on{background:var(--photo-red);color:#fff}
+
+/* ボタン */
+.btn{background:#0a0a0a;border:1px solid var(--photo-line);color:#fff;font-family:var(--f-jp);font-size:12px;font-weight:700;padding:9px 16px;border-radius:50px;cursor:pointer;transition:.15s}
+.btn:active{transform:scale(.95)}
+.btn.ghost{background:transparent}
+.btn.danger{background:transparent;color:var(--warn);border-color:rgba(230,57,70,.4)}
+.btn.danger:active{background:var(--photo-red-soft)}
+.btn.full{width:100%;padding:14px 0;font-size:14px;border-radius:10px}
+
+/* 部位目標カード */
+.goals{display:grid;grid-template-columns:1fr 1fr 1fr;gap:8px;padding:14px}
+.goal-cell{background:#0a0a0a;border:1px solid var(--photo-line);border-radius:8px;padding:10px;text-align:center}
+.goal-cell .lbl{font-family:var(--f-jp);font-size:11px;color:var(--photo-mute);font-weight:700;margin-bottom:6px}
+.goal-cell .ctrl{display:flex;align-items:center;justify-content:center;gap:6px}
+.goal-cell button{width:24px;height:24px;border-radius:50%;background:#1a1a1a;border:1px solid var(--photo-line);color:#fff;font-size:14px;cursor:pointer;display:flex;align-items:center;justify-content:center;line-height:1;font-family:var(--f-display);padding:0}
+.goal-cell button:active{background:var(--photo-red-soft);border-color:var(--photo-red)}
+.goal-cell .v{font-family:var(--f-mono);font-size:18px;color:#fff;font-weight:600;min-width:18px;text-align:center}
+
+/* 危険セクション */
+.danger-zone{margin-top:24px}
+.danger-zone .section-title{color:var(--warn)}
+
+/* アプリ情報 */
+.about{padding:18px;text-align:center}
+.about .logo{width:54px;height:54px;border-radius:14px;background:#0a0a0a;border:2px solid var(--photo-red);display:inline-flex;align-items:center;justify-content:center;font-family:var(--f-display);font-size:30px;color:var(--photo-red);margin-bottom:10px;font-weight:400}
+.about .nm{font-family:var(--f-display);font-size:18px;letter-spacing:.1em;color:#fff;font-weight:400}
+.about .ver{font-family:var(--f-mono);font-size:11px;color:var(--photo-mute);margin-top:4px}
+.about .links{display:flex;justify-content:center;gap:10px;margin-top:14px;flex-wrap:wrap}
+.about .links a{font-family:var(--f-jp);font-size:11px;color:var(--photo-mute);text-decoration:none;padding:6px 12px;border:1px solid var(--photo-line);border-radius:50px}
+.about .links a:active{color:#fff;border-color:var(--photo-red)}
+
+/* トースト */
+.toast{position:fixed;bottom:120px;left:50%;transform:translateX(-50%);background:var(--photo-card);border:1px solid var(--photo-line);color:#fff;padding:10px 18px;border-radius:50px;font-size:12px;font-weight:600;z-index:80;box-shadow:0 6px 20px rgba(0,0,0,.4);opacity:0;transition:opacity .25s;font-family:var(--f-jp);pointer-events:none}
+.toast.on{opacity:1}
+
+/* 確認ダイアログ */
+.confirm{position:fixed;inset:0;z-index:90;background:rgba(0,0,0,.75);backdrop-filter:blur(8px);display:none;align-items:center;justify-content:center;padding:24px}
+.confirm.on{display:flex}
+.confirm-card{background:var(--photo-card);border:1px solid var(--photo-line);border-radius:14px;padding:24px;max-width:340px;width:100%;text-align:center}
+.confirm-card h3{font-family:var(--f-jp);font-size:16px;font-weight:900;margin-bottom:10px}
+.confirm-card p{font-family:var(--f-jp);font-size:13px;color:var(--photo-mute);margin-bottom:18px;line-height:1.6}
+.confirm-card .acts{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+
+.tab{position:fixed;bottom:0;left:50%;transform:translateX(-50%);width:100%;max-width:420px;background:rgba(10,10,10,.95);backdrop-filter:blur(12px);border-top:1px solid var(--photo-line);padding:10px 8px calc(28px + env(safe-area-inset-bottom));display:grid;grid-template-columns:repeat(5,1fr);gap:4px;z-index:30}
+.tab a{display:flex;flex-direction:column;align-items:center;gap:4px;font-size:10px;color:var(--photo-dim);text-decoration:none;letter-spacing:.04em;cursor:pointer;font-family:var(--f-jp);font-weight:700;padding:4px 0;touch-action:manipulation;-webkit-touch-callout:none;user-select:none}
+.tab a.on{color:var(--photo-red)}
+.tab a .ic{font-size:18px;line-height:1;font-family:var(--f-ui)}
+</style>
+</head>
+<body>
+<div class="app">
+  <div class="head">
+    <h1>設定<small>SETTINGS</small></h1>
+  </div>
+
+  <!-- ユーザー -->
+  <div class="section">
+    <div class="section-title">USER</div>
+    <div class="card">
+      <div class="row">
+        <div class="l">
+          <div class="nm">表示名</div>
+          <div class="desc">ホーム画面の挨拶に使用</div>
+        </div>
+        <div class="r"><input type="text" id="setName" placeholder="名前" maxlength="20"></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- 入力設定 -->
+  <div class="section">
+    <div class="section-title">INPUT</div>
+    <div class="card">
+      <div class="row">
+        <div class="l">
+          <div class="nm">単位</div>
+          <div class="desc">重量の表示単位</div>
+        </div>
+        <div class="r">
+          <div class="seg" id="segUnit">
+            <button data-v="kg" class="on">kg</button>
+            <button data-v="lb">lb</button>
+          </div>
+        </div>
+      </div>
+      <div class="row">
+        <div class="l">
+          <div class="nm">重量ステップ</div>
+          <div class="desc">±ボタン1回で増減する重量</div>
+        </div>
+        <div class="r">
+          <div class="seg" id="segWStep">
+            <button data-v="1">1</button>
+            <button data-v="2.5" class="on">2.5</button>
+            <button data-v="5">5</button>
+          </div>
+        </div>
+      </div>
+      <div class="row">
+        <div class="l">
+          <div class="nm">回数ステップ</div>
+          <div class="desc">±ボタン1回で増減する回数</div>
+        </div>
+        <div class="r">
+          <div class="seg" id="segRStep">
+            <button data-v="1" class="on">1</button>
+            <button data-v="2">2</button>
+          </div>
+        </div>
+      </div>
+      <div class="row">
+        <div class="l">
+          <div class="nm">週の開始</div>
+          <div class="desc">週カレンダーの起点</div>
+        </div>
+        <div class="r">
+          <div class="seg" id="segWeekStart">
+            <button data-v="0">日</button>
+            <button data-v="1" class="on">月</button>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- 部位別目標 -->
+  <div class="section">
+    <div class="section-title">WEEKLY GOALS / 部位別の週目標</div>
+    <div class="card">
+      <div class="goals" id="goals"></div>
+    </div>
+  </div>
+
+  <!-- データ -->
+  <div class="section">
+    <div class="section-title">DATA</div>
+    <div class="card">
+      <div class="row">
+        <div class="l">
+          <div class="nm">エクスポート</div>
+          <div class="desc">全記録をJSONでダウンロード</div>
+        </div>
+        <div class="r"><button class="btn" id="btnExportJson">JSON</button></div>
+      </div>
+      <div class="row">
+        <div class="l">
+          <div class="nm">エクスポート (CSV)</div>
+          <div class="desc">スプレッドシート用</div>
+        </div>
+        <div class="r"><button class="btn" id="btnExportCsv">CSV</button></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- 危険ゾーン -->
+  <div class="section danger-zone">
+    <div class="section-title">DANGER ZONE</div>
+    <div class="card">
+      <div class="row">
+        <div class="l">
+          <div class="nm">ローカル設定をリセット</div>
+          <div class="desc">表示名・目標・単位等をデフォルトに戻す<br>(D1の記録は削除されません)</div>
+        </div>
+        <div class="r"><button class="btn danger" id="btnResetLocal">リセット</button></div>
+      </div>
+      <div class="row">
+        <div class="l">
+          <div class="nm">全トレーニング記録を削除</div>
+          <div class="desc">D1から本日までの全記録を削除<br>取消できません</div>
+        </div>
+        <div class="r"><button class="btn danger" id="btnResetAll">削除</button></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- アプリ情報 -->
+  <div class="section">
+    <div class="section-title">ABOUT</div>
+    <div class="card">
+      <div class="about">
+        <div class="logo">K</div>
+        <div class="nm">KINNTORE</div>
+        <div class="ver" id="appVer">v1.0 · 2026/05</div>
+        <div class="links">
+          <a href="https://github.com/mitsurumukaihata/kinntore" target="_blank">GitHub</a>
+          <a href="https://mitsurumukaihata.github.io/kinntore/" target="_blank">公開URL</a>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div class="toast" id="toast"></div>
+
+<div class="confirm" id="confirm">
+  <div class="confirm-card">
+    <h3 id="cnfTitle">確認</h3>
+    <p id="cnfMsg">本当に実行しますか？</p>
+    <div class="acts">
+      <button class="btn ghost" id="cnfNo">キャンセル</button>
+      <button class="btn danger" id="cnfYes">実行</button>
+    </div>
+  </div>
+</div>
+
+<div class="tab">
+  <a href="home.html"><span class="ic">⌂</span>ホーム</a>
+  <a href="record.html"><span class="ic">▤</span>記録</a>
+  <a href="pattern-i.html#chest"><span class="ic">☰</span>メニュー</a>
+  <a href="progress.html"><span class="ic">◢</span>進捗</a>
+  <a class="on"><span class="ic">⚙</span>設定</a>
+</div>
+
+<script>
+const API = 'https://kinntore-api.33322666666mm.workers.dev';
+const TAGS = ['chest','shoulder','back','leg','abs','hip'];
+const TAG_LABEL = { chest:'胸', shoulder:'肩', back:'背中', leg:'脚', abs:'腹', hip:'お尻' };
+const $ = id => document.getElementById(id);
+
+// 設定 (localStorage)
+const Settings = {
+  get(k, d){ const v = localStorage.getItem('kinntore_'+k); return v===null?d:v; },
+  set(k, v){ localStorage.setItem('kinntore_'+k, String(v)); },
+};
+
+function toast(msg) {
+  const t = $('toast'); t.textContent = msg; t.classList.add('on');
+  setTimeout(()=>t.classList.remove('on'), 1800);
+}
+
+function confirmDialog(title, msg, onYes) {
+  $('cnfTitle').textContent = title;
+  $('cnfMsg').textContent = msg;
+  $('confirm').classList.add('on');
+  $('cnfYes').onclick = () => { $('confirm').classList.remove('on'); onYes(); };
+  $('cnfNo').onclick = () => $('confirm').classList.remove('on');
+}
+
+// 表示名
+$('setName').value = Settings.get('user_name','');
+$('setName').addEventListener('change', () => { Settings.set('user_name', $('setName').value.trim()); toast('表示名を保存しました'); });
+
+// セグメントの汎用バインド
+function bindSeg(segId, key, def) {
+  const v = Settings.get(key, def);
+  document.querySelectorAll('#'+segId+' button').forEach(b => {
+    b.classList.toggle('on', b.dataset.v === v);
+    b.onclick = () => {
+      document.querySelectorAll('#'+segId+' button').forEach(x=>x.classList.remove('on'));
+      b.classList.add('on');
+      Settings.set(key, b.dataset.v);
+      toast('保存しました');
+    };
+  });
+}
+bindSeg('segUnit','unit','kg');
+bindSeg('segWStep','weight_step','2.5');
+bindSeg('segRStep','rep_step','1');
+bindSeg('segWeekStart','week_start','1');
+
+// 部位別目標
+function renderGoals() {
+  $('goals').innerHTML = TAGS.map(tag => {
+    const g = +(Settings.get('goal_'+tag, '2'));
+    return `<div class="goal-cell">
+      <div class="lbl">${TAG_LABEL[tag]}</div>
+      <div class="ctrl">
+        <button data-tag="${tag}" data-d="-1">−</button>
+        <span class="v" id="goalV-${tag}">${g}</span>
+        <button data-tag="${tag}" data-d="1">+</button>
+      </div>
+    </div>`;
+  }).join('');
+  document.querySelectorAll('.goal-cell button').forEach(b => {
+    b.onclick = () => {
+      const tag = b.dataset.tag, d = +b.dataset.d;
+      let g = +(Settings.get('goal_'+tag, '2')) + d;
+      g = Math.max(1, Math.min(7, g));
+      Settings.set('goal_'+tag, g);
+      $('goalV-'+tag).textContent = g;
+    };
+  });
+}
+renderGoals();
+
+// エクスポート
+async function fetchAll() {
+  // 過去365日分を取得
+  const today = new Date(); today.setHours(0,0,0,0);
+  const days = []; for (let i=0;i<365;i++){const d=new Date(today);d.setDate(d.getDate()-i);days.push(d.getFullYear()+'-'+String(d.getMonth()+1).padStart(2,'0')+'-'+String(d.getDate()).padStart(2,'0'))}
+  const all = [];
+  const chunks=[]; for(let i=0;i<days.length;i+=8) chunks.push(days.slice(i,i+8));
+  for (const c of chunks) {
+    const r = await Promise.all(c.map(d => fetch(API+'/api/sets?day='+d).then(x=>x.ok?x.json():{sets:[]}).catch(()=>({sets:[]}))));
+    for (const x of r) all.push(...(x.sets||[]));
+  }
+  return all;
+}
+function download(filename, content, mime) {
+  const blob = new Blob([content], { type: mime });
+  const url = URL.createObjectURL(blob);
+  const a = document.createElement('a');
+  a.href = url; a.download = filename; document.body.appendChild(a); a.click();
+  setTimeout(()=>{ a.remove(); URL.revokeObjectURL(url); }, 100);
+}
+$('btnExportJson').onclick = async () => {
+  toast('読込中…');
+  const all = await fetchAll();
+  download('kinntore_'+new Date().toISOString().slice(0,10)+'.json', JSON.stringify(all, null, 2), 'application/json');
+  toast(all.length+'件をエクスポートしました');
+};
+$('btnExportCsv').onclick = async () => {
+  toast('読込中…');
+  const all = await fetchAll();
+  const head = 'day,tag,exercise_name,set_no,weight,reps,recorded_at\n';
+  const rows = all.map(s => [s.day, s.tag, '"'+(s.exercise_name||'').replace(/"/g,'""')+'"', s.set_no, s.weight, s.reps, s.recorded_at||''].join(',')).join('\n');
+  download('kinntore_'+new Date().toISOString().slice(0,10)+'.csv', head + rows, 'text/csv;charset=utf-8');
+  toast(all.length+'件をCSVに出力しました');
+};
+
+// リセット
+$('btnResetLocal').onclick = () => {
+  confirmDialog('ローカル設定をリセット', '表示名・単位・ステップ・目標等のローカル設定を全て初期値に戻します。トレーニング記録 (D1) は削除されません。', () => {
+    Object.keys(localStorage).filter(k=>k.startsWith('kinntore_') && !k.startsWith('kinntore_cache')).forEach(k => localStorage.removeItem(k));
+    toast('ローカル設定をリセットしました');
+    setTimeout(()=>location.reload(), 1000);
+  });
+};
+$('btnResetAll').onclick = () => {
+  confirmDialog('全記録を削除', '本当に全てのトレーニング記録を削除しますか？この操作は取消できません。', async () => {
+    toast('削除中…');
+    const all = await fetchAll();
+    let ok = 0, ng = 0;
+    for (const s of all) {
+      try {
+        const r = await fetch(API+'/api/sets/'+s.id, { method:'DELETE' });
+        if (r.ok) ok++; else ng++;
+      } catch { ng++; }
+    }
+    localStorage.removeItem('kinntore_cache');
+    toast(`${ok}件削除しました${ng>0?' (失敗'+ng+'件)':''}`);
+  });
+};
+
+if ('serviceWorker' in navigator) window.addEventListener('load', () => navigator.serviceWorker.register('sw.js').catch(()=>{}));
+document.addEventListener('dblclick', e => e.preventDefault(), {passive:false});
+let _lt=0; document.addEventListener('touchend', e => { const n=Date.now(); if(n-_lt<300)e.preventDefault(); _lt=n; }, {passive:false});
+document.addEventListener('gesturestart', e => e.preventDefault(), {passive:false});
+</script>
+</body></html>
