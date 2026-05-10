@@ -215,7 +215,6 @@ body{font-family:var(--f-ui),var(--f-jp);color:var(--photo-text);min-height:100v
       <div class="lead" id="headDate">--</div>
       <h1 id="headGreet">こんにちは、<em id="headName">あなた</em></h1>
     </div>
-    <div class="av" id="headAvatar">K</div>
   </div>
 
   <div class="streak">
@@ -406,9 +405,6 @@ swipe.addEventListener('scroll', () => {
   const name = (localStorage.getItem('kinntore_user_name') || '').trim();
   const nameEl = document.getElementById('headName');
   if (nameEl) nameEl.textContent = name || 'あなた';
-  // アバター: 名前の先頭1文字 (アルファベットなら大文字、日本語ならその文字)
-  const av = document.getElementById('headAvatar');
-  if (av) av.textContent = name ? Array.from(name)[0].toUpperCase() : 'K';
   // 時間帯で挨拶切替
   const greetEl = document.getElementById('headGreet');
   if (greetEl) {
