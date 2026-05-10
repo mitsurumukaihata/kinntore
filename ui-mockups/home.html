@@ -8,6 +8,7 @@
 <meta name="theme-color" content="#0a0a0a">
 <link rel="manifest" href="manifest.json">
 <link rel="apple-touch-icon" href="img/icon-192.png">
+<script src="dialogue.js" defer></script>
 <title>kinntore — ホーム</title>
 <script>(function(){
   var t=localStorage.getItem('kinntore_theme');if(t==='light')document.documentElement.dataset.theme='light';
@@ -776,14 +777,55 @@ async function renderHomeData() {
     const muteChance = (!stateChanged && !dayChanged) ? (silent ? 0.30 : 0.20) : 0;
     // deepSilent は state 変化に関わらず強制ミュート (案X: msg空白 + hint最小)
     const shouldMute = deepSilent || (Math.random() < muteChance);
-    const pool = (silent ? msgQuietPool : msgLoudPool)[state] || [''];
+
+    // Dialogue engine (v1.1) で msg を選択。fallback は既存 pool
     let pickedMsg = '';
+    let pickedCharacter = null;
     if (!shouldMute) {
-      // B: 24h以内に出したセリフは除外
+      // daysSinceLast 計算 (comeback 判定用)
+      let daysSinceLast = 0;
+      if (lastSession) {
+        const lastDate = new Date(lastSession.day + 'T00:00:00');
+        daysSinceLast = Math.floor((today - lastDate) / (24 * 3600 * 1000));
+      }
+      // dailyStreak 簡易再計算
+      const dayKeys = new Set(data.filter(d => d.sets.length > 0).map(d => d.day));
+      let ds = 0;
+      const cursor = new Date(today);
+      // 今日に記録なければ昨日から
+      if (!dayKeys.has(todayKey)) cursor.setDate(cursor.getDate() - 1);
+      while (true) {
+        const k = cursor.getFullYear()+'-'+String(cursor.getMonth()+1).padStart(2,'0')+'-'+String(cursor.getDate()).padStart(2,'0');
+        if (dayKeys.has(k)) { ds++; cursor.setDate(cursor.getDate() - 1); }
+        else break;
+      }
+
+      const dialogueState = (window.mapToDialogueState ? window.mapToDialogueState({
+        isNewPB, isHuge, achieved,
+        lastVol, todayVol, daysSinceLast,
+        dailyStreak: ds, isLateNight
+      }) : null);
+
       const recentMsgs = (stateLog.recent || []).filter(r => Date.now() - r.ts < 24*3600*1000).map(r => r.msg);
-      const candidates = pool.filter(m => !recentMsgs.includes(m));
-      const fromPool = candidates.length ? candidates : pool;
-      pickedMsg = fromPool[Math.floor(Math.random() * fromPool.length)] || '';
+
+      let result = null;
+      if (window.pickDialogue && dialogueState) {
+        result = window.pickDialogue(dialogueState, {
+          recent: recentMsgs,
+          vars: { days: daysSinceLast }
+        });
+      }
+
+      if (result && result.line) {
+        pickedMsg = result.line;
+        pickedCharacter = result.character;
+      } else {
+        // fallback: 既存 pool (engine ロード失敗時)
+        const pool = (silent ? msgQuietPool : msgLoudPool)[state] || [''];
+        const candidates = pool.filter(m => !recentMsgs.includes(m));
+        const fromPool = candidates.length ? candidates : pool;
+        pickedMsg = fromPool[Math.floor(Math.random() * fromPool.length)] || '';
+      }
       // 記録
       stateLog.recent = [...(stateLog.recent || []), { msg: pickedMsg, ts: Date.now() }].slice(-20);
     }
