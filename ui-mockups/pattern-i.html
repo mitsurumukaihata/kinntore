@@ -464,13 +464,8 @@ body{font-family:var(--f-ui),var(--f-jp);color:var(--photo-text);min-height:100v
     </div>
 
     <div class="medals">
-      <div class="ttl"><h3>実績</h3><small>3 / 12 獲得</small></div>
-      <div class="row">
-        <div class="m gold"><div class="badge"><svg viewBox="0 0 24 24" fill="none"><path d="M12 2 L14 9 L22 10 L16 15 L18 22 L12 18 L6 22 L8 15 L2 10 L10 9 Z" fill="#3a2a00"/></svg></div><div class="lab"><b>3日連続</b>WEEK STREAK</div></div>
-        <div class="m silver"><div class="badge"><svg viewBox="0 0 24 24" fill="none"><path d="M12 2 L14 9 L22 10 L16 15 L18 22 L12 18 L6 22 L8 15 L2 10 L10 9 Z" fill="#222"/></svg></div><div class="lab"><b>10万kg</b>TOTAL VOLUME</div></div>
-        <div class="m bronze"><div class="badge"><svg viewBox="0 0 24 24" fill="none"><path d="M12 2 L14 9 L22 10 L16 15 L18 22 L12 18 L6 22 L8 15 L2 10 L10 9 Z" fill="#3a1f00"/></svg></div><div class="lab"><b>初挑戦</b>BENCH 80KG</div></div>
-        <div class="m locked"><div class="badge"><svg viewBox="0 0 24 24" fill="none"><path d="M12 2 L14 9 L22 10 L16 15 L18 22 L12 18 L6 22 L8 15 L2 10 L10 9 Z" fill="#444"/></svg></div><div class="lab"><b>--</b>NEXT</div></div>
-      </div>
+      <div class="ttl"><h3>実績</h3><small id="medalsCount">--</small></div>
+      <div class="row" id="medalsRow"></div>
     </div>
 
   </div>
@@ -731,8 +726,9 @@ function render(tag, opts) {
   updateTodayStats();
   // 週カレンダー & プログラム (非同期で取得)
   loadWeek(tag).then(() => renderWeekAndProgram()).catch(()=>{});
-  // ボリューム推移 (過去7セッション)
+  // ボリューム推移 (過去7セッション) と 実績
   renderVolChart(tag).catch(()=>{});
+  renderAchievements(tag);
 }
 
 // ===== 週カレンダー + 週次目標プログラム =====
@@ -743,6 +739,51 @@ function getGoal(tag){const v=+(localStorage.getItem('kinntore_goal_'+tag)||2);r
 function setGoal(tag,n){localStorage.setItem('kinntore_goal_'+tag,String(n))}
 
 let _weekCache = {}; // { tag: { 'YYYY-MM-DD': sets[] } }
+// ===== 実績: ボリューム更新の連続回数 (5/10/15/20、各部位ごと) =====
+// セッション間で部位別合計ボリュームが前回より増加していれば「更新」、減少/横ばいでリセット
+function computeStreak(tag, allSets) {
+  const byDay = {};
+  for (const s of allSets) {
+    if (s.tag !== tag) continue;
+    byDay[s.day] = (byDay[s.day]||0) + (Number(s.weight)||0)*(Number(s.reps)||0);
+  }
+  const sessions = Object.entries(byDay).sort((a,b)=>a[0].localeCompare(b[0]));
+  if (sessions.length < 2) return { current: 0, max: 0, sessions: sessions.length };
+  let cur = 0, mx = 0;
+  for (let i = 1; i < sessions.length; i++) {
+    if (sessions[i][1] > sessions[i-1][1]) { cur++; if (cur > mx) mx = cur; }
+    else cur = 0;
+  }
+  return { current: cur, max: mx, sessions: sessions.length };
+}
+
+const ACHIEVEMENT_THRESHOLDS = [5, 10, 15, 20];
+function renderAchievements(tag) {
+  const row = document.getElementById('medalsRow');
+  const count = document.getElementById('medalsCount');
+  if (!row) return;
+  // 先読みキャッシュから currentTag のセットを取得
+  let allSets = [];
+  try {
+    const pre = JSON.parse(sessionStorage.getItem('kinntore_prefetch_90d')||'null');
+    if (pre && Array.isArray(pre.data)) {
+      for (const d of pre.data) for (const s of d.sets) if (s.tag === tag) allSets.push(s);
+    }
+  } catch {}
+  const { current, max, sessions } = computeStreak(tag, allSets);
+  const badges = ACHIEVEMENT_THRESHOLDS.map((th, i) => {
+    const tier = ['gold','silver','bronze','locked'][i] || 'locked';
+    const fill = ['#3a2a00','#222','#3a1f00','#444'][i];
+    const got = max >= th;
+    const cls = got ? tier : 'locked';
+    return `<div class="m ${cls}"><div class="badge"><svg viewBox="0 0 24 24" fill="none"><path d="M12 2 L14 9 L22 10 L16 15 L18 22 L12 18 L6 22 L8 15 L2 10 L10 9 Z" fill="${got?fill:'#444'}"/></svg></div><div class="lab"><b>${th}回連続</b>VOL UP</div></div>`;
+  }).join('');
+  row.innerHTML = badges;
+  const earned = ACHIEVEMENT_THRESHOLDS.filter(t => max >= t).length;
+  const labelTag = DATA[tag]?.targetLabel || '';
+  count.innerHTML = `${labelTag} ・ <b>${earned} / 4</b> 獲得 ・ 現在 ${current}回連続更新中`;
+}
+
 // ===== ボリューム推移チャート (過去7回のセッション) =====
 async function renderVolChart(tag) {
   const svg = document.getElementById('volChart');
@@ -1251,6 +1292,7 @@ async function recordSet() {
       // 先読みキャッシュを invalidate (今日のセットが追加されたのでprefetchが古い)
       sessionStorage.removeItem('kinntore_prefetch_90d');
       renderVolChart(currentTag).catch(()=>{});
+      renderAchievements(currentTag);
     }, 350);
   } catch (e) {
     console.error(e);
@@ -1415,19 +1457,18 @@ window._swipeActive = false;
       // 現在ページを画面外へ (キャラの送り出し)
       page.style.transform = `translateX(${dir < 0 ? w : -w}px)`;
       setTimeout(() => {
-        // 反対側に瞬間移動 → 新部位描画 (silent: 内部アニメ抑制) → スライドイン
+        // 反対側に瞬間移動 → 新部位描画 (silent) → 画面外でhero-enter発火 → スライドイン
         page.style.transition = 'none';
         page.style.transform = `translateX(${dir < 0 ? -w : w}px)`;
         history.replaceState(null, '', '#' + ORDER[next]);
         render(ORDER[next], { silent: true });
+        // 画面外 (translateX±w) で hero-enter を全要素に付与 → ユーザーは消失過程を見ない
+        triggerHeroEnter(false);
         requestAnimationFrame(() => {
           page.style.transition = 'transform .32s cubic-bezier(.2,.8,.2,1)';
           page.style.transform = '';
-          // page-content スライド完了後、画像だけエントランスアニメ (バッジ/リボン消失を防ぐため imgOnly)
-          setTimeout(() => {
-            window._swipeActive = false;
-            triggerHeroEnter(true);
-          }, 340);
+          // page-content スライドと内部アニメが並行進行 → 着地時にはアニメも完了/終盤
+          setTimeout(() => { window._swipeActive = false; }, 350);
         });
       }, 300);
     } else {
