@@ -13,7 +13,7 @@
 <script>
 // 先読み: URLハッシュから対応するヒーロー画像をプリロード (描画前にbrowserが取得開始)
 (function(){
-  var ORDER={chest:1,shoulder:1,back:1,leg:1,abs:1,hip:1};
+  var ORDER={chest:1,shoulder:1,back:1,arm:1,leg:1,calf:1,abs:1,hip:1};
   var t=(location.hash||'').replace('#','');
   if(!ORDER[t]) t='chest';
   var isLight=localStorage.getItem('kinntore_theme')==='light';
@@ -733,6 +733,32 @@ const DATA = {
       {name:'ハンギングレッグレイズ', sub:'腹直筋 下部', sets:3, reps:12, state:'wait', manga:'img/manga/hanging-leg-raise.png'},
     ],
   },
+  arm: {
+    img:'img/hero-arm.png', badge:'ARM DAY · DAY 029',
+    title:'ARM<small>腕トレ</small>', level:'中級', time:'約45分',
+    vol:'4,200', bodyParts:['arm'],
+    muscles:['上腕二頭筋','上腕三頭筋','前腕'],
+    targetLabel:'腕',
+    items:[
+      {name:'バーベルカール',     sub:'上腕二頭筋', sets:4, reps:10, weight:30, state:'next'},
+      {name:'ハンマーカール',     sub:'上腕二頭筋', sets:3, reps:12, weight:14},
+      {name:'ライイングトライセプスエクステンション', sub:'上腕三頭筋', sets:3, reps:10, weight:20},
+      {name:'プレスダウン',       sub:'上腕三頭筋', sets:3, reps:12, weight:30},
+      {name:'リストカール',       sub:'前腕',     sets:3, reps:15, weight:10},
+    ],
+  },
+  calf: {
+    img:'img/hero-calf.png', badge:'CALF DAY · DAY 030',
+    title:'CALF<small>ふくらはぎトレ</small>', level:'中級', time:'約20分',
+    vol:'3,000', bodyParts:['calf'],
+    muscles:['腓腹筋','ヒラメ筋'],
+    targetLabel:'ふくらはぎ',
+    items:[
+      {name:'スタンディングカーフレイズ', sub:'腓腹筋',     sets:4, reps:15, weight:60, state:'next'},
+      {name:'シーテッドカーフレイズ',   sub:'ヒラメ筋',   sets:4, reps:15, weight:40},
+      {name:'ドンキーカーフレイズ',     sub:'腓腹筋',     sets:3, reps:20, weight:50},
+    ],
+  },
 };
 
 const $ = id => document.getElementById(id);
@@ -823,7 +849,7 @@ function getAllSetsFromCache() {
   } catch {}
   return all;
 }
-const TAG_LABEL_MAP = { chest:'胸', shoulder:'肩', back:'背中', leg:'脚', abs:'腹', hip:'お尻' };
+const TAG_LABEL_MAP = { chest:'胸', shoulder:'肩', back:'背中', arm:'腕', leg:'脚', calf:'ふくらはぎ', abs:'腹', hip:'お尻' };
 function computeAchievements(tag) {
   const all = getAllSetsFromCache();
   const list = [];
@@ -835,7 +861,7 @@ function computeAchievements(tag) {
 
   // === ファースト系 ===
   list.push({ id:'first-set', cat:'first', name:'最初の一歩', desc:'初めてセットを記録', got: totalSetCount >= 1, tier:'bronze' });
-  for (const t of ['chest','shoulder','back','leg','abs','hip']) {
+  for (const t of ['chest','shoulder','back','arm','leg','calf','abs','hip']) {
     const cnt = all.filter(s => s.tag === t).length;
     list.push({ id:'first-'+t, cat:'first', name:TAG_LABEL_MAP[t]+'初体験', desc:TAG_LABEL_MAP[t]+'トレで初セット', got: cnt >= 1, tier:'bronze' });
   }
@@ -921,7 +947,7 @@ function computeAchievements(tag) {
   }
 
   // === 全部位制覇 ===
-  const PARTS = ['chest','shoulder','back','leg','abs','hip'];
+  const PARTS = ['chest','shoulder','back','arm','leg','calf','abs','hip'];
   const allPartsEver = PARTS.every(p => all.some(s => s.tag === p));
   list.push({ id:'all-parts', cat:'special', name:'全部位制覇', desc:'6部位すべて経験', got: allPartsEver, tier:'gold' });
   // 1週間で全部位
@@ -1782,7 +1808,7 @@ window.addEventListener('hashchange', () => {
 // ===== 横スワイプで部位切替 =====
 window._swipeActive = false;
 (function() {
-  const ORDER = ['chest','shoulder','back','leg','abs','hip'];
+  const ORDER = ['chest','shoulder','back','arm','leg','calf','abs','hip'];
   const page = $('pageContent');
   let sx=0, sy=0, dx=0, dy=0, tracking=false, horizontal=false;
 

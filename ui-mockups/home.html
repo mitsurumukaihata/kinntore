@@ -160,14 +160,17 @@ body{font-family:var(--f-ui),var(--f-jp);color:var(--photo-text);min-height:100v
 .onepct-hint b{color:var(--photo-text);font-weight:700}
 .onepct.achieved .onepct-hint b{color:var(--ok)}
 
-/* 連続記録ストリップ */
-.streak{margin:8px 16px 16px;background:linear-gradient(135deg,#1a0a0c,var(--photo-card) 70%);border:1px solid rgba(230,57,70,.2);border-radius:12px;padding:14px 16px;display:flex;align-items:center;gap:14px;position:relative;overflow:hidden}
+/* 連続記録ストリップ (デイリー + 週間ハイブリッド) */
+.streak{margin:8px 16px 16px;background:linear-gradient(135deg,#1a0a0c,var(--photo-card) 70%);border:1px solid rgba(230,57,70,.2);border-radius:12px;padding:14px 16px;position:relative;overflow:hidden}
 .streak::before{content:'';position:absolute;right:-30px;top:-20px;width:140px;height:140px;background:radial-gradient(circle,rgba(230,57,70,.18) 0%,transparent 70%);pointer-events:none}
-.streak .num{font-family:var(--f-mono);font-weight:600;font-size:38px;color:var(--photo-red);line-height:.95;letter-spacing:-.02em}
-.streak .num small{display:block;font-family:var(--f-display);font-size:10px;color:var(--photo-mute);letter-spacing:.18em;margin-top:2px;font-weight:400}
-.streak .desc{flex:1}
-.streak .desc b{font-family:var(--f-jp);font-size:14px;font-weight:700;color:var(--photo-text);display:block}
-.streak .desc span{font-size:11px;color:var(--photo-mute);font-family:var(--f-jp);margin-top:3px;display:block}
+.streak-grid{display:grid;grid-template-columns:1fr 1px 1fr;gap:14px;align-items:center;margin-bottom:8px;position:relative;z-index:1}
+.streak-cell{text-align:center;min-width:0}
+.streak-divider{background:rgba(255,255,255,.08);align-self:stretch}
+.streak .num{font-family:var(--f-mono);font-weight:600;font-size:34px;color:var(--photo-red);line-height:1;letter-spacing:-.02em}
+.streak .num small{display:inline-block;font-family:var(--f-display);font-size:10px;color:var(--photo-mute);letter-spacing:.15em;margin-left:3px;font-weight:400}
+.streak-cell-label{font-family:var(--f-display);font-size:9px;letter-spacing:.18em;color:var(--photo-mute);margin-top:4px;font-weight:400}
+.streak .desc{font-family:var(--f-jp);font-size:11px;color:var(--photo-mute);margin-top:2px;line-height:1.4;text-align:center;position:relative;z-index:1}
+.streak .desc b{color:var(--photo-text);font-weight:700}
 
 /* 前回トレ カード */
 .last{margin:0 16px 16px;background:var(--photo-card);border:1px solid var(--photo-line);border-radius:12px;padding:14px 16px}
@@ -305,12 +308,19 @@ body{font-family:var(--f-ui),var(--f-jp);color:var(--photo-text);min-height:100v
     </div>
   </div>
 
-  <div class="streak">
-    <div class="num">23<small>DAYS</small></div>
-    <div class="desc">
-      <b>連続トレーニング中</b>
-      <span>このペースを維持して、来週は記録更新を狙おう。</span>
+  <div class="streak" id="streakCard">
+    <div class="streak-grid">
+      <div class="streak-cell">
+        <div class="num" id="streakDaily">0<small>日連続</small></div>
+        <div class="streak-cell-label">DAILY</div>
+      </div>
+      <div class="streak-divider"></div>
+      <div class="streak-cell">
+        <div class="num" id="streakWeekly">0<small>週連続</small></div>
+        <div class="streak-cell-label" id="streakWeekTargetLabel">週3回達成</div>
+      </div>
     </div>
+    <div class="desc" id="streakMsg">記録を始めて連続記録を作ろう。</div>
   </div>
 
   <div class="last" id="lastCard">
@@ -359,6 +369,16 @@ body{font-family:var(--f-ui),var(--f-jp);color:var(--photo-text);min-height:100v
       <img class="part-img" data-part="hip" src="img/part-hip.png" alt="hip">
       <span class="arrow">›</span>
     </a>
+    <a class="p" href="pattern-i.html#arm" data-jp="腕" data-en="ARMS">
+      <div class="stat">--</div>
+      <img class="part-img" data-part="arm" src="img/part-arm.png" alt="arm">
+      <span class="arrow">›</span>
+    </a>
+    <a class="p" href="pattern-i.html#calf" data-jp="ふくらはぎ" data-en="CALF">
+      <div class="stat">--</div>
+      <img class="part-img" data-part="calf" src="img/part-calf.png" alt="calf">
+      <span class="arrow">›</span>
+    </a>
   </div>
 
   <div class="sec"><h2>今週の統計<small>THIS WEEK</small></h2></div>
@@ -398,7 +418,7 @@ const _PART_DEFS = [
   { tag:'abs', label:'腹' },
   { tag:'hip', label:'お尻' },
 ];
-const TAG_LABEL_HOME = { chest:'胸', shoulder:'肩', back:'背中', leg:'脚', abs:'腹', hip:'お尻' };
+const TAG_LABEL_HOME = { chest:'胸', shoulder:'肩', back:'背中', arm:'腕', leg:'脚', calf:'ふくらはぎ', abs:'腹', hip:'お尻' };
 
 function buildChart(p, i, points, total, deltaPct, hasData) {
   const w=320, h=110, PAD_X=8;
@@ -496,6 +516,70 @@ async function renderHomeData() {
     const idx = Math.round(swipe.scrollLeft / w);
     dots.querySelectorAll('.d').forEach((d,i) => d.classList.toggle('on', i===idx));
   }, { passive: true });
+
+  // ===== 連続トレーニング (デイリー + 週間ハイブリッド) =====
+  (function() {
+    const dayKeys = new Set(data.filter(d => d.sets.length > 0).map(d => d.day));
+    // デイリー連続: 今日(または昨日)から遡って連続している日数
+    const todayD = new Date(); todayD.setHours(0,0,0,0);
+    const todayK = todayD.getFullYear()+'-'+String(todayD.getMonth()+1).padStart(2,'0')+'-'+String(todayD.getDate()).padStart(2,'0');
+    let dailyStreak = 0;
+    let cursor = new Date(todayD);
+    // 今日記録あり → 今日から数える / 今日無し → 昨日から (今日まだやってない人をリセットしないため)
+    if (!dayKeys.has(todayK)) cursor.setDate(cursor.getDate() - 1);
+    while (true) {
+      const k = cursor.getFullYear()+'-'+String(cursor.getMonth()+1).padStart(2,'0')+'-'+String(cursor.getDate()).padStart(2,'0');
+      if (dayKeys.has(k)) { dailyStreak++; cursor.setDate(cursor.getDate() - 1); }
+      else break;
+    }
+    // 週間連続: 月曜始まりの週ごとに集計、目標達成週が連続している数
+    const weekTarget = +(localStorage.getItem('kinntore_weekly_streak_target') || '3');
+    function isoWeekKey(d) {
+      const x = new Date(d);
+      x.setHours(0,0,0,0);
+      // 月曜始まり
+      const day = x.getDay(); // 0=Sun
+      const diff = (day === 0 ? -6 : 1 - day);
+      x.setDate(x.getDate() + diff);
+      return x.getFullYear()+'-W'+String(Math.ceil(((x-new Date(x.getFullYear(),0,1))/86400000+new Date(x.getFullYear(),0,1).getDay()+1)/7)).padStart(2,'0');
+    }
+    // 各日付を週キーに分類
+    const weekDays = {};
+    for (const d of dayKeys) {
+      const wk = isoWeekKey(new Date(d));
+      if (!weekDays[wk]) weekDays[wk] = new Set();
+      weekDays[wk].add(d);
+    }
+    // 今週から遡って、目標達成週が連続している数
+    let weeklyStreak = 0;
+    let weekCursor = new Date(todayD);
+    // 月曜にスナップ
+    const wcDay = weekCursor.getDay();
+    weekCursor.setDate(weekCursor.getDate() - (wcDay === 0 ? 6 : wcDay - 1));
+    while (true) {
+      const wk = isoWeekKey(weekCursor);
+      const cnt = (weekDays[wk] || new Set()).size;
+      if (cnt >= weekTarget) {
+        weeklyStreak++;
+        weekCursor.setDate(weekCursor.getDate() - 7);
+      } else if (weeklyStreak === 0 && wk === isoWeekKey(todayD)) {
+        // 今週がまだ目標未達でも、過去週で連続してたらそこから数える
+        weekCursor.setDate(weekCursor.getDate() - 7);
+        const prevWk = isoWeekKey(weekCursor);
+        const prevCnt = (weekDays[prevWk] || new Set()).size;
+        if (prevCnt < weekTarget) break;
+        // 続行
+      } else break;
+    }
+    // UI更新
+    document.getElementById('streakDaily').innerHTML = dailyStreak + '<small>日連続</small>';
+    document.getElementById('streakWeekly').innerHTML = weeklyStreak + '<small>週連続</small>';
+    document.getElementById('streakWeekTargetLabel').textContent = `週${weekTarget}回達成`;
+    const msg = (dailyStreak > 0 || weeklyStreak > 0)
+      ? `<b>${dailyStreak}日</b>連続 / 週${weekTarget}回目標を<b>${weeklyStreak}週</b>連続クリア`
+      : '記録を始めて連続記録を作ろう。';
+    document.getElementById('streakMsg').innerHTML = msg;
+  })();
 
   // ===== 101% ルール: 状態判定 + キャラ + メッセージ =====
   (function() {
@@ -699,7 +783,7 @@ window.addEventListener('pageshow', () => {
 // 本日にセットがあれば「本日のトレーニング」、無ければ過去14日で直近の日を「前回のトレーニング」として表示
 (async function() {
   const API = 'https://kinntore-api.33322666666mm.workers.dev';
-  const TAG_LABEL = { chest:'胸', shoulder:'肩', back:'背中', leg:'脚', abs:'腹', hip:'お尻' };
+  const TAG_LABEL = { chest:'胸', shoulder:'肩', back:'背中', arm:'腕', leg:'脚', calf:'ふくらはぎ', abs:'腹', hip:'お尻' };
   const dayKey = (d) => d.getFullYear()+'-'+String(d.getMonth()+1).padStart(2,'0')+'-'+String(d.getDate()).padStart(2,'0');
   const fmtMD = (d) => (d.getMonth()+1)+'/'+d.getDate();
   const wkdays = ['SUN','MON','TUE','WED','THU','FRI','SAT'];

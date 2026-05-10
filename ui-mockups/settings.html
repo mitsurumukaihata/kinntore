@@ -206,6 +206,22 @@ body{font-family:var(--f-ui),var(--f-jp);color:var(--photo-text);min-height:100v
           </div>
         </div>
       </div>
+      <div class="row">
+        <div class="l">
+          <div class="nm">週の連続目標</div>
+          <div class="desc">何回トレで「達成週」とするか<br>(連続記録カードに反映)</div>
+        </div>
+        <div class="r">
+          <div class="seg" id="segWeeklyTarget">
+            <button data-v="2">2</button>
+            <button data-v="3" class="on">3</button>
+            <button data-v="4">4</button>
+            <button data-v="5">5</button>
+            <button data-v="6">6</button>
+            <button data-v="7">7</button>
+          </div>
+        </div>
+      </div>
     </div>
   </div>
 
@@ -299,8 +315,8 @@ body{font-family:var(--f-ui),var(--f-jp);color:var(--photo-text);min-height:100v
 
 <script>
 const API = 'https://kinntore-api.33322666666mm.workers.dev';
-const TAGS = ['chest','shoulder','back','leg','abs','hip'];
-const TAG_LABEL = { chest:'胸', shoulder:'肩', back:'背中', leg:'脚', abs:'腹', hip:'お尻' };
+const TAGS = ['chest','shoulder','back','arm','leg','calf','abs','hip'];
+const TAG_LABEL = { chest:'胸', shoulder:'肩', back:'背中', arm:'腕', leg:'脚', calf:'ふくらはぎ', abs:'腹', hip:'お尻' };
 const $ = id => document.getElementById(id);
 
 // 設定 (localStorage)
@@ -359,6 +375,7 @@ bindSeg('segUnit','unit','kg');
 bindSeg('segWStep','weight_step','2.5');
 bindSeg('segRStep','rep_step','1');
 bindSeg('segWeekStart','week_start','1');
+bindSeg('segWeeklyTarget','weekly_streak_target','3');
 
 // 部位別目標
 function renderGoals() {
