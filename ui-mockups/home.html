@@ -213,10 +213,10 @@ body{font-family:var(--f-ui),var(--f-jp);color:var(--photo-text);min-height:100v
 
   <div class="head">
     <div class="gr">
-      <div class="lead">2026.05.09 SAT · DAY 023</div>
-      <h1>おはよう、<em>向畑さん</em></h1>
+      <div class="lead" id="headDate">--</div>
+      <h1 id="headGreet">こんにちは、<em id="headName">あなた</em></h1>
     </div>
-    <div class="av">M</div>
+    <div class="av" id="headAvatar">K</div>
   </div>
 
   <div class="streak">
@@ -392,16 +392,39 @@ swipe.addEventListener('scroll', () => {
     } catch (e) { /* prefetch失敗はサイレント */ }
   })();
 })();
-// 設定: テーマ適用 (ライトモード対応) + 部位タイル画像をテーマで切替
+// 設定: テーマ適用 + 部位タイル画像をテーマで切替 + 表示名/日付/挨拶反映
 (function() {
   const theme = localStorage.getItem('kinntore_theme') || 'dark';
   const isLight = theme === 'light';
   if (isLight) document.documentElement.setAttribute('data-theme', 'light');
-  // 部位タイルを -light 版に差替え
   document.querySelectorAll('.part-img').forEach(img => {
     const part = img.dataset.part;
     if (part) img.src = isLight ? `img/part-${part}-light.png` : `img/part-${part}.png`;
   });
+  // 表示名 (設定画面で保存した値、未設定は「あなた」)
+  const name = (localStorage.getItem('kinntore_user_name') || '').trim();
+  const nameEl = document.getElementById('headName');
+  if (nameEl) nameEl.textContent = name || 'あなた';
+  // アバター: 名前の先頭1文字 (アルファベットなら大文字、日本語ならその文字)
+  const av = document.getElementById('headAvatar');
+  if (av) av.textContent = name ? Array.from(name)[0].toUpperCase() : 'K';
+  // 時間帯で挨拶切替
+  const greetEl = document.getElementById('headGreet');
+  if (greetEl) {
+    const h = new Date().getHours();
+    const word = h < 5 ? 'こんばんは' : h < 11 ? 'おはよう' : h < 17 ? 'こんにちは' : 'こんばんは';
+    greetEl.firstChild.textContent = word + '、';
+  }
+  // 日付ライン: YYYY.MM.DD WKD · DAY N (DAY は連続日数 — 仮計算 = 当年経過日数)
+  const dateEl = document.getElementById('headDate');
+  if (dateEl) {
+    const d = new Date();
+    const y = d.getFullYear(), m = String(d.getMonth()+1).padStart(2,'0'), dd = String(d.getDate()).padStart(2,'0');
+    const wk = ['SUN','MON','TUE','WED','THU','FRI','SAT'][d.getDay()];
+    const start = new Date(y,0,1);
+    const day = Math.floor((d - start) / 86400000) + 1;
+    dateEl.textContent = `${y}.${m}.${dd} ${wk} · DAY ${day}`;
+  }
 })();
 
 // ===== 前回 / 本日のトレーニングカード =====

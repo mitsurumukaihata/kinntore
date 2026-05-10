@@ -322,9 +322,10 @@ function confirmDialog(title, msg, onYes) {
   $('cnfNo').onclick = () => $('confirm').classList.remove('on');
 }
 
-// 表示名
+// 表示名 (1文字ごとに自動保存、トースト表示はblur時のみ)
 $('setName').value = Settings.get('user_name','');
-$('setName').addEventListener('change', () => { Settings.set('user_name', $('setName').value.trim()); toast('表示名を保存しました'); });
+$('setName').addEventListener('input', () => Settings.set('user_name', $('setName').value.trim()));
+$('setName').addEventListener('change', () => toast('表示名を保存しました'));
 
 // セグメントの汎用バインド
 function bindSeg(segId, key, def) {
