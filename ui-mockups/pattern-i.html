@@ -693,13 +693,14 @@ const el = {
 };
 
 let _heroRendered = false;
-// ヒーロー登場アニメ発火 (img + label + slash に hero-enter クラスを再付与)
-function triggerHeroEnter() {
-  const targets = [el.img, document.querySelector('.hero-label'), document.querySelector('.hero .slash')];
+// ヒーロー登場アニメ発火: imgOnly=true ならキャラ画像のみ (バッジ/リボンは表示維持)
+function triggerHeroEnter(imgOnly) {
+  const targets = imgOnly
+    ? [el.img]
+    : [el.img, document.querySelector('.hero-label'), document.querySelector('.hero .slash')];
   targets.forEach(t => {
     if (!t) return;
     t.classList.remove('hero-enter');
-    // reflow してから再付与 (アニメを巻き戻す)
     void t.offsetWidth;
     t.classList.add('hero-enter');
   });
@@ -1359,10 +1360,10 @@ window._swipeActive = false;
         requestAnimationFrame(() => {
           page.style.transition = 'transform .32s cubic-bezier(.2,.8,.2,1)';
           page.style.transform = '';
-          // page-content スライド完了後、ヒーロー登場アニメを発火 (transform競合回避のため逐次)
+          // page-content スライド完了後、画像だけエントランスアニメ (バッジ/リボン消失を防ぐため imgOnly)
           setTimeout(() => {
             window._swipeActive = false;
-            triggerHeroEnter();
+            triggerHeroEnter(true);
           }, 340);
         });
       }, 300);
