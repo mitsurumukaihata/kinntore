@@ -132,7 +132,8 @@ body{font-family:var(--f-ui),var(--f-jp);color:var(--photo-text);min-height:100v
 .parts .p:hover{box-shadow:0 0 0 2px var(--photo-red-soft)}
 .parts .p img{width:100%;height:100%;object-fit:cover;object-position:center;display:block}
 .parts .p.next-up{box-shadow:0 0 0 2px var(--photo-red),0 0 18px rgba(230,57,70,.35)}
-.parts .p.next-up::before{content:'NEXT';position:absolute;top:10px;right:10px;background:var(--photo-red);color:var(--photo-text);font-family:var(--f-display);font-size:9px;letter-spacing:.18em;padding:3px 6px;border-radius:3px;z-index:3}
+.parts .p .next-flag{display:none}
+.parts .p.next-up .next-flag{display:inline-block;position:absolute;top:10px;right:10px;background:var(--photo-red);color:#fff;font-family:var(--f-display);font-size:9px;letter-spacing:.18em;padding:3px 6px;border-radius:3px;z-index:4;font-weight:400}
 .parts .p .stat{position:absolute;top:10px;left:10px;z-index:3;font-family:var(--f-mono);font-size:11px;color:var(--photo-text);background:rgba(0,0,0,.55);backdrop-filter:blur(6px);padding:3px 7px;border-radius:50px;font-weight:500;letter-spacing:-.01em}
 
 /* 統計2列 */
@@ -242,6 +243,7 @@ body{font-family:var(--f-ui),var(--f-jp);color:var(--photo-text);min-height:100v
   <div class="parts">
     <a class="p next-up" href="pattern-i.html#chest" data-jp="胸" data-en="CHEST">
       <div class="stat">3日前</div>
+      <span class="next-flag">NEXT</span>
       <img class="part-img" data-part="chest" src="img/part-chest.png" alt="胸">
       <span class="arrow">›</span>
     </a>
