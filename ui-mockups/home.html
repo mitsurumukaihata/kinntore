@@ -107,12 +107,21 @@ body{font-family:var(--f-ui),var(--f-jp);color:var(--photo-text);min-height:100v
 .head .av{width:42px;height:42px;border-radius:50%;background:linear-gradient(135deg,#2a2a2a,#0a0a0a);display:flex;align-items:center;justify-content:center;border:1px solid var(--photo-line);font-family:var(--f-jp);font-weight:700;color:var(--photo-text);font-size:16px}
 
 /* ===== 101% ルール カード (ダッシュボードのトップ) ===== */
-.onepct{position:relative;margin:8px 16px 16px;background:linear-gradient(135deg,#1f0a0e 0%,#0f0a0c 100%);border:1px solid rgba(230,57,70,.35);border-radius:16px;padding:18px 18px 16px;overflow:hidden;box-shadow:0 8px 32px rgba(230,57,70,.12)}
+.onepct{position:relative;margin:8px 16px 16px;background:linear-gradient(135deg,#1f0a0e 0%,#0f0a0c 100%);border:1px solid rgba(230,57,70,.35);border-radius:16px;padding:18px 18px 16px;overflow:hidden;box-shadow:0 8px 32px rgba(230,57,70,.12);min-height:230px}
 :root[data-theme="light"] .onepct{background:linear-gradient(135deg,#fff5f6,#fff 100%) !important;border-color:rgba(230,57,70,.3) !important}
 .onepct.achieved{background:linear-gradient(135deg,#0a1f10 0%,#0f0a0c 100%);border-color:rgba(79,176,122,.5);box-shadow:0 8px 32px rgba(79,176,122,.18)}
 :root[data-theme="light"] .onepct.achieved{background:linear-gradient(135deg,#e8fff0,#fff 100%) !important;border-color:rgba(79,176,122,.45) !important}
 .onepct-bg{position:absolute;right:-40px;top:-40px;width:180px;height:180px;background:radial-gradient(circle,rgba(230,57,70,.22) 0%,transparent 70%);filter:blur(20px);pointer-events:none}
 .onepct.achieved .onepct-bg{background:radial-gradient(circle,rgba(79,176,122,.25) 0%,transparent 70%)}
+/* キャラクター画像 (右側に配置、コンテンツとオーバーラップ) */
+.onepct-char{position:absolute;right:-18px;bottom:-12px;height:108%;width:auto;max-height:280px;z-index:1;pointer-events:none;opacity:0;transform:translateY(8px) scale(.96);transition:opacity .5s,transform .5s,filter .5s;filter:drop-shadow(0 6px 20px rgba(0,0,0,.4))}
+.onepct-char.show{opacity:1;transform:translateY(0) scale(1)}
+.onepct.achieved .onepct-char{filter:drop-shadow(0 6px 24px rgba(79,176,122,.3))}
+.onepct-content{position:relative;z-index:2;max-width:65%}
+@media (max-width:380px){
+  .onepct-content{max-width:62%}
+  .onepct-char{height:100%;max-height:240px}
+}
 .onepct-tag{font-family:var(--f-display);font-size:11px;letter-spacing:.32em;color:var(--photo-red);font-weight:400;margin-bottom:6px;text-shadow:0 0 10px rgba(230,57,70,.4)}
 .onepct.achieved .onepct-tag{color:var(--ok);text-shadow:0 0 10px rgba(79,176,122,.4)}
 .onepct-msg{font-family:var(--f-jp);font-size:14px;font-weight:700;color:var(--photo-text);margin-bottom:14px;letter-spacing:-.01em}
@@ -262,21 +271,24 @@ body{font-family:var(--f-ui),var(--f-jp);color:var(--photo-text);min-height:100v
   <!-- 101%ルール: 昨日のボリューム×1.01を超えれば成長 -->
   <div class="onepct" id="onepct">
     <div class="onepct-bg"></div>
-    <div class="onepct-tag">101% RULE</div>
-    <div class="onepct-msg" id="onepctMsg">読込中…</div>
-    <div class="onepct-row">
-      <div class="onepct-current">
-        <div class="onepct-label">今日</div>
-        <div class="onepct-val" id="onepctToday">0<small>kg</small></div>
+    <img class="onepct-char" id="onepctChar" src="img/char-encourage.png" alt="">
+    <div class="onepct-content">
+      <div class="onepct-tag">101% RULE</div>
+      <div class="onepct-msg" id="onepctMsg">読込中…</div>
+      <div class="onepct-row">
+        <div class="onepct-current">
+          <div class="onepct-label">今日</div>
+          <div class="onepct-val" id="onepctToday">0<small>kg</small></div>
+        </div>
+        <div class="onepct-arrow" id="onepctArrow">›</div>
+        <div class="onepct-target">
+          <div class="onepct-label">目標 <b>101%</b></div>
+          <div class="onepct-val target" id="onepctTarget">--<small>kg</small></div>
+        </div>
       </div>
-      <div class="onepct-arrow" id="onepctArrow">›</div>
-      <div class="onepct-target">
-        <div class="onepct-label">目標 <b>101%</b></div>
-        <div class="onepct-val target" id="onepctTarget">--<small>kg</small></div>
-      </div>
+      <div class="onepct-bar"><div class="onepct-fill" id="onepctFill" style="width:0%"></div></div>
+      <div class="onepct-hint" id="onepctHint">--</div>
     </div>
-    <div class="onepct-bar"><div class="onepct-fill" id="onepctFill" style="width:0%"></div></div>
-    <div class="onepct-hint" id="onepctHint">--</div>
   </div>
 
   <div class="streak">
@@ -485,6 +497,13 @@ async function renderHomeData() {
     const achieved = lastVol > 0 && todayVol >= target;
     const card = document.getElementById('onepct');
     const $$ = id => document.getElementById(id);
+    const charImg = $$('onepctChar');
+    // キャラを fade-in (画像load完了で表示)
+    if (charImg) {
+      const showChar = () => requestAnimationFrame(() => charImg.classList.add('show'));
+      if (charImg.complete && charImg.naturalWidth > 0) showChar();
+      else charImg.addEventListener('load', showChar, { once:true });
+    }
     if (lastVol === 0) {
       // 初日: 基準なし
       card.classList.remove('achieved');
@@ -502,11 +521,13 @@ async function renderHomeData() {
     $$('onepctFill').style.width = pct + '%';
     if (achieved) {
       card.classList.add('achieved');
+      if (charImg && !charImg.src.endsWith('char-achieve.png')) charImg.src = 'img/char-achieve.png';
       $$('onepctMsg').textContent = '🔥 101% 達成 — 昨日を超えた!';
       const surplus = todayVol - target;
       $$('onepctHint').innerHTML = `前回 <b>${lastVol.toLocaleString()}kg</b> を <b>+${surplus.toLocaleString()}kg</b> 上回った。明日もこの調子で。`;
     } else {
       card.classList.remove('achieved');
+      if (charImg && !charImg.src.endsWith('char-encourage.png')) charImg.src = 'img/char-encourage.png';
       $$('onepctMsg').textContent = '昨日より 1% を超えていこう';
       const remain = target - todayVol;
       if (todayVol === 0) {
