@@ -704,13 +704,21 @@ function triggerHeroEnter() {
     t.classList.add('hero-enter');
   });
 }
-function render(tag) {
+function render(tag, opts) {
+  opts = opts || {};
   currentTag = tag;
   const d = DATA[tag];
   const isLight = document.documentElement.dataset.theme === 'light';
   const src = isLight ? d.img.replace('.png', '-light.png') : d.img;
-  if (!_heroRendered) {
-    // 初回: フェード遅延なしで src 設定 → load 完了で登場アニメ発火
+  if (opts.silent) {
+    // スワイプ等の外部トランジション中: 内部アニメは抑制し src だけ即差替
+    el.img.src = src;
+    el.machoBg.src = src;
+    el.img.style.opacity = '1';
+    el.machoBg.style.opacity = '';
+    // hero-enter クラスが残っていたら除去 (transform重なり防止)
+    [el.img, document.querySelector('.hero-label'), document.querySelector('.hero .slash')].forEach(t => t && t.classList.remove('hero-enter'));
+  } else if (!_heroRendered) {
     _heroRendered = true;
     el.img.src = src;
     el.machoBg.src = src;
@@ -720,7 +728,6 @@ function render(tag) {
     if (el.img.complete && el.img.naturalWidth > 0) start();
     else el.img.addEventListener('load', start, { once:true });
   } else {
-    // 切替時: 一旦消して画像差替え → 再登場アニメ
     el.img.style.opacity='0';
     el.machoBg.style.opacity='0';
     setTimeout(() => {
@@ -1337,14 +1344,18 @@ window._swipeActive = false;
       let next = ORDER.indexOf(currentTag) + dir;
       if (next < 0) next = ORDER.length - 1;
       if (next >= ORDER.length) next = 0;
-      // 現在ページを画面外へ
+      // 次の画像を事前にプリロード (途中で画像が抜ける回避)
+      const isLight = document.documentElement.dataset.theme === 'light';
+      const nextSrc = isLight ? DATA[ORDER[next]].img.replace('.png','-light.png') : DATA[ORDER[next]].img;
+      const pre = new Image(); pre.src = nextSrc;
+      // 現在ページを画面外へ (キャラの送り出し)
       page.style.transform = `translateX(${dir < 0 ? w : -w}px)`;
       setTimeout(() => {
-        // 反対側に瞬間移動 → 新部位描画 → 入ってくるアニメ
+        // 反対側に瞬間移動 → 新部位描画 (silent: 内部アニメ抑制) → スライドイン
         page.style.transition = 'none';
         page.style.transform = `translateX(${dir < 0 ? -w : w}px)`;
         history.replaceState(null, '', '#' + ORDER[next]);
-        render(ORDER[next]);
+        render(ORDER[next], { silent: true });
         requestAnimationFrame(() => {
           page.style.transition = 'transform .32s cubic-bezier(.2,.8,.2,1)';
           page.style.transform = '';
