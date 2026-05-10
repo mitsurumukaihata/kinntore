@@ -47,6 +47,20 @@
 :root[data-theme="light"] .modal-head,:root[data-theme="light"] .ws-head{background:#fff}
 :root[data-theme="light"] .day-ex-head{background:#f0f0f0}
 :root[data-theme="light"] .swipe-hint{color:rgba(0,0,0,.5)}
+/* ライトモード: 暗グラデのプログラムカードを明るいピンク系に */
+:root[data-theme="light"] .program{background:linear-gradient(135deg,#ffe9eb 0%,var(--photo-card) 60%) !important;border-color:rgba(230,57,70,.25) !important}
+:root[data-theme="light"] .program::before{background:radial-gradient(circle,rgba(230,57,70,.14) 0%,transparent 70%) !important}
+/* ライトモード: ヒーロー下部グラデを白系に (テキスト見えづらさ回避) */
+:root[data-theme="light"] .hero .grad{background:linear-gradient(180deg,rgba(255,255,255,.15) 0%,transparent 28%,transparent 50%,rgba(245,245,247,.7) 85%,var(--photo-bg) 100%) !important}
+:root[data-theme="light"] .hero-label .day{background:var(--photo-red);color:#fff}
+:root[data-theme="light"] .hero-label h1{color:#0a0a0a;text-shadow:0 0 10px #fff,0 0 5px #fff}
+:root[data-theme="light"] .hero-label h1 small{color:#0a0a0a}
+:root[data-theme="light"] .hero-label .meta{color:rgba(0,0,0,.7);text-shadow:0 0 6px #fff}
+:root[data-theme="light"] .hero-label .meta .sep{background:rgba(0,0,0,.5)}
+/* ライトモード: 限界を超えろカード等の暗背景元素を救済 (もし残ってたら) */
+:root[data-theme="light"] .motiv{background:linear-gradient(135deg,#fff5f6,#fff) !important;color:#0a0a0a}
+:root[data-theme="light"] .motiv-grad{background:linear-gradient(180deg,rgba(255,255,255,0) 0%,rgba(255,255,255,.6) 100%) !important}
+:root[data-theme="light"] .motiv-glow{display:none}
 *{box-sizing:border-box;margin:0;padding:0;-webkit-tap-highlight-color:transparent}
 html,body{background:#000;overscroll-behavior-y:contain;-webkit-text-size-adjust:100%;text-size-adjust:100%;touch-action:manipulation}
 button,a,.tag,.ex,.nav-btn,.modal-close,.cta-main,.cta-ghost,.rec-btn,.rec-cta,.motiv-cta,.tab a{touch-action:manipulation;-webkit-touch-callout:none;-webkit-user-select:none;user-select:none}
