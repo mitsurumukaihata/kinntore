@@ -457,27 +457,10 @@ body{font-family:var(--f-ui),var(--f-jp);color:var(--photo-text);min-height:100v
     <div class="week" id="weekCal"></div>
 
     <div class="chart-block">
-      <div class="ttl"><h3>ボリューム推移</h3><small>直近 <b>7日間</b></small></div>
-      <svg class="line-chart" viewBox="0 0 320 100" preserveAspectRatio="none">
-        <defs><linearGradient id="grad-line" x1="0" y1="0" x2="0" y2="1">
-          <stop offset="0%" stop-color="#E63946" stop-opacity=".5"/>
-          <stop offset="100%" stop-color="#E63946" stop-opacity="0"/>
-        </linearGradient></defs>
-        <line x1="0" y1="86" x2="320" y2="86" stroke="rgba(255,255,255,0.06)" stroke-width="1"/>
-        <line x1="0" y1="56" x2="320" y2="56" stroke="rgba(255,255,255,0.04)" stroke-width="1" stroke-dasharray="2 4"/>
-        <line x1="0" y1="26" x2="320" y2="26" stroke="rgba(255,255,255,0.04)" stroke-width="1" stroke-dasharray="2 4"/>
-        <path d="M 10,72 L 60,50 L 110,62 L 160,38 L 210,46 L 260,26 L 310,14 L 310,86 L 10,86 Z" fill="url(#grad-line)"/>
-        <polyline points="10,72 60,50 110,62 160,38 210,46 260,26 310,14" fill="none" stroke="#E63946" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"/>
-        <circle cx="10" cy="72" r="3" fill="#E63946"/>
-        <circle cx="60" cy="50" r="3" fill="#E63946"/>
-        <circle cx="110" cy="62" r="3" fill="#E63946"/>
-        <circle cx="160" cy="38" r="3" fill="#E63946"/>
-        <circle cx="210" cy="46" r="3" fill="#E63946"/>
-        <circle cx="260" cy="26" r="3" fill="#E63946"/>
-        <circle cx="310" cy="14" r="4" fill="#fff" stroke="#E63946" stroke-width="2"/>
-      </svg>
-      <div class="chart-axis"><span>4/27</span><span>4/28</span><span>4/29</span><span>4/30</span><span>5/1</span><span>5/2</span><span class="on">5/3</span></div>
-      <div class="chart-foot">12,450 <small>過去7日最高</small></div>
+      <div class="ttl"><h3>ボリューム推移</h3><small>過去 <b>7回</b></small></div>
+      <svg class="line-chart" id="volChart" viewBox="0 0 320 100" preserveAspectRatio="none"></svg>
+      <div class="chart-axis" id="volAxis"></div>
+      <div class="chart-foot" id="volFoot">--</div>
     </div>
 
     <div class="medals">
@@ -748,6 +731,8 @@ function render(tag, opts) {
   updateTodayStats();
   // 週カレンダー & プログラム (非同期で取得)
   loadWeek(tag).then(() => renderWeekAndProgram()).catch(()=>{});
+  // ボリューム推移 (過去7セッション)
+  renderVolChart(tag).catch(()=>{});
 }
 
 // ===== 週カレンダー + 週次目標プログラム =====
@@ -758,6 +743,81 @@ function getGoal(tag){const v=+(localStorage.getItem('kinntore_goal_'+tag)||2);r
 function setGoal(tag,n){localStorage.setItem('kinntore_goal_'+tag,String(n))}
 
 let _weekCache = {}; // { tag: { 'YYYY-MM-DD': sets[] } }
+// ===== ボリューム推移チャート (過去7回のセッション) =====
+async function renderVolChart(tag) {
+  const svg = document.getElementById('volChart');
+  const axis = document.getElementById('volAxis');
+  const foot = document.getElementById('volFoot');
+  if (!svg) return;
+  // 先読みキャッシュ (90日分) を優先利用
+  let allSets = null;
+  try {
+    const pre = JSON.parse(sessionStorage.getItem('kinntore_prefetch_90d')||'null');
+    if (pre && Array.isArray(pre.data)) {
+      allSets = [];
+      for (const d of pre.data) for (const s of d.sets) if (s.tag === tag) allSets.push(s);
+    }
+  } catch {}
+  if (!allSets) {
+    // キャッシュ無ければ直接取得 (過去90日分を並列)
+    const today = new Date(); today.setHours(0,0,0,0);
+    const days = []; for (let i=0;i<90;i++){const d=new Date(today);d.setDate(d.getDate()-i);days.push(dayKeyOf(d))}
+    allSets = [];
+    const chunks=[]; for(let i=0;i<days.length;i+=8) chunks.push(days.slice(i,i+8));
+    for (const c of chunks) {
+      const r = await Promise.all(c.map(d => fetch(Store.API+'/api/sets?day='+d+'&tag='+encodeURIComponent(tag)).then(x=>x.ok?x.json():{sets:[]}).catch(()=>({sets:[]}))));
+      for (const x of r) for (const s of (x.sets||[])) allSets.push(s);
+    }
+  }
+  // 日ごとにボリューム集計
+  const byDay = {};
+  for (const s of allSets) {
+    byDay[s.day] = (byDay[s.day]||0) + (Number(s.weight)||0) * (Number(s.reps)||0);
+  }
+  // 最新7日 (volume>0) を取得
+  const sessions = Object.entries(byDay).sort((a,b)=>a[0].localeCompare(b[0])).slice(-7);
+  if (sessions.length === 0) {
+    svg.innerHTML = '<text x="160" y="56" text-anchor="middle" fill="#5e5e5e" font-size="11" font-family="sans-serif">記録がありません</text>';
+    axis.innerHTML = '';
+    foot.innerHTML = '0 <small>過去7回最高</small>';
+    return;
+  }
+  const W=320, H=100, PAD_X=10, PAD_Y_TOP=14, PAD_Y_BOT=14;
+  const max = Math.max(...sessions.map(s=>s[1]));
+  const min = 0;
+  const span = Math.max(1, max - min);
+  const stepX = sessions.length > 1 ? (W - PAD_X*2) / (sessions.length - 1) : 0;
+  const points = sessions.map((s, i) => {
+    const x = PAD_X + stepX * i;
+    const y = H - PAD_Y_BOT - ((s[1] - min) / span) * (H - PAD_Y_TOP - PAD_Y_BOT);
+    return { x: x.toFixed(1), y: y.toFixed(1), v: s[1], day: s[0] };
+  });
+  const linePath = points.map((p,i)=>(i===0?'M':'L')+' '+p.x+','+p.y).join(' ');
+  const areaPath = `M ${points[0].x},${H-PAD_Y_BOT} L ${points.map(p=>p.x+','+p.y).join(' L ')} L ${points[points.length-1].x},${H-PAD_Y_BOT} Z`;
+  const dots = points.map((p, i) => {
+    if (i === points.length - 1) return `<circle cx="${p.x}" cy="${p.y}" r="4" fill="#fff" stroke="#E63946" stroke-width="2"/>`;
+    return `<circle cx="${p.x}" cy="${p.y}" r="3" fill="#E63946"/>`;
+  }).join('');
+  svg.innerHTML = `
+    <defs><linearGradient id="grad-line" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0%" stop-color="#E63946" stop-opacity=".5"/>
+      <stop offset="100%" stop-color="#E63946" stop-opacity="0"/>
+    </linearGradient></defs>
+    <line x1="0" y1="${H-PAD_Y_BOT}" x2="${W}" y2="${H-PAD_Y_BOT}" stroke="rgba(255,255,255,0.06)" stroke-width="1"/>
+    <line x1="0" y1="56" x2="${W}" y2="56" stroke="rgba(255,255,255,0.04)" stroke-width="1" stroke-dasharray="2 4"/>
+    <line x1="0" y1="26" x2="${W}" y2="26" stroke="rgba(255,255,255,0.04)" stroke-width="1" stroke-dasharray="2 4"/>
+    <path d="${areaPath}" fill="url(#grad-line)"/>
+    <path d="${linePath}" fill="none" stroke="#E63946" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"/>
+    ${dots}`;
+  axis.innerHTML = sessions.map((s,i) => {
+    const d = new Date(s[0]);
+    const lbl = (d.getMonth()+1)+'/'+d.getDate();
+    const cls = i === sessions.length - 1 ? ' class="on"' : '';
+    return `<span${cls}>${lbl}</span>`;
+  }).join('');
+  foot.innerHTML = `${max.toLocaleString()} <small>過去${sessions.length}回最高</small>`;
+}
+
 async function loadWeek(tag){
   const mon = mondayOf(new Date());
   const days=[]; for(let i=0;i<7;i++){const d=new Date(mon);d.setDate(d.getDate()+i);days.push(d)}
@@ -1186,8 +1246,11 @@ async function recordSet() {
       refreshHistory();
       if (isExDoneToday(curEx.tag, curEx.item)) curEx.item.state = 'done';
       updateTodayStats();
-      // 週カレンダーを再取得して反映
+      // 週カレンダー & ボリュームチャートを再取得して反映
       loadWeek(currentTag).then(() => renderWeekAndProgram()).catch(()=>{});
+      // 先読みキャッシュを invalidate (今日のセットが追加されたのでprefetchが古い)
+      sessionStorage.removeItem('kinntore_prefetch_90d');
+      renderVolChart(currentTag).catch(()=>{});
     }, 350);
   } catch (e) {
     console.error(e);
