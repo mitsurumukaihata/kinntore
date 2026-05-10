@@ -666,21 +666,21 @@ async function renderHomeData() {
     // メッセージ + ヒントを状態別に
     const surplus = todayVol - target;
     const remain = target - todayVol;
-    // 通常モード (熱量はあるが控えめ・絵文字なし・感嘆符は新記録のみ)
-    const msgLoud = {
-      king: isNewPB ? '新記録だ。' : '今日は別格。',
-      achieve: '昨日を超えた。',
-      cheer: pctRaw >= 70 ? 'あとひと押し。' : '積み上がってる。',
-      down: '今日はここまでで十分。',
-      encourage: todayVol > 0 ? 'いいリズム。' : '今日も始めよう。',
+    // 通常モード Pool (2-3バリアント)
+    const msgLoudPool = {
+      king: isNewPB ? ['新記録だ。','歴代を抜いた。'] : ['今日は別格。','ここまで持ち上げたか。'],
+      achieve: ['昨日を超えた。','超えた。','101%。'],
+      cheer: pctRaw >= 70 ? ['あとひと押し。','もう少し。'] : ['積み上がってる。','続いてる。','悪くない。'],
+      down: ['今日はここまでで十分。','ここまでで終わろう。'],
+      encourage: todayVol > 0 ? ['いいリズム。','続いてるな。'] : ['今日も始めよう。','来たな。'],
     };
-    // silent モード (より静か・気配だけ残す)
-    const msgQuiet = {
-      king: isNewPB ? '記録、更新。' : '今日は伸びた。',
-      achieve: isLateNight ? '今日も、超えた。' : (recentlyTrained ? 'お疲れさま。' : '超えた。'),
-      cheer: pctRaw >= 70 ? 'あと少し。' : '続いてる。',
-      down: isLateNight ? 'おやすみ。' : 'また明日。',
-      encourage: isLateNight ? 'まだ起きてるのか。' : (todayVol > 0 ? 'その調子。' : '今日も来たな。'),
+    // silent モード Pool (より静か)
+    const msgQuietPool = {
+      king: isNewPB ? ['記録、更新。'] : ['今日は伸びた。'],
+      achieve: isLateNight ? ['今日も、超えた。'] : (recentlyTrained ? ['お疲れさま。','よく頑張った。'] : ['超えた。']),
+      cheer: pctRaw >= 70 ? ['あと少し。'] : ['続いてる。'],
+      down: isLateNight ? ['おやすみ。','また明日。'] : ['また明日。'],
+      encourage: isLateNight ? ['まだ起きてるのか。'] : (todayVol > 0 ? ['その調子。'] : ['今日も来たな。']),
     };
     const hintLoud = {
       king: isNewPB
@@ -701,9 +701,31 @@ async function renderHomeData() {
       down: `前回 ${lastVol.toLocaleString()}kg`,
       encourage: todayVol > 0 ? `今日 ${todayVol.toLocaleString()}kg` : `前回 ${lastVol.toLocaleString()}kg`,
     };
-    const msg = (silent ? msgQuiet : msgLoud)[state];
+    // ===== A+B+C: 表示頻度・重複防止・沈黙演出 =====
+    let stateLog = {};
+    try { stateLog = JSON.parse(localStorage.getItem('kt_101_log') || '{}'); } catch(_) {}
+    const stateChanged = stateLog.lastState !== state;
+    const dayChanged = stateLog.lastDate !== todayKey;
+    // C: 状態変化なし時のみ沈黙確率 (通常20% / silent 30%)
+    const muteChance = (!stateChanged && !dayChanged) ? (silent ? 0.30 : 0.20) : 0;
+    const shouldMute = Math.random() < muteChance;
+    const pool = (silent ? msgQuietPool : msgLoudPool)[state] || [''];
+    let pickedMsg = '';
+    if (!shouldMute) {
+      // B: 24h以内に出したセリフは除外
+      const recentMsgs = (stateLog.recent || []).filter(r => Date.now() - r.ts < 24*3600*1000).map(r => r.msg);
+      const candidates = pool.filter(m => !recentMsgs.includes(m));
+      const fromPool = candidates.length ? candidates : pool;
+      pickedMsg = fromPool[Math.floor(Math.random() * fromPool.length)] || '';
+      // 記録
+      stateLog.recent = [...(stateLog.recent || []), { msg: pickedMsg, ts: Date.now() }].slice(-20);
+    }
+    stateLog.lastState = state;
+    stateLog.lastDate = todayKey;
+    try { localStorage.setItem('kt_101_log', JSON.stringify(stateLog)); } catch(_) {}
     const hint = (silent ? hintQuiet : hintLoud)[state];
-    $$('onepctMsg').textContent = msg;
+    $$('onepctMsg').textContent = pickedMsg;
+    $$('onepctMsg').style.display = pickedMsg ? '' : 'none';
     $$('onepctHint').innerHTML = hint;
   })();
 
