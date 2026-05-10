@@ -107,7 +107,7 @@ body{font-family:var(--f-ui),var(--f-jp);color:var(--photo-text);min-height:100v
 .head .av{width:42px;height:42px;border-radius:50%;background:linear-gradient(135deg,#2a2a2a,#0a0a0a);display:flex;align-items:center;justify-content:center;border:1px solid var(--photo-line);font-family:var(--f-jp);font-weight:700;color:var(--photo-text);font-size:16px}
 
 /* ===== 101% ルール カード (ダッシュボードのトップ) ===== */
-.onepct{position:relative;margin:8px 16px 16px;background:linear-gradient(135deg,#1f0a0e 0%,#0f0a0c 100%);border:1px solid rgba(230,57,70,.35);border-radius:16px;padding:18px 18px 16px;overflow:hidden;box-shadow:0 8px 32px rgba(230,57,70,.12);min-height:230px}
+.onepct{position:relative;margin:14px 16px 22px;background:linear-gradient(135deg,#1f0a0e 0%,#0f0a0c 100%);border:1px solid rgba(230,57,70,.35);border-radius:16px;padding:22px 20px 20px;overflow:hidden;box-shadow:0 8px 32px rgba(230,57,70,.12);min-height:248px}
 :root[data-theme="light"] .onepct{background:linear-gradient(135deg,#fff5f6,#fff 100%) !important;border-color:rgba(230,57,70,.3) !important}
 .onepct.achieved{background:linear-gradient(135deg,#0a1f10 0%,#0f0a0c 100%);border-color:rgba(79,176,122,.5);box-shadow:0 8px 32px rgba(79,176,122,.18)}
 :root[data-theme="light"] .onepct.achieved{background:linear-gradient(135deg,#e8fff0,#fff 100%) !important;border-color:rgba(79,176,122,.45) !important}
@@ -136,10 +136,10 @@ body{font-family:var(--f-ui),var(--f-jp);color:var(--photo-text);min-height:100v
   .onepct-content{max-width:62%}
   .onepct-char{height:100%;max-height:240px}
 }
-.onepct-tag{font-family:var(--f-display);font-size:11px;letter-spacing:.32em;color:var(--photo-red);font-weight:400;margin-bottom:6px;text-shadow:0 0 10px rgba(230,57,70,.4)}
+.onepct-tag{font-family:var(--f-display);font-size:11px;letter-spacing:.32em;color:var(--photo-red);font-weight:400;margin-bottom:10px;text-shadow:0 0 10px rgba(230,57,70,.4)}
 .onepct.achieved .onepct-tag{color:var(--ok);text-shadow:0 0 10px rgba(79,176,122,.4)}
-.onepct-msg{font-family:var(--f-jp);font-size:14px;font-weight:700;color:var(--photo-text);margin-bottom:14px;letter-spacing:-.01em}
-.onepct-row{display:grid;grid-template-columns:1fr auto 1fr;gap:8px;align-items:end;margin-bottom:12px;position:relative;z-index:1}
+.onepct-msg{font-family:var(--f-jp);font-size:14px;font-weight:700;color:var(--photo-text);margin-bottom:18px;letter-spacing:-.01em;line-height:1.5}
+.onepct-row{display:grid;grid-template-columns:1fr auto 1fr;gap:8px;align-items:end;margin-bottom:16px;position:relative;z-index:1}
 .onepct-current,.onepct-target{min-width:0}
 .onepct-target{text-align:right}
 .onepct-label{font-family:var(--f-display);font-size:9px;letter-spacing:.18em;color:var(--photo-mute);margin-bottom:3px;font-weight:400}
@@ -156,7 +156,7 @@ body{font-family:var(--f-ui),var(--f-jp);color:var(--photo-text);min-height:100v
 :root[data-theme="light"] .onepct-bar{background:rgba(0,0,0,.08)}
 .onepct-fill{height:100%;background:linear-gradient(90deg,var(--photo-red),#f97484);border-radius:3px;transition:width .6s cubic-bezier(.2,.8,.2,1);box-shadow:0 0 12px rgba(230,57,70,.5)}
 .onepct.achieved .onepct-fill{background:linear-gradient(90deg,var(--ok),#86efac);box-shadow:0 0 12px rgba(79,176,122,.5)}
-.onepct-hint{font-family:var(--f-jp);font-size:11px;color:var(--photo-mute);margin-top:8px;letter-spacing:-.01em;position:relative;z-index:1}
+.onepct-hint{font-family:var(--f-jp);font-size:11px;color:var(--photo-mute);margin-top:12px;letter-spacing:-.01em;position:relative;z-index:1;line-height:1.6}
 .onepct-hint b{color:var(--photo-text);font-weight:700}
 .onepct.achieved .onepct-hint b{color:var(--ok)}
 /* silent モード: 静かな空気感 (深夜・トレ直後・達成直後) */
