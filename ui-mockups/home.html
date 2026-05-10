@@ -615,6 +615,10 @@ async function renderHomeData() {
     const recentlyTrained = lastSetMs > 0 && (nowMs - lastSetMs) < 30 * 60 * 1000;
     const isLateNight = hour >= 22 || hour < 5;
     const silent = isLateNight || recentlyTrained || achieved;
+    // deepSilent: 深夜 0-5時 / セット記録 5分以内 → msg を空白に、キャラ+数字のみ
+    const deepNight = hour >= 0 && hour < 5;
+    const justFinishedSet = lastSetMs > 0 && (nowMs - lastSetMs) < 5 * 60 * 1000;
+    const deepSilent = deepNight || justFinishedSet;
 
     // 状態判定 (優先度順)
     let state;
@@ -708,7 +712,8 @@ async function renderHomeData() {
     const dayChanged = stateLog.lastDate !== todayKey;
     // C: 状態変化なし時のみ沈黙確率 (通常20% / silent 30%)
     const muteChance = (!stateChanged && !dayChanged) ? (silent ? 0.30 : 0.20) : 0;
-    const shouldMute = Math.random() < muteChance;
+    // deepSilent は state 変化に関わらず強制ミュート (案X: msg空白 + hint最小)
+    const shouldMute = deepSilent || (Math.random() < muteChance);
     const pool = (silent ? msgQuietPool : msgLoudPool)[state] || [''];
     let pickedMsg = '';
     if (!shouldMute) {
