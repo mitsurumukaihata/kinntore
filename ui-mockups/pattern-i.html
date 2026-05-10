@@ -95,8 +95,8 @@ body{font-family:var(--f-ui),var(--f-jp);color:var(--photo-text);min-height:100v
 .tag:active{transform:scale(.96)}
 
 /* ヒーロー (キャラクターのみの画像 + HTML側で文字オーバーレイ + 赤ストリップアクセント) */
-.hero{position:relative;height:300px;overflow:hidden}
-.hero img{width:100%;height:100%;object-fit:cover;object-position:center 35%;display:block;transition:opacity .35s}
+.hero{position:relative;height:380px;overflow:hidden;padding-top:calc(40px + env(safe-area-inset-top));background:var(--photo-bg);box-sizing:border-box}
+.hero img{width:100%;height:100%;object-fit:cover;object-position:center 22%;display:block;transition:opacity .35s}
 /* 暗グラデで下部にテキスト乗せやすくする */
 .hero .grad{position:absolute;inset:0;background:linear-gradient(180deg,rgba(0,0,0,.35) 0%,transparent 28%,transparent 50%,rgba(10,10,10,.75) 85%,var(--photo-bg) 100%);pointer-events:none;z-index:1}
 /* 赤い斜めスラッシュ (全部位共通アクセント、腹も含む) */
