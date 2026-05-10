@@ -1359,7 +1359,11 @@ window._swipeActive = false;
         requestAnimationFrame(() => {
           page.style.transition = 'transform .32s cubic-bezier(.2,.8,.2,1)';
           page.style.transform = '';
-          setTimeout(() => { window._swipeActive = false; }, 350);
+          // page-content スライド完了後、ヒーロー登場アニメを発火 (transform競合回避のため逐次)
+          setTimeout(() => {
+            window._swipeActive = false;
+            triggerHeroEnter();
+          }, 340);
         });
       }, 300);
     } else {
