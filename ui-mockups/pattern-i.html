@@ -10,6 +10,21 @@
 <link rel="apple-touch-icon" href="img/icon-192.png">
 <title>kinntore</title>
 <script>(function(){var t=localStorage.getItem('kinntore_theme');if(t==='light')document.documentElement.dataset.theme='light';})();</script>
+<script>
+// 先読み: URLハッシュから対応するヒーロー画像をプリロード (描画前にbrowserが取得開始)
+(function(){
+  var ORDER={chest:1,shoulder:1,back:1,leg:1,abs:1,hip:1};
+  var t=(location.hash||'').replace('#','');
+  if(!ORDER[t]) t='chest';
+  var isLight=localStorage.getItem('kinntore_theme')==='light';
+  var src='img/hero-'+t+(isLight?'-light':'')+'.png';
+  // <link rel="preload"> でブラウザに早期取得させる
+  var l=document.createElement('link');l.rel='preload';l.as='image';l.href=src;document.head.appendChild(l);
+  // グローバル変数に保存して後続スクリプトから即利用
+  window.__kinntoreInitialHeroSrc=src;
+  window.__kinntoreInitialTag=t;
+})();
+</script>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Inter+Tight:wght@400;500;600;700;800;900&family=JetBrains+Mono:wght@400;500;600&family=Zen+Kaku+Gothic+New:wght@400;500;700;900&display=swap" rel="stylesheet">
@@ -372,7 +387,7 @@ body{font-family:var(--f-ui),var(--f-jp);color:var(--photo-text);min-height:100v
   <div class="ptr-label" id="ptrLabel">引っ張って更新</div>
 
   <!-- 右側に固定で残るマッチョシルエット -->
-  <div class="macho-bg"><img id="machoBg" src="img/hero-chest.png" alt=""></div>
+  <div class="macho-bg"><img id="machoBg" src="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg'/%3E" alt=""></div>
 
   <!-- 固定ヘッダー (戻る + メニュー) -->
   <div class="topbar">
@@ -384,7 +399,7 @@ body{font-family:var(--f-ui),var(--f-jp);color:var(--photo-text);min-height:100v
 
     <!-- ヒーロー -->
     <div class="hero">
-      <img id="heroImg" src="img/hero-chest.png" alt="">
+      <img id="heroImg" src="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg'/%3E" alt="" style="opacity:0">
       <div class="grad"></div>
       <div class="slash">
         <svg viewBox="0 0 180 300" preserveAspectRatio="none">
@@ -659,20 +674,32 @@ const el = {
   vol:$('statVol'), sets:$('statSets'), done:$('statDone'),
 };
 
+let _heroRendered = false;
 function render(tag) {
   currentTag = tag;
   const d = DATA[tag];
-  el.img.style.opacity='0';
-  el.machoBg.style.opacity='0';
-  setTimeout(() => {
-    // テーマに応じてヒーロー画像を切替 (light は -light サフィックス)
-    const isLight = document.documentElement.dataset.theme === 'light';
-    const src = isLight ? d.img.replace('.png', '-light.png') : d.img;
+  const isLight = document.documentElement.dataset.theme === 'light';
+  const src = isLight ? d.img.replace('.png', '-light.png') : d.img;
+  if (!_heroRendered) {
+    // 初回: フェード遅延なしで即座に正しい画像をセット (誤キャラちらつき防止)
+    _heroRendered = true;
     el.img.src = src;
     el.machoBg.src = src;
-    el.img.style.opacity='1';
-    el.machoBg.style.opacity='';
-  }, 180);
+    // 画像読込完了後に滑らかにフェードイン
+    const fadeIn = () => { el.img.style.opacity='1'; el.img.style.transition='opacity .3s'; el.machoBg.style.opacity=''; };
+    if (el.img.complete && el.img.naturalWidth > 0) fadeIn();
+    else el.img.addEventListener('load', fadeIn, { once:true });
+  } else {
+    // 切替時: フェードアウト → src差替 → フェードイン
+    el.img.style.opacity='0';
+    el.machoBg.style.opacity='0';
+    setTimeout(() => {
+      el.img.src = src;
+      el.machoBg.src = src;
+      el.img.style.opacity='1';
+      el.machoBg.style.opacity='';
+    }, 180);
+  }
   el.badge.textContent = d.badge;
   el.title.innerHTML = d.title;
   el.level.textContent = d.level;
