@@ -303,7 +303,7 @@ body{font-family:var(--f-ui),var(--f-jp);color:var(--photo-text);min-height:100v
 .unlock-overlay{position:fixed;inset:0;z-index:300;background:rgba(0,0,0,.82);backdrop-filter:blur(10px);display:flex;align-items:center;justify-content:center;animation:unlock-bg .4s ease forwards;cursor:pointer;padding:20px;-webkit-tap-highlight-color:transparent}
 .unlock-overlay.closing{animation:unlock-out .4s ease forwards}
 .unlock-content{position:relative;text-align:center;z-index:2;max-width:380px;width:100%}
-.unlock-tag{font-family:var(--f-display);font-size:12px;letter-spacing:.32em;color:var(--photo-red);margin-bottom:22px;text-shadow:0 0 12px rgba(230,57,70,.6);animation:unlock-tag .6s ease forwards;opacity:0}
+.unlock-tag{font-family:var(--f-display);font-size:12px;letter-spacing:.32em;color:var(--photo-red);margin-bottom:22px;text-shadow:0 0 12px rgba(230,57,70,.6);animation:unlock-tag .6s ease both}
 .unlock-cards{display:flex;flex-direction:column;gap:12px;max-height:60vh;overflow-y:auto;scrollbar-width:none;padding:4px}
 .unlock-cards::-webkit-scrollbar{display:none}
 /* 単一表示時: 縦並びで中央 */
@@ -319,11 +319,11 @@ body{font-family:var(--f-ui),var(--f-jp);color:var(--photo-text);min-height:100v
 .unlock-overlay.multi .unlock-card-body{flex:1;min-width:0}
 .unlock-overlay.multi .unlock-name{font-size:14px;margin-bottom:3px}
 .unlock-overlay.multi .unlock-desc{font-size:11px;max-width:none;margin:0}
-.unlock-card{position:relative;animation:unlock-card-in .7s cubic-bezier(.2,.8,.2,1) backwards;opacity:0;transform:scale(.7) translateY(20px)}
+.unlock-card{position:relative;animation:unlock-card-in .7s cubic-bezier(.2,.8,.2,1) both}
 .unlock-medal{display:flex;align-items:center;justify-content:center;box-shadow:0 8px 28px rgba(0,0,0,.5),0 0 40px rgba(230,57,70,.4);animation:unlock-medal-pulse 1.6s ease-in-out infinite}
 .unlock-name{font-family:var(--f-jp);font-weight:900;color:#fff;letter-spacing:-.01em;text-shadow:0 2px 12px rgba(0,0,0,.6)}
 .unlock-desc{font-family:var(--f-jp);color:rgba(255,255,255,.7);max-width:280px;margin:0 auto;line-height:1.5}
-.unlock-hint{font-family:var(--f-display);font-size:9px;letter-spacing:.32em;color:rgba(255,255,255,.35);margin-top:18px;animation:unlock-tag .6s ease 1s backwards}
+.unlock-hint{font-family:var(--f-display);font-size:9px;letter-spacing:.32em;color:rgba(255,255,255,.35);margin-top:18px;animation:unlock-tag .6s ease 1s both}
 .unlock-particles{position:absolute;inset:0;pointer-events:none;z-index:1}
 .unlock-particles span{position:absolute;left:50%;top:50%;width:4px;height:4px;border-radius:50%;background:#E63946;box-shadow:0 0 8px rgba(230,57,70,.8);animation:unlock-particle 1.8s ease-out forwards;opacity:0}
 .unlock-particles span:nth-child(1){--ang:0deg;animation-delay:.1s}
