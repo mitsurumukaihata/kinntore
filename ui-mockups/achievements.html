@@ -1,0 +1,319 @@
+<!DOCTYPE html>
+<html lang="ja"><head><meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,minimum-scale=1,user-scalable=no,viewport-fit=cover">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="apple-mobile-web-app-title" content="kinntore">
+<meta name="theme-color" content="#0a0a0a">
+<link rel="manifest" href="manifest.json">
+<link rel="apple-touch-icon" href="img/icon-192.png">
+<title>kinntore — 実績</title>
+<script>(function(){var t=localStorage.getItem('kinntore_theme');if(t==='light')document.documentElement.dataset.theme='light';})();</script>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Inter+Tight:wght@400;500;600;700;800;900&family=JetBrains+Mono:wght@400;500;600&family=Zen+Kaku+Gothic+New:wght@400;500;700;900&display=swap" rel="stylesheet">
+<style>
+:root{
+  --photo-bg:#0a0a0a;--photo-card:#1a1a1a;--photo-card-2:#232323;
+  --photo-line:rgba(255,255,255,0.08);--photo-line-strong:rgba(255,255,255,0.16);
+  --photo-text:#fff;--photo-mute:#9a9a9a;--photo-dim:#5e5e5e;
+  --photo-red:#E63946;--photo-red-deep:#B22838;--photo-red-soft:rgba(230,57,70,0.15);
+  --gold:#D4A04B;--silver:#A8A8A8;--bronze:#8C5A2A;--ok:#4FB07A;
+  --f-ui:'Inter Tight',-apple-system,system-ui,sans-serif;
+  --f-jp:'Zen Kaku Gothic New',-apple-system,'Hiragino Kaku Gothic ProN',sans-serif;
+  --f-display:'Bebas Neue','Inter Tight',system-ui,sans-serif;
+  --f-mono:'JetBrains Mono',ui-monospace,monospace;
+}
+:root[data-theme="light"]{
+  --photo-bg:#f4f4f5;--photo-card:#fff;--photo-card-2:#fafafa;
+  --photo-line:rgba(0,0,0,0.08);--photo-line-strong:rgba(0,0,0,0.16);
+  --photo-text:#0a0a0a;--photo-mute:#5e5e5e;--photo-dim:#9a9a9a;
+}
+:root[data-theme="light"] html,:root[data-theme="light"] body{background:#e8e8ea}
+:root[data-theme="light"] .tab{background:rgba(255,255,255,.95);border-top-color:rgba(0,0,0,.08)}
+*{box-sizing:border-box;margin:0;padding:0;-webkit-tap-highlight-color:transparent}
+html,body{background:#000;overscroll-behavior-y:contain;-webkit-text-size-adjust:100%;text-size-adjust:100%;touch-action:manipulation}
+button,a{touch-action:manipulation;-webkit-touch-callout:none;-webkit-user-select:none;user-select:none}
+body{font-family:var(--f-ui),var(--f-jp);color:var(--photo-text);min-height:100vh;-webkit-font-smoothing:antialiased;letter-spacing:-0.01em}
+.app{max-width:420px;margin:0 auto;min-height:100vh;background:var(--photo-bg);padding-top:env(safe-area-inset-top);padding-bottom:calc(90px + env(safe-area-inset-bottom));position:relative}
+
+.head{padding:22px 20px 12px;display:flex;align-items:center;gap:14px}
+.head .back{width:36px;height:36px;border-radius:50%;background:var(--photo-card);border:1px solid var(--photo-line);display:flex;align-items:center;justify-content:center;color:var(--photo-text);font-size:18px;text-decoration:none;flex-shrink:0}
+.head h1{font-family:var(--f-jp);font-size:24px;font-weight:900;letter-spacing:-.01em}
+.head h1 small{display:block;font-family:var(--f-display);font-size:10px;color:var(--photo-mute);letter-spacing:.18em;margin-top:2px;font-weight:400}
+
+.summary{margin:0 16px 18px;background:linear-gradient(135deg,#1a0a0c,var(--photo-card) 70%);border:1px solid rgba(230,57,70,.2);border-radius:14px;padding:16px 18px;position:relative;overflow:hidden}
+:root[data-theme="light"] .summary{background:linear-gradient(135deg,#ffe9eb,#fff 70%) !important}
+.summary::before{content:'';position:absolute;right:-30px;top:-20px;width:140px;height:140px;background:radial-gradient(circle,rgba(230,57,70,.18) 0%,transparent 70%);pointer-events:none}
+.summary .grand{font-family:var(--f-mono);font-size:36px;font-weight:600;color:var(--photo-red);letter-spacing:-.02em;line-height:1}
+.summary .grand small{display:inline;font-family:var(--f-display);font-size:11px;color:var(--photo-mute);letter-spacing:.18em;margin-left:6px;font-weight:400}
+.summary .progress{margin-top:10px;height:6px;background:rgba(0,0,0,.3);border-radius:3px;overflow:hidden}
+.summary .progress-fill{height:100%;background:linear-gradient(90deg,var(--photo-red),#f97484);border-radius:3px;box-shadow:0 0 10px rgba(230,57,70,.4)}
+.summary .stats{display:grid;grid-template-columns:1fr 1fr 1fr;gap:8px;margin-top:14px}
+.summary .stats .s{text-align:center}
+.summary .stats .s .l{font-family:var(--f-display);font-size:9px;color:var(--photo-mute);letter-spacing:.18em;margin-bottom:3px}
+.summary .stats .s .v{font-family:var(--f-mono);font-size:16px;font-weight:600;color:var(--photo-text);letter-spacing:-.01em}
+
+.cat-section{margin:0 16px 18px}
+.cat-head{display:flex;justify-content:space-between;align-items:baseline;padding:0 4px;margin-bottom:10px}
+.cat-head h2{font-family:var(--f-jp);font-size:15px;font-weight:900;letter-spacing:-.01em}
+.cat-head h2 small{font-family:var(--f-display);font-size:9px;color:var(--photo-dim);letter-spacing:.18em;margin-left:6px;font-weight:400}
+.cat-head .meta{font-family:var(--f-mono);font-size:11px;color:var(--photo-mute);letter-spacing:-.01em}
+.cat-head .meta b{color:var(--photo-text);font-weight:600;margin:0 1px}
+
+.ach-grid{display:grid;grid-template-columns:repeat(2,1fr);gap:8px}
+.ach-card{background:var(--photo-card);border:1px solid var(--photo-line);border-radius:10px;padding:12px;display:flex;align-items:center;gap:10px;transition:.15s;position:relative}
+.ach-card.locked{opacity:.55}
+.ach-card .b{width:42px;height:42px;border-radius:8px;display:flex;align-items:center;justify-content:center;flex-shrink:0;background:linear-gradient(135deg,#222,#111);border:1px solid #2a2a2a}
+.ach-card.gold .b{background:linear-gradient(135deg,#E8C76C,#9A7A30);border-color:var(--gold);box-shadow:0 0 12px rgba(212,160,75,.25)}
+.ach-card.silver .b{background:linear-gradient(135deg,#D8D8D8,#888);border-color:var(--silver)}
+.ach-card.bronze .b{background:linear-gradient(135deg,#C8895A,#6A3F1A);border-color:var(--bronze)}
+.ach-card .b svg{width:22px;height:22px}
+.ach-card .info{flex:1;min-width:0}
+.ach-card .info .nm{font-family:var(--f-jp);font-size:12px;font-weight:700;color:var(--photo-text);line-height:1.2;margin-bottom:3px}
+.ach-card .info .ds{font-family:var(--f-jp);font-size:10px;color:var(--photo-mute);line-height:1.3}
+.ach-card .info .dt{font-family:var(--f-mono);font-size:9px;color:var(--photo-red);letter-spacing:-.01em;margin-top:3px}
+.ach-card .info .dt::before{content:'★ ';color:var(--photo-red)}
+
+.tab{position:fixed;bottom:0;left:50%;transform:translateX(-50%);width:100%;max-width:420px;background:rgba(10,10,10,.95);backdrop-filter:blur(12px);border-top:1px solid var(--photo-line);padding:10px 8px calc(28px + env(safe-area-inset-bottom));display:grid;grid-template-columns:repeat(5,1fr);gap:4px;z-index:30}
+.tab a{display:flex;flex-direction:column;align-items:center;gap:4px;font-size:10px;color:var(--photo-dim);text-decoration:none;letter-spacing:.04em;cursor:pointer;font-family:var(--f-jp);font-weight:700;padding:4px 0}
+.tab a.on{color:var(--photo-red)}
+.tab a .ic{font-size:18px;line-height:1;font-family:var(--f-ui)}
+
+.loading{text-align:center;padding:40px;color:var(--photo-mute);font-family:var(--f-display);font-size:11px;letter-spacing:.18em}
+</style>
+</head>
+<body>
+<div class="app">
+  <div class="head">
+    <a class="back" href="home.html">‹</a>
+    <div>
+      <h1>実績<small>ACHIEVEMENTS</small></h1>
+    </div>
+  </div>
+
+  <div class="summary" id="summary">
+    <div class="grand"><span id="earnedCount">0</span><small>/ <span id="totalCount">0</span> 解除</small></div>
+    <div class="progress"><div class="progress-fill" id="progFill" style="width:0%"></div></div>
+    <div class="stats">
+      <div class="s"><div class="l">SESSIONS</div><div class="v" id="sStats">0</div></div>
+      <div class="s"><div class="l">TOTAL VOL</div><div class="v" id="vStats">0kg</div></div>
+      <div class="s"><div class="l">MAX STREAK</div><div class="v" id="streakStats">0d</div></div>
+    </div>
+  </div>
+
+  <div id="content"><div class="loading">読込中…</div></div>
+</div>
+
+<div class="tab">
+  <a href="home.html"><span class="ic">⌂</span>ホーム</a>
+  <a href="record.html"><span class="ic">▤</span>記録</a>
+  <a href="pattern-i.html#chest"><span class="ic">☰</span>メニュー</a>
+  <a href="progress.html"><span class="ic">◢</span>進捗</a>
+  <a href="settings.html"><span class="ic">⚙</span>設定</a>
+</div>
+
+<script>
+const API = 'https://kinntore-api.33322666666mm.workers.dev';
+const TAG_LABEL_MAP = { chest:'胸', shoulder:'肩', back:'背中', leg:'脚', abs:'腹', hip:'お尻' };
+const PARTS = ['chest','shoulder','back','leg','abs','hip'];
+const $ = id => document.getElementById(id);
+
+function dayKeyOf(d){return d.getFullYear()+'-'+String(d.getMonth()+1).padStart(2,'0')+'-'+String(d.getDate()).padStart(2,'0')}
+
+async function fetchAll() {
+  // 先読みキャッシュを使用 (無ければ取得)
+  try {
+    const pre = JSON.parse(sessionStorage.getItem('kinntore_prefetch_90d')||'null');
+    if (pre && (Date.now() - pre.ts) < 5*60*1000 && Array.isArray(pre.data)) {
+      const all = []; for (const d of pre.data) for (const s of d.sets) all.push(s);
+      return all;
+    }
+  } catch {}
+  const today = new Date(); today.setHours(0,0,0,0);
+  const days = []; for (let i=0;i<90;i++){const d=new Date(today);d.setDate(d.getDate()-i);days.push(dayKeyOf(d))}
+  const all = [];
+  const chunks = []; for (let i=0;i<days.length;i+=8) chunks.push(days.slice(i,i+8));
+  for (const c of chunks) {
+    const r = await Promise.all(c.map(d => fetch(API+'/api/sets?day='+d).then(x=>x.ok?x.json():{sets:[]}).catch(()=>({sets:[]}))));
+    for (const x of r) all.push(...(x.sets||[]));
+  }
+  return all;
+}
+
+function computeAll(allSets) {
+  const list = [];
+  const totalSetCount = allSets.length;
+  const dayKeys = new Set(allSets.map(s => s.day));
+  const sessionCount = dayKeys.size;
+  const totalVol = allSets.reduce((s,x)=>s+(+x.weight||0)*(+x.reps||0), 0);
+  const totalReps = allSets.reduce((s,x)=>s+(+x.reps||0), 0);
+  list.push({ id:'first-set', cat:'first', name:'最初の一歩', desc:'初めてセットを記録', got: totalSetCount >= 1, tier:'bronze' });
+  for (const t of PARTS) {
+    list.push({ id:'first-'+t, cat:'first', name:TAG_LABEL_MAP[t]+'初体験', desc:TAG_LABEL_MAP[t]+'トレで初セット', got: allSets.some(s => s.tag === t), tier:'bronze' });
+  }
+  const has100kg = allSets.some(s => (+s.weight||0) * (+s.reps||0) >= 100);
+  list.push({ id:'first-100kg', cat:'first', name:'重量級デビュー', desc:'1セットで100kg超', got: has100kg, tier:'silver' });
+
+  for (const [th, tier] of [[1,'bronze'],[3,'bronze'],[7,'silver'],[14,'silver'],[30,'gold'],[50,'gold'],[100,'gold'],[365,'gold']]) {
+    list.push({ id:'sessions-'+th, cat:'sessions', name:th+'セッション', desc:th+'回トレーニング', got: sessionCount >= th, tier });
+  }
+
+  for (const [th, label, tier] of [[1000,'1,000kg','bronze'],[10000,'1万kg','silver'],[100000,'10万kg','gold'],[500000,'50万kg','gold'],[1000000,'100万kg','gold']]) {
+    list.push({ id:'totalvol-'+th, cat:'volume', name:'累計 '+label, desc:'通算ボリューム'+label, got: totalVol >= th, tier });
+  }
+
+  const dayVol = {};
+  for (const s of allSets) dayVol[s.day] = (dayVol[s.day]||0) + (+s.weight||0)*(+s.reps||0);
+  const maxDayVol = Object.values(dayVol).reduce((a,b)=>Math.max(a,b), 0);
+  for (const [th, label, tier] of [[1000,'1,000kg','bronze'],[5000,'5,000kg','silver'],[10000,'10,000kg','gold'],[30000,'30,000kg','gold']]) {
+    list.push({ id:'dayvol-'+th, cat:'volume', name:'1日 '+label, desc:'1日で'+label+'到達', got: maxDayVol >= th, tier });
+  }
+
+  const sortedDays = [...dayKeys].sort();
+  let maxStreak = 0, curStreak = 0, prev = null;
+  for (const d of sortedDays) {
+    if (prev) {
+      const diff = (new Date(d) - new Date(prev)) / 86400000;
+      if (diff === 1) curStreak++; else if (diff > 1) curStreak = 1;
+    } else curStreak = 1;
+    if (curStreak > maxStreak) maxStreak = curStreak;
+    prev = d;
+  }
+  for (const [th, tier] of [[3,'bronze'],[7,'silver'],[14,'silver'],[30,'gold'],[60,'gold'],[100,'gold']]) {
+    list.push({ id:'streak-'+th, cat:'streak', name:th+'日連続', desc:th+'日連続トレーニング', got: maxStreak >= th, tier });
+  }
+
+  // 部位別連続更新 (全6部位分)
+  for (const t of PARTS) {
+    const byDay = {};
+    for (const s of allSets) if (s.tag === t) byDay[s.day] = (byDay[s.day]||0) + (+s.weight||0)*(+s.reps||0);
+    const sess = Object.entries(byDay).sort((a,b)=>a[0].localeCompare(b[0]));
+    let mxUp = 0, curUp = 0;
+    for (let i=1;i<sess.length;i++) {
+      if (sess[i][1] > sess[i-1][1]) { curUp++; if (curUp > mxUp) mxUp = curUp; }
+      else curUp = 0;
+    }
+    for (const [th, tier] of [[5,'silver'],[10,'gold'],[15,'gold'],[20,'gold']]) {
+      list.push({ id:'volup-'+t+'-'+th, cat:'pr', name:TAG_LABEL_MAP[t]+' VOL UP '+th, desc:TAG_LABEL_MAP[t]+'を'+th+'回連続更新', got: mxUp >= th, tier });
+    }
+  }
+
+  const exNames = new Set(allSets.map(s => s.exercise_name));
+  for (const [th, tier] of [[3,'bronze'],[5,'bronze'],[10,'silver'],[20,'gold']]) {
+    list.push({ id:'variety-'+th, cat:'variety', name:th+'種目制覇', desc:th+'種類の種目を体験', got: exNames.size >= th, tier });
+  }
+
+  const dayExCount = {};
+  for (const s of allSets) {
+    if (!dayExCount[s.day]) dayExCount[s.day] = new Set();
+    dayExCount[s.day].add(s.exercise_name);
+  }
+  const maxDayEx = Object.values(dayExCount).reduce((a,b)=>Math.max(a,b.size), 0);
+  for (const [th, tier] of [[3,'bronze'],[5,'silver'],[7,'gold']]) {
+    list.push({ id:'dayex-'+th, cat:'volume', name:'1日'+th+'種目', desc:'1日に'+th+'種目以上トレ', got: maxDayEx >= th, tier });
+  }
+
+  const maxSetW = allSets.reduce((m,s)=>Math.max(m, (+s.weight||0)), 0);
+  for (const [th, tier] of [[20,'bronze'],[40,'bronze'],[60,'silver'],[80,'silver'],[100,'gold'],[120,'gold'],[150,'gold']]) {
+    list.push({ id:'maxw-'+th, cat:'pr', name:'1セット '+th+'kg', desc:th+'kg持ち上げた', got: maxSetW >= th, tier });
+  }
+
+  for (const [th, tier] of [[100,'bronze'],[500,'silver'],[1000,'silver'],[5000,'gold'],[10000,'gold']]) {
+    list.push({ id:'reps-'+th, cat:'volume', name:'累計 '+th+' レップ', desc:'通算'+th+'回挙上', got: totalReps >= th, tier });
+  }
+
+  list.push({ id:'all-parts', cat:'special', name:'全部位制覇', desc:'6部位すべて経験', got: PARTS.every(p => allSets.some(s => s.tag === p)), tier:'gold' });
+  const today = new Date(); today.setHours(0,0,0,0);
+  const recent7 = new Set();
+  for (const s of allSets) {
+    const sd = new Date(s.day); sd.setHours(0,0,0,0);
+    if ((today - sd) / 86400000 <= 7) recent7.add(s.tag);
+  }
+  list.push({ id:'all-parts-week', cat:'special', name:'週間6部位', desc:'1週間で全6部位トレ', got: PARTS.every(p => recent7.has(p)), tier:'gold' });
+
+  const earlyCount = allSets.filter(s => s.recorded_at && /^0[0-5]:|^06:0/.test(s.recorded_at)).length;
+  const nightCount = allSets.filter(s => s.recorded_at && /^(2[2-3]|0[0-3]):/.test(s.recorded_at)).length;
+  for (const [th, tier] of [[1,'bronze'],[5,'silver'],[20,'gold']]) {
+    list.push({ id:'morning-'+th, cat:'special', name:'早朝戦士 '+th, desc:'6時前のトレ '+th+'回', got: earlyCount >= th, tier });
+  }
+  for (const [th, tier] of [[1,'bronze'],[5,'silver'],[20,'gold']]) {
+    list.push({ id:'night-'+th, cat:'special', name:'夜更かしトレ '+th, desc:'22時以降のトレ '+th+'回', got: nightCount >= th, tier });
+  }
+
+  const weekendCount = allSets.filter(s => { const d = new Date(s.day); return d.getDay() === 0 || d.getDay() === 6 }).length;
+  for (const [th, tier] of [[1,'bronze'],[10,'silver'],[30,'gold']]) {
+    list.push({ id:'weekend-'+th, cat:'special', name:'週末王者 '+th, desc:'土日トレ '+th+'回', got: weekendCount >= th, tier });
+  }
+
+  return { list, stats: { totalVol, sessionCount, maxStreak, totalSetCount, exVariety: exNames.size, maxSetW, totalReps } };
+}
+
+const CATEGORIES = [
+  { id:'first', name:'ファースト', en:'FIRSTS' },
+  { id:'sessions', name:'セッション数', en:'SESSIONS' },
+  { id:'streak', name:'連続日数', en:'STREAK' },
+  { id:'volume', name:'ボリューム', en:'VOLUME' },
+  { id:'pr', name:'PR / 重量', en:'PR' },
+  { id:'variety', name:'種目バリエーション', en:'VARIETY' },
+  { id:'special', name:'スペシャル', en:'SPECIAL' },
+];
+
+function renderCategory(cat, list, unlocked) {
+  const items = list.filter(a => a.cat === cat.id);
+  if (items.length === 0) return '';
+  const earned = items.filter(a => a.got).length;
+  const fills = { gold:'#3a2a00', silver:'#222', bronze:'#3a1f00' };
+  const cards = items.map(a => {
+    const cls = a.got ? a.tier : 'locked';
+    const f = a.got ? fills[a.tier] : '#444';
+    const dt = unlocked[a.id] ? new Date(unlocked[a.id]) : null;
+    const dtStr = dt ? `${dt.getFullYear()}/${dt.getMonth()+1}/${dt.getDate()} 解除` : '';
+    return `<div class="ach-card ${cls}">
+      <div class="b"><svg viewBox="0 0 24 24" fill="none"><path d="M12 2 L14 9 L22 10 L16 15 L18 22 L12 18 L6 22 L8 15 L2 10 L10 9 Z" fill="${f}"/></svg></div>
+      <div class="info">
+        <div class="nm">${a.name}</div>
+        <div class="ds">${a.desc}</div>
+        ${dtStr ? `<div class="dt">${dtStr}</div>` : ''}
+      </div>
+    </div>`;
+  }).join('');
+  return `<div class="cat-section">
+    <div class="cat-head">
+      <h2>${cat.name}<small>${cat.en}</small></h2>
+      <div class="meta"><b>${earned}</b>/${items.length}</div>
+    </div>
+    <div class="ach-grid">${cards}</div>
+  </div>`;
+}
+
+(async () => {
+  const allSets = await fetchAll();
+  const { list, stats } = computeAll(allSets);
+  let unlocked = {};
+  try { unlocked = JSON.parse(localStorage.getItem('kinntore_unlocked')||'{}') } catch {}
+  // 未記録の解除済みも遡って記録
+  let updated = false;
+  for (const a of list) {
+    if (a.got && !unlocked[a.id]) { unlocked[a.id] = new Date().toISOString(); updated = true; }
+  }
+  if (updated) localStorage.setItem('kinntore_unlocked', JSON.stringify(unlocked));
+
+  const earned = list.filter(a => a.got).length;
+  $('earnedCount').textContent = earned;
+  $('totalCount').textContent = list.length;
+  $('progFill').style.width = (earned/list.length*100).toFixed(1) + '%';
+  $('sStats').textContent = stats.sessionCount;
+  $('vStats').textContent = (stats.totalVol/1000).toFixed(1) + 't';
+  $('streakStats').textContent = stats.maxStreak + 'd';
+
+  $('content').innerHTML = CATEGORIES.map(c => renderCategory(c, list, unlocked)).join('');
+})();
+
+if ('serviceWorker' in navigator) window.addEventListener('load', () => navigator.serviceWorker.register('sw.js').catch(()=>{}));
+document.addEventListener('dblclick', e => e.preventDefault(), {passive:false});
+let _lt=0; document.addEventListener('touchend', e => { const n=Date.now(); if(n-_lt<300)e.preventDefault(); _lt=n; }, {passive:false});
+document.addEventListener('gesturestart', e => e.preventDefault(), {passive:false});
+</script>
+</body></html>

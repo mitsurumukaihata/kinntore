@@ -299,6 +299,51 @@ body{font-family:var(--f-ui),var(--f-jp);color:var(--photo-text);min-height:100v
 .medals .m .lab{font-size:10px;color:var(--photo-mute);margin-top:6px;line-height:1.2;font-family:var(--f-jp)}
 .medals .m .lab b{color:var(--photo-text);display:block;font-size:11px;font-weight:700}
 
+/* ===== 実績解除ポップアップ ===== */
+.unlock-overlay{position:fixed;inset:0;z-index:300;background:rgba(0,0,0,.78);backdrop-filter:blur(8px);display:flex;align-items:center;justify-content:center;animation:unlock-bg .4s ease forwards;cursor:pointer}
+.unlock-overlay.closing{animation:unlock-out .4s ease forwards}
+.unlock-card{position:relative;text-align:center;z-index:2;animation:unlock-card-in .8s cubic-bezier(.2,.8,.2,1) forwards;opacity:0;transform:scale(.6) rotate(-4deg)}
+.unlock-tag{font-family:var(--f-display);font-size:11px;letter-spacing:.32em;color:var(--photo-red);margin-bottom:18px;text-shadow:0 0 12px rgba(230,57,70,.6);animation:unlock-tag .6s ease .2s backwards}
+.unlock-medal{width:120px;height:120px;border-radius:24px;margin:0 auto 18px;display:flex;align-items:center;justify-content:center;box-shadow:0 12px 40px rgba(0,0,0,.6),0 0 60px rgba(230,57,70,.5);animation:unlock-medal-pulse 1.5s ease-in-out 1s infinite}
+.unlock-medal svg{width:64px;height:64px}
+.unlock-name{font-family:var(--f-jp);font-size:22px;font-weight:900;color:#fff;margin-bottom:6px;letter-spacing:-.01em;text-shadow:0 2px 12px rgba(0,0,0,.6)}
+.unlock-desc{font-family:var(--f-jp);font-size:12px;color:rgba(255,255,255,.7);max-width:280px;margin:0 auto;line-height:1.5}
+.unlock-particles{position:absolute;inset:0;pointer-events:none;z-index:1}
+.unlock-particles span{position:absolute;left:50%;top:50%;width:4px;height:4px;border-radius:50%;background:#E63946;box-shadow:0 0 8px rgba(230,57,70,.8);animation:unlock-particle 1.8s ease-out forwards;opacity:0}
+.unlock-particles span:nth-child(1){--ang:0deg;animation-delay:.1s}
+.unlock-particles span:nth-child(2){--ang:30deg;animation-delay:.15s;background:#fff;box-shadow:0 0 8px #fff}
+.unlock-particles span:nth-child(3){--ang:60deg;animation-delay:.2s}
+.unlock-particles span:nth-child(4){--ang:90deg;animation-delay:.05s;background:#fff;box-shadow:0 0 8px #fff}
+.unlock-particles span:nth-child(5){--ang:120deg;animation-delay:.18s}
+.unlock-particles span:nth-child(6){--ang:150deg;animation-delay:.12s}
+.unlock-particles span:nth-child(7){--ang:180deg;animation-delay:.08s;background:#fff;box-shadow:0 0 8px #fff}
+.unlock-particles span:nth-child(8){--ang:210deg;animation-delay:.22s}
+.unlock-particles span:nth-child(9){--ang:240deg;animation-delay:.06s}
+.unlock-particles span:nth-child(10){--ang:270deg;animation-delay:.16s;background:#fff;box-shadow:0 0 8px #fff}
+.unlock-particles span:nth-child(11){--ang:300deg;animation-delay:.1s}
+.unlock-particles span:nth-child(12){--ang:330deg;animation-delay:.2s}
+@keyframes unlock-bg{from{opacity:0}to{opacity:1}}
+@keyframes unlock-out{from{opacity:1}to{opacity:0}}
+@keyframes unlock-card-in{
+  0%{opacity:0;transform:scale(.6) rotate(-4deg)}
+  60%{opacity:1;transform:scale(1.08) rotate(2deg)}
+  85%{transform:scale(.98) rotate(-1deg)}
+  100%{opacity:1;transform:scale(1) rotate(0deg)}
+}
+@keyframes unlock-tag{
+  from{opacity:0;letter-spacing:.5em;transform:translateY(-6px)}
+  to{opacity:1;letter-spacing:.32em;transform:translateY(0)}
+}
+@keyframes unlock-medal-pulse{
+  0%,100%{box-shadow:0 12px 40px rgba(0,0,0,.6),0 0 60px rgba(230,57,70,.5)}
+  50%{box-shadow:0 14px 50px rgba(0,0,0,.7),0 0 90px rgba(230,57,70,.8)}
+}
+@keyframes unlock-particle{
+  0%{opacity:0;transform:translate(-50%,-50%) rotate(var(--ang)) translateY(0) scale(.5)}
+  20%{opacity:1}
+  100%{opacity:0;transform:translate(-50%,-50%) rotate(var(--ang)) translateY(-180px) scale(.2)}
+}
+
 /* ワークアウトを開始 → 種目シート (ボトムシート) */
 .ws-modal{position:fixed;inset:0;z-index:75;background:rgba(0,0,0,.7);backdrop-filter:blur(6px);display:none;align-items:flex-end;justify-content:center}
 .ws-modal.on{display:flex;animation:mfade .2s ease}
@@ -753,7 +798,6 @@ function setGoal(tag,n){localStorage.setItem('kinntore_goal_'+tag,String(n))}
 
 let _weekCache = {}; // { tag: { 'YYYY-MM-DD': sets[] } }
 // ===== 実績システム =====
-// 全部位横断のセットから全カテゴリの達成度を算出
 function getAllSetsFromCache() {
   let all = [];
   try {
@@ -764,32 +808,32 @@ function getAllSetsFromCache() {
   } catch {}
   return all;
 }
+const TAG_LABEL_MAP = { chest:'胸', shoulder:'肩', back:'背中', leg:'脚', abs:'腹', hip:'お尻' };
 function computeAchievements(tag) {
   const all = getAllSetsFromCache();
-  const TAG_LABEL = { chest:'胸', shoulder:'肩', back:'背中', leg:'脚', abs:'腹', hip:'お尻' };
   const list = [];
-  // === ファースト系 (低しきい値) ===
   const totalSetCount = all.length;
+  const dayKeys = new Set(all.map(s => s.day));
+  const sessionCount = dayKeys.size;
+  const totalVol = all.reduce((s,x)=>s+(+x.weight||0)*(+x.reps||0), 0);
+  const totalReps = all.reduce((s,x)=>s+(+x.reps||0), 0);
+
+  // === ファースト系 ===
   list.push({ id:'first-set', cat:'first', name:'最初の一歩', desc:'初めてセットを記録', got: totalSetCount >= 1, tier:'bronze' });
-  // 部位初体験
   for (const t of ['chest','shoulder','back','leg','abs','hip']) {
     const cnt = all.filter(s => s.tag === t).length;
-    list.push({ id:'first-'+t, cat:'first', name:TAG_LABEL[t]+'初体験', desc:TAG_LABEL[t]+'トレで初セット', got: cnt >= 1, tier:'bronze' });
+    list.push({ id:'first-'+t, cat:'first', name:TAG_LABEL_MAP[t]+'初体験', desc:TAG_LABEL_MAP[t]+'トレで初セット', got: cnt >= 1, tier:'bronze' });
   }
-  // 100kg級セット
   const has100kg = all.some(s => (+s.weight||0) * (+s.reps||0) >= 100);
   list.push({ id:'first-100kg', cat:'first', name:'重量級デビュー', desc:'1セットで100kg超', got: has100kg, tier:'silver' });
 
-  // === セッション数 (記録のあった日数) ===
-  const dayKeys = new Set(all.map(s => s.day));
-  const sessionCount = dayKeys.size;
-  for (const [th, tier] of [[1,'bronze'],[3,'bronze'],[7,'silver'],[14,'silver'],[30,'gold'],[50,'gold'],[100,'gold']]) {
+  // === セッション数 ===
+  for (const [th, tier] of [[1,'bronze'],[3,'bronze'],[7,'silver'],[14,'silver'],[30,'gold'],[50,'gold'],[100,'gold'],[365,'gold']]) {
     list.push({ id:'sessions-'+th, cat:'sessions', name:th+'セッション', desc:th+'回トレーニング達成', got: sessionCount >= th, tier });
   }
 
   // === 累計ボリューム ===
-  const totalVol = all.reduce((s,x)=>s+(+x.weight||0)*(+x.reps||0), 0);
-  for (const [th, label, tier] of [[1000,'1,000kg','bronze'],[10000,'1万kg','silver'],[100000,'10万kg','gold'],[1000000,'100万kg','gold']]) {
+  for (const [th, label, tier] of [[1000,'1,000kg','bronze'],[10000,'1万kg','silver'],[100000,'10万kg','gold'],[500000,'50万kg','gold'],[1000000,'100万kg','gold']]) {
     list.push({ id:'totalvol-'+th, cat:'volume', name:'累計 '+label, desc:'通算ボリューム'+label, got: totalVol >= th, tier });
   }
 
@@ -801,10 +845,9 @@ function computeAchievements(tag) {
     list.push({ id:'dayvol-'+th, cat:'volume', name:'1日 '+label, desc:'1日で'+label+'到達', got: maxDayVol >= th, tier });
   }
 
-  // === 連続日数 (streak) ===
+  // === 連続日数 ===
   const sortedDays = [...dayKeys].sort();
-  let maxStreak = 0, curStreak = 0;
-  let prev = null;
+  let maxStreak = 0, curStreak = 0, prev = null;
   for (const d of sortedDays) {
     if (prev) {
       const diff = (new Date(d) - new Date(prev)) / 86400000;
@@ -818,7 +861,7 @@ function computeAchievements(tag) {
     list.push({ id:'streak-'+th, cat:'streak', name:th+'日連続', desc:th+'日連続トレーニング', got: maxStreak >= th, tier });
   }
 
-  // === 部位別 ボリューム連続更新 (現タグ) ===
+  // === 部位別連続ボリューム更新 (現タグ) ===
   const byDayTag = {};
   for (const s of all) if (s.tag === tag) {
     byDayTag[s.day] = (byDayTag[s.day]||0) + (+s.weight||0)*(+s.reps||0);
@@ -829,11 +872,130 @@ function computeAchievements(tag) {
     if (sess[i][1] > sess[i-1][1]) { curUp++; if (curUp > mxUp) mxUp = curUp; }
     else curUp = 0;
   }
-  const tagLabel = TAG_LABEL[tag] || '';
+  const tagLbl = TAG_LABEL_MAP[tag] || '';
   for (const [th, tier] of [[5,'silver'],[10,'gold'],[15,'gold'],[20,'gold']]) {
-    list.push({ id:'volup-'+tag+'-'+th, cat:'pr', name:tagLabel+' VOL UP '+th, desc:tagLabel+'を'+th+'回連続更新', got: mxUp >= th, tier });
+    list.push({ id:'volup-'+tag+'-'+th, cat:'pr', name:tagLbl+' VOL UP '+th, desc:tagLbl+'を'+th+'回連続更新', got: mxUp >= th, tier });
   }
-  return { list, stats: { totalVol, sessionCount, maxStreak, currentVolUpStreak: curUp, totalSetCount } };
+
+  // === 種目バリエーション ===
+  const exNames = new Set(all.map(s => s.exercise_name));
+  for (const [th, tier] of [[3,'bronze'],[5,'bronze'],[10,'silver'],[20,'gold']]) {
+    list.push({ id:'variety-'+th, cat:'variety', name:th+'種目制覇', desc:th+'種類の種目を体験', got: exNames.size >= th, tier });
+  }
+
+  // === 1日の種目数 ===
+  const dayExCount = {};
+  for (const s of all) {
+    if (!dayExCount[s.day]) dayExCount[s.day] = new Set();
+    dayExCount[s.day].add(s.exercise_name);
+  }
+  const maxDayEx = Object.values(dayExCount).reduce((a,b)=>Math.max(a,b.size), 0);
+  for (const [th, tier] of [[3,'bronze'],[5,'silver'],[7,'gold']]) {
+    list.push({ id:'dayex-'+th, cat:'volume', name:'1日'+th+'種目', desc:'1日に'+th+'種目以上トレ', got: maxDayEx >= th, tier });
+  }
+
+  // === 1セット最大重量 ===
+  const maxSetW = all.reduce((m,s)=>Math.max(m, (+s.weight||0)), 0);
+  for (const [th, tier] of [[20,'bronze'],[40,'bronze'],[60,'silver'],[80,'silver'],[100,'gold'],[120,'gold'],[150,'gold']]) {
+    list.push({ id:'maxw-'+th, cat:'pr', name:'1セット '+th+'kg', desc:th+'kg持ち上げた', got: maxSetW >= th, tier });
+  }
+
+  // === 累計レップ数 ===
+  for (const [th, tier] of [[100,'bronze'],[500,'silver'],[1000,'silver'],[5000,'gold'],[10000,'gold']]) {
+    list.push({ id:'reps-'+th, cat:'volume', name:'累計 '+th+' レップ', desc:'通算'+th+'回挙上', got: totalReps >= th, tier });
+  }
+
+  // === 全部位制覇 ===
+  const PARTS = ['chest','shoulder','back','leg','abs','hip'];
+  const allPartsEver = PARTS.every(p => all.some(s => s.tag === p));
+  list.push({ id:'all-parts', cat:'special', name:'全部位制覇', desc:'6部位すべて経験', got: allPartsEver, tier:'gold' });
+  // 1週間で全部位
+  const recent7 = new Set();
+  const today = new Date(); today.setHours(0,0,0,0);
+  for (const s of all) {
+    const sd = new Date(s.day); sd.setHours(0,0,0,0);
+    if ((today - sd) / 86400000 <= 7) recent7.add(s.tag);
+  }
+  list.push({ id:'all-parts-week', cat:'special', name:'週間6部位', desc:'1週間で全6部位トレ', got: PARTS.every(p => recent7.has(p)), tier:'gold' });
+
+  // === 時間帯 ===
+  const earlyCount = all.filter(s => s.recorded_at && /^0[0-5]:|^06:0/.test(s.recorded_at)).length;
+  const nightCount = all.filter(s => s.recorded_at && /^(2[2-3]|0[0-3]):/.test(s.recorded_at)).length;
+  for (const [th, tier] of [[1,'bronze'],[5,'silver'],[20,'gold']]) {
+    list.push({ id:'morning-'+th, cat:'special', name:'早朝戦士 '+th, desc:'6時前のトレ '+th+'回', got: earlyCount >= th, tier });
+  }
+  for (const [th, tier] of [[1,'bronze'],[5,'silver'],[20,'gold']]) {
+    list.push({ id:'night-'+th, cat:'special', name:'夜更かしトレ '+th, desc:'22時以降のトレ '+th+'回', got: nightCount >= th, tier });
+  }
+
+  // === 週末トレ ===
+  const weekendCount = all.filter(s => { const d = new Date(s.day); return d.getDay() === 0 || d.getDay() === 6 }).length;
+  for (const [th, tier] of [[1,'bronze'],[10,'silver'],[30,'gold']]) {
+    list.push({ id:'weekend-'+th, cat:'special', name:'週末王者 '+th, desc:'土日トレ '+th+'回', got: weekendCount >= th, tier });
+  }
+
+  return { list, stats: { totalVol, sessionCount, maxStreak, currentVolUpStreak: curUp, totalSetCount, exVariety: exNames.size, maxSetW, totalReps } };
+}
+
+// 実績解除検知 + アニメ
+function checkUnlocks(list) {
+  let unlocked = {};
+  try { unlocked = JSON.parse(localStorage.getItem('kinntore_unlocked')||'{}') } catch {}
+  const newly = [];
+  for (const a of list) {
+    if (a.got && !unlocked[a.id]) {
+      unlocked[a.id] = new Date().toISOString();
+      newly.push(a);
+    }
+  }
+  localStorage.setItem('kinntore_unlocked', JSON.stringify(unlocked));
+  return newly;
+}
+
+function showUnlockAnimation(achievement) {
+  const fills = { gold:'#3a2a00', silver:'#222', bronze:'#3a1f00' };
+  const bgs = { gold:'linear-gradient(135deg,#E8C76C,#9A7A30)', silver:'linear-gradient(135deg,#D8D8D8,#888)', bronze:'linear-gradient(135deg,#C8895A,#6A3F1A)' };
+  const overlay = document.createElement('div');
+  overlay.className = 'unlock-overlay';
+  overlay.innerHTML = `
+    <div class="unlock-particles">
+      <span></span><span></span><span></span><span></span><span></span>
+      <span></span><span></span><span></span><span></span><span></span>
+      <span></span><span></span>
+    </div>
+    <div class="unlock-card">
+      <div class="unlock-tag">ACHIEVEMENT UNLOCKED</div>
+      <div class="unlock-medal" style="background:${bgs[achievement.tier]||'#444'}">
+        <svg viewBox="0 0 24 24"><path d="M12 2 L14 9 L22 10 L16 15 L18 22 L12 18 L6 22 L8 15 L2 10 L10 9 Z" fill="${fills[achievement.tier]||'#444'}"/></svg>
+      </div>
+      <div class="unlock-name">${achievement.name}</div>
+      <div class="unlock-desc">${achievement.desc}</div>
+    </div>`;
+  document.body.appendChild(overlay);
+  // 触覚 (対応端末のみ)
+  if (navigator.vibrate) navigator.vibrate([20, 40, 20]);
+  // タップで即閉じ
+  overlay.addEventListener('click', () => overlay.classList.add('closing'));
+  // 自動クローズ
+  setTimeout(() => overlay.classList.add('closing'), 2800);
+  overlay.addEventListener('animationend', e => {
+    if (e.animationName === 'unlock-out') overlay.remove();
+  });
+}
+
+// 解除待ちキューを順番に表示
+let _unlockQueue = [];
+let _unlockShowing = false;
+function queueUnlocks(list) {
+  _unlockQueue.push(...list);
+  drainUnlockQueue();
+}
+function drainUnlockQueue() {
+  if (_unlockShowing || _unlockQueue.length === 0) return;
+  _unlockShowing = true;
+  const a = _unlockQueue.shift();
+  showUnlockAnimation(a);
+  setTimeout(() => { _unlockShowing = false; drainUnlockQueue(); }, 3400);
 }
 
 function renderAchievements(tag) {
@@ -842,10 +1004,13 @@ function renderAchievements(tag) {
   if (!row) return;
   const { list, stats } = computeAchievements(tag);
   const earned = list.filter(a => a.got).length;
-  // 獲得済みを優先して並べ、未獲得は「次の目標」を6個ほど見せる
-  const got = list.filter(a => a.got);
+  // 解除検知 → アニメ
+  const newly = checkUnlocks(list);
+  if (newly.length > 0) queueUnlocks(newly);
+  // 獲得済み (新しい順) + 未獲得「次の目標」
+  const got = list.filter(a => a.got).reverse().slice(0, 14);
   const notGot = list.filter(a => !a.got).slice(0, 6);
-  const display = [...got.reverse().slice(0, 12), ...notGot];
+  const display = [...got, ...notGot];
   const fills = { gold:'#3a2a00', silver:'#222', bronze:'#3a1f00', locked:'#444' };
   row.innerHTML = display.map(a => {
     const cls = a.got ? a.tier : 'locked';
@@ -855,7 +1020,8 @@ function renderAchievements(tag) {
       <div class="lab"><b>${a.name}</b><span style="display:block;font-size:9px;color:var(--photo-dim);margin-top:1px">${a.desc}</span></div>
     </div>`;
   }).join('');
-  count.innerHTML = `<b>${earned}</b> / ${list.length} 獲得 ・ 累計 <b>${(stats.totalVol/1000).toFixed(1)}t</b>`;
+  // タップで一覧ページへ
+  count.innerHTML = `<b>${earned}</b> / ${list.length} 獲得 ・ <a href="achievements.html" style="color:var(--photo-red);text-decoration:none;font-weight:600">すべて見る ›</a>`;
 }
 
 // ===== ボリューム推移チャート (過去7回のセッション) =====
