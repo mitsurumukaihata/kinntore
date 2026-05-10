@@ -43,6 +43,13 @@
 :root[data-theme="light"] .topbar .nav-btn{background:rgba(255,255,255,.55);color:#000;border-color:rgba(0,0,0,0.1)}
 :root[data-theme="light"] .modal-card,:root[data-theme="light"] .ws-card{background:#fff}
 :root[data-theme="light"] .modal-head,:root[data-theme="light"] .ws-head{background:#fff}
+/* 部位タイル: ダーク版はラベル/矢印が画像に焼込済 → ダーク時は arrow 非表示 */
+.parts .p .arrow{display:none}
+/* ライトモード: 画像にラベル無いので CSS で重ねる */
+:root[data-theme="light"] .parts .p{background:#fafafa}
+:root[data-theme="light"] .parts .p::before{content:attr(data-jp);position:absolute;left:14px;bottom:42px;font-family:var(--f-jp);font-size:24px;font-weight:900;color:#0a0a0a;letter-spacing:-.02em;z-index:3;text-shadow:0 1px 2px rgba(255,255,255,.5)}
+:root[data-theme="light"] .parts .p::after{content:attr(data-en);position:absolute;left:14px;bottom:24px;font-family:var(--f-display);font-size:11px;color:rgba(0,0,0,.55);letter-spacing:.18em;font-weight:400;z-index:3}
+:root[data-theme="light"] .parts .p .arrow{display:flex;position:absolute;right:12px;bottom:12px;width:28px;height:28px;border-radius:50%;background:var(--photo-red);align-items:center;justify-content:center;color:#fff;font-family:var(--f-ui);font-size:14px;font-weight:700;z-index:3;box-shadow:0 2px 8px rgba(230,57,70,.4)}
 *{box-sizing:border-box;margin:0;padding:0;-webkit-tap-highlight-color:transparent}
 html,body{background:#000;overscroll-behavior-y:contain;-webkit-text-size-adjust:100%;text-size-adjust:100%;touch-action:manipulation}
 
@@ -235,29 +242,35 @@ body{font-family:var(--f-ui),var(--f-jp);color:var(--photo-text);min-height:100v
   <div class="sec"><h2>部位を選ぶ<small>BODY PART</small></h2></div>
 
   <div class="parts">
-    <a class="p next-up" href="pattern-i.html#chest">
+    <a class="p next-up" href="pattern-i.html#chest" data-jp="胸" data-en="CHEST">
       <div class="stat">3日前</div>
-      <img src="img/part-chest.png" alt="胸">
+      <img class="part-img" data-part="chest" src="img/part-chest.png" alt="胸">
+      <span class="arrow">›</span>
     </a>
-    <a class="p" href="pattern-i.html#shoulder">
+    <a class="p" href="pattern-i.html#shoulder" data-jp="肩" data-en="SHOULDERS">
       <div class="stat">5日前</div>
-      <img src="img/part-shoulder.png" alt="肩">
+      <img class="part-img" data-part="shoulder" src="img/part-shoulder.png" alt="shoulder">
+      <span class="arrow">›</span>
     </a>
-    <a class="p" href="pattern-i.html#back">
+    <a class="p" href="pattern-i.html#back" data-jp="背中" data-en="BACK">
       <div class="stat">2日前</div>
-      <img src="img/part-back.png" alt="背中">
+      <img class="part-img" data-part="back" src="img/part-back.png" alt="back">
+      <span class="arrow">›</span>
     </a>
-    <a class="p" href="pattern-i.html#leg">
+    <a class="p" href="pattern-i.html#leg" data-jp="脚" data-en="LEGS">
       <div class="stat">4日前</div>
-      <img src="img/part-leg.png" alt="脚">
+      <img class="part-img" data-part="leg" src="img/part-leg.png" alt="leg">
+      <span class="arrow">›</span>
     </a>
-    <a class="p" href="pattern-i.html#abs">
+    <a class="p" href="pattern-i.html#abs" data-jp="腹" data-en="ABS">
       <div class="stat">6日前</div>
-      <img src="img/part-abs.png" alt="腹">
+      <img class="part-img" data-part="abs" src="img/part-abs.png" alt="abs">
+      <span class="arrow">›</span>
     </a>
-    <a class="p" href="pattern-i.html#hip">
+    <a class="p" href="pattern-i.html#hip" data-jp="お尻" data-en="GLUTES">
       <div class="stat">7日前</div>
-      <img src="img/part-hip.png" alt="お尻">
+      <img class="part-img" data-part="hip" src="img/part-hip.png" alt="hip">
+      <span class="arrow">›</span>
     </a>
   </div>
 
@@ -379,10 +392,16 @@ swipe.addEventListener('scroll', () => {
     } catch (e) { /* prefetch失敗はサイレント */ }
   })();
 })();
-// 設定: テーマ適用 (ライトモード対応)
+// 設定: テーマ適用 (ライトモード対応) + 部位タイル画像をテーマで切替
 (function() {
   const theme = localStorage.getItem('kinntore_theme') || 'dark';
-  if (theme === 'light') document.documentElement.setAttribute('data-theme', 'light');
+  const isLight = theme === 'light';
+  if (isLight) document.documentElement.setAttribute('data-theme', 'light');
+  // 部位タイルを -light 版に差替え
+  document.querySelectorAll('.part-img').forEach(img => {
+    const part = img.dataset.part;
+    if (part) img.src = isLight ? `img/part-${part}-light.png` : `img/part-${part}.png`;
+  });
 })();
 
 // ===== 前回 / 本日のトレーニングカード =====
