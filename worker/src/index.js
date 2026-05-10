@@ -11,7 +11,7 @@ function cors(origin) {
   const allow = ALLOW_ORIGINS.includes(origin) ? origin : ALLOW_ORIGINS[0];
   return {
     'Access-Control-Allow-Origin': allow,
-    'Access-Control-Allow-Methods': 'GET, POST, DELETE, OPTIONS',
+    'Access-Control-Allow-Methods': 'GET, POST, PATCH, DELETE, OPTIONS',
     'Access-Control-Allow-Headers': 'Content-Type',
     'Access-Control-Max-Age': '86400',
     'Vary': 'Origin',
@@ -87,6 +87,21 @@ export default {
       if (delMatch && request.method === 'DELETE') {
         const id = +delMatch[1];
         await env.DB.prepare('DELETE FROM workout_logs WHERE id = ?').bind(id).run();
+        return json({ ok: true }, 200, origin);
+      }
+
+      // PATCH /api/sets/:id  body: { weight?, reps?, recorded_at? }  (個別編集)
+      if (delMatch && request.method === 'PATCH') {
+        const id = +delMatch[1];
+        const body = await request.json();
+        const fields = [];
+        const args = [];
+        if (body.weight !== undefined) { fields.push('weight = ?'); args.push(+body.weight); }
+        if (body.reps !== undefined) { fields.push('reps = ?'); args.push(+body.reps); }
+        if (body.recorded_at !== undefined) { fields.push('recorded_at = ?'); args.push(body.recorded_at); }
+        if (fields.length === 0) return json({ error:'no fields' }, 400, origin);
+        args.push(id);
+        await env.DB.prepare(`UPDATE workout_logs SET ${fields.join(', ')} WHERE id = ?`).bind(...args).run();
         return json({ ok: true }, 200, origin);
       }
 

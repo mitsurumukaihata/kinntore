@@ -286,7 +286,9 @@ body{font-family:var(--f-ui),var(--f-jp);color:var(--photo-text);min-height:100v
 .medals .ttl{display:flex;justify-content:space-between;align-items:center;margin-bottom:12px}
 .medals .ttl h3{font-family:var(--f-jp);font-size:13px;font-weight:700}
 .medals .ttl small{color:var(--photo-mute);font-size:11px}
-.medals .row{display:grid;grid-template-columns:repeat(4,1fr);gap:10px}
+.medals .row{display:flex;gap:10px;overflow-x:auto;scrollbar-width:none;padding-bottom:4px;-webkit-overflow-scrolling:touch}
+.medals .row::-webkit-scrollbar{display:none}
+.medals .m{text-align:center;flex:0 0 80px;min-width:80px}
 .medals .m{text-align:center}
 .medals .m .badge{width:56px;height:56px;margin:0 auto;display:flex;align-items:center;justify-content:center;position:relative;border-radius:8px;background:linear-gradient(135deg,#222,#111);border:1px solid #2a2a2a}
 .medals .m .badge svg{width:26px;height:26px}
@@ -389,6 +391,17 @@ body{font-family:var(--f-ui),var(--f-jp);color:var(--photo-text);min-height:100v
 .day-set-row .vol{font-family:var(--f-mono);font-size:11px;color:var(--photo-mute);letter-spacing:-.01em;font-weight:500}
 .day-set-row .vol small{font-family:var(--f-display);font-size:9px;letter-spacing:.05em;margin-left:1px}
 .day-set-row .t{font-family:var(--f-display);font-size:10px;color:var(--photo-dim);letter-spacing:.05em;min-width:36px;text-align:right}
+.day-set-row{grid-template-columns:32px 1fr auto auto auto !important;gap:8px}
+.day-set-row.editing{grid-template-columns:auto auto auto auto auto auto !important;align-items:center;gap:6px}
+.day-set-row.editing input{background:#0a0a0a;border:1px solid var(--photo-line);color:var(--photo-text);padding:6px 8px;border-radius:6px;font-family:var(--f-mono);font-size:13px;text-align:center}
+.row-act{background:transparent;border:0;color:var(--photo-mute);font-size:14px;cursor:pointer;padding:4px 6px;border-radius:6px;line-height:1}
+.row-act:hover{color:var(--photo-text);background:rgba(255,255,255,0.04)}
+.row-act.del:hover{color:var(--photo-red)}
+.row-act.save{background:var(--photo-red);color:#fff;font-family:var(--f-jp);font-size:11px;font-weight:700;padding:6px 10px}
+.row-act.cancel{font-size:18px}
+.row-act.add-set{background:var(--photo-red-soft);color:var(--photo-red);font-size:13px;padding:2px 8px;font-weight:700}
+.add-form input{background:#0a0a0a;border:1px solid var(--photo-line);color:var(--photo-text);padding:9px 10px;border-radius:8px;font-family:var(--f-mono);font-size:14px}
+.add-form input::placeholder{color:var(--photo-dim)}
 
 /* タブバー (5タブ) */
 .tab{position:fixed;bottom:0;left:50%;transform:translateX(-50%);width:100%;max-width:420px;background:rgba(10,10,10,.95);backdrop-filter:blur(12px);border-top:1px solid var(--photo-line);padding:10px 8px 28px;display:grid;grid-template-columns:repeat(5,1fr);gap:4px;z-index:30}
@@ -739,49 +752,110 @@ function getGoal(tag){const v=+(localStorage.getItem('kinntore_goal_'+tag)||2);r
 function setGoal(tag,n){localStorage.setItem('kinntore_goal_'+tag,String(n))}
 
 let _weekCache = {}; // { tag: { 'YYYY-MM-DD': sets[] } }
-// ===== 実績: ボリューム更新の連続回数 (5/10/15/20、各部位ごと) =====
-// セッション間で部位別合計ボリュームが前回より増加していれば「更新」、減少/横ばいでリセット
-function computeStreak(tag, allSets) {
-  const byDay = {};
-  for (const s of allSets) {
-    if (s.tag !== tag) continue;
-    byDay[s.day] = (byDay[s.day]||0) + (Number(s.weight)||0)*(Number(s.reps)||0);
+// ===== 実績システム =====
+// 全部位横断のセットから全カテゴリの達成度を算出
+function getAllSetsFromCache() {
+  let all = [];
+  try {
+    const pre = JSON.parse(sessionStorage.getItem('kinntore_prefetch_90d')||'null');
+    if (pre && Array.isArray(pre.data)) {
+      for (const d of pre.data) for (const s of d.sets) all.push(s);
+    }
+  } catch {}
+  return all;
+}
+function computeAchievements(tag) {
+  const all = getAllSetsFromCache();
+  const TAG_LABEL = { chest:'胸', shoulder:'肩', back:'背中', leg:'脚', abs:'腹', hip:'お尻' };
+  const list = [];
+  // === ファースト系 (低しきい値) ===
+  const totalSetCount = all.length;
+  list.push({ id:'first-set', cat:'first', name:'最初の一歩', desc:'初めてセットを記録', got: totalSetCount >= 1, tier:'bronze' });
+  // 部位初体験
+  for (const t of ['chest','shoulder','back','leg','abs','hip']) {
+    const cnt = all.filter(s => s.tag === t).length;
+    list.push({ id:'first-'+t, cat:'first', name:TAG_LABEL[t]+'初体験', desc:TAG_LABEL[t]+'トレで初セット', got: cnt >= 1, tier:'bronze' });
   }
-  const sessions = Object.entries(byDay).sort((a,b)=>a[0].localeCompare(b[0]));
-  if (sessions.length < 2) return { current: 0, max: 0, sessions: sessions.length };
-  let cur = 0, mx = 0;
-  for (let i = 1; i < sessions.length; i++) {
-    if (sessions[i][1] > sessions[i-1][1]) { cur++; if (cur > mx) mx = cur; }
-    else cur = 0;
+  // 100kg級セット
+  const has100kg = all.some(s => (+s.weight||0) * (+s.reps||0) >= 100);
+  list.push({ id:'first-100kg', cat:'first', name:'重量級デビュー', desc:'1セットで100kg超', got: has100kg, tier:'silver' });
+
+  // === セッション数 (記録のあった日数) ===
+  const dayKeys = new Set(all.map(s => s.day));
+  const sessionCount = dayKeys.size;
+  for (const [th, tier] of [[1,'bronze'],[3,'bronze'],[7,'silver'],[14,'silver'],[30,'gold'],[50,'gold'],[100,'gold']]) {
+    list.push({ id:'sessions-'+th, cat:'sessions', name:th+'セッション', desc:th+'回トレーニング達成', got: sessionCount >= th, tier });
   }
-  return { current: cur, max: mx, sessions: sessions.length };
+
+  // === 累計ボリューム ===
+  const totalVol = all.reduce((s,x)=>s+(+x.weight||0)*(+x.reps||0), 0);
+  for (const [th, label, tier] of [[1000,'1,000kg','bronze'],[10000,'1万kg','silver'],[100000,'10万kg','gold'],[1000000,'100万kg','gold']]) {
+    list.push({ id:'totalvol-'+th, cat:'volume', name:'累計 '+label, desc:'通算ボリューム'+label, got: totalVol >= th, tier });
+  }
+
+  // === 1日最大ボリューム ===
+  const dayVol = {};
+  for (const s of all) dayVol[s.day] = (dayVol[s.day]||0) + (+s.weight||0)*(+s.reps||0);
+  const maxDayVol = Object.values(dayVol).reduce((a,b)=>Math.max(a,b), 0);
+  for (const [th, label, tier] of [[1000,'1,000kg','bronze'],[5000,'5,000kg','silver'],[10000,'10,000kg','gold'],[30000,'30,000kg','gold']]) {
+    list.push({ id:'dayvol-'+th, cat:'volume', name:'1日 '+label, desc:'1日で'+label+'到達', got: maxDayVol >= th, tier });
+  }
+
+  // === 連続日数 (streak) ===
+  const sortedDays = [...dayKeys].sort();
+  let maxStreak = 0, curStreak = 0;
+  let prev = null;
+  for (const d of sortedDays) {
+    if (prev) {
+      const diff = (new Date(d) - new Date(prev)) / 86400000;
+      if (diff === 1) curStreak++;
+      else if (diff > 1) curStreak = 1;
+    } else curStreak = 1;
+    if (curStreak > maxStreak) maxStreak = curStreak;
+    prev = d;
+  }
+  for (const [th, tier] of [[3,'bronze'],[7,'silver'],[14,'silver'],[30,'gold'],[60,'gold'],[100,'gold']]) {
+    list.push({ id:'streak-'+th, cat:'streak', name:th+'日連続', desc:th+'日連続トレーニング', got: maxStreak >= th, tier });
+  }
+
+  // === 部位別 ボリューム連続更新 (現タグ) ===
+  const byDayTag = {};
+  for (const s of all) if (s.tag === tag) {
+    byDayTag[s.day] = (byDayTag[s.day]||0) + (+s.weight||0)*(+s.reps||0);
+  }
+  const sess = Object.entries(byDayTag).sort((a,b)=>a[0].localeCompare(b[0]));
+  let mxUp = 0, curUp = 0;
+  for (let i = 1; i < sess.length; i++) {
+    if (sess[i][1] > sess[i-1][1]) { curUp++; if (curUp > mxUp) mxUp = curUp; }
+    else curUp = 0;
+  }
+  const tagLabel = TAG_LABEL[tag] || '';
+  for (const [th, tier] of [[5,'silver'],[10,'gold'],[15,'gold'],[20,'gold']]) {
+    list.push({ id:'volup-'+tag+'-'+th, cat:'pr', name:tagLabel+' VOL UP '+th, desc:tagLabel+'を'+th+'回連続更新', got: mxUp >= th, tier });
+  }
+  return { list, stats: { totalVol, sessionCount, maxStreak, currentVolUpStreak: curUp, totalSetCount } };
 }
 
-const ACHIEVEMENT_THRESHOLDS = [5, 10, 15, 20];
 function renderAchievements(tag) {
   const row = document.getElementById('medalsRow');
   const count = document.getElementById('medalsCount');
   if (!row) return;
-  // 先読みキャッシュから currentTag のセットを取得
-  let allSets = [];
-  try {
-    const pre = JSON.parse(sessionStorage.getItem('kinntore_prefetch_90d')||'null');
-    if (pre && Array.isArray(pre.data)) {
-      for (const d of pre.data) for (const s of d.sets) if (s.tag === tag) allSets.push(s);
-    }
-  } catch {}
-  const { current, max, sessions } = computeStreak(tag, allSets);
-  const badges = ACHIEVEMENT_THRESHOLDS.map((th, i) => {
-    const tier = ['gold','silver','bronze','locked'][i] || 'locked';
-    const fill = ['#3a2a00','#222','#3a1f00','#444'][i];
-    const got = max >= th;
-    const cls = got ? tier : 'locked';
-    return `<div class="m ${cls}"><div class="badge"><svg viewBox="0 0 24 24" fill="none"><path d="M12 2 L14 9 L22 10 L16 15 L18 22 L12 18 L6 22 L8 15 L2 10 L10 9 Z" fill="${got?fill:'#444'}"/></svg></div><div class="lab"><b>${th}回連続</b>VOL UP</div></div>`;
+  const { list, stats } = computeAchievements(tag);
+  const earned = list.filter(a => a.got).length;
+  // 獲得済みを優先して並べ、未獲得は「次の目標」を6個ほど見せる
+  const got = list.filter(a => a.got);
+  const notGot = list.filter(a => !a.got).slice(0, 6);
+  const display = [...got.reverse().slice(0, 12), ...notGot];
+  const fills = { gold:'#3a2a00', silver:'#222', bronze:'#3a1f00', locked:'#444' };
+  row.innerHTML = display.map(a => {
+    const cls = a.got ? a.tier : 'locked';
+    const f = a.got ? fills[a.tier] : '#444';
+    return `<div class="m ${cls}" title="${a.desc}">
+      <div class="badge"><svg viewBox="0 0 24 24" fill="none"><path d="M12 2 L14 9 L22 10 L16 15 L18 22 L12 18 L6 22 L8 15 L2 10 L10 9 Z" fill="${f}"/></svg></div>
+      <div class="lab"><b>${a.name}</b><span style="display:block;font-size:9px;color:var(--photo-dim);margin-top:1px">${a.desc}</span></div>
+    </div>`;
   }).join('');
-  row.innerHTML = badges;
-  const earned = ACHIEVEMENT_THRESHOLDS.filter(t => max >= t).length;
-  const labelTag = DATA[tag]?.targetLabel || '';
-  count.innerHTML = `${labelTag} ・ <b>${earned} / 4</b> 獲得 ・ 現在 ${current}回連続更新中`;
+  count.innerHTML = `<b>${earned}</b> / ${list.length} 獲得 ・ 累計 <b>${(stats.totalVol/1000).toFixed(1)}t</b>`;
 }
 
 // ===== ボリューム推移チャート (過去7回のセッション) =====
@@ -911,48 +985,166 @@ function renderWeekAndProgram(){
   else $('progSubtitle').textContent = 'タップで目標を変更';
 }
 
-// 過去日履歴モーダル
-function openDayModal(dayKey) {
-  const cache = _weekCache[currentTag] || {};
-  const sets = cache[dayKey] || [];
+// 過去日履歴モーダル (編集・削除・記録追加対応)
+let _currentDayKey = null;
+async function openDayModal(dayKey) {
+  _currentDayKey = dayKey;
   const d = new Date(dayKey);
   $('dayModalSub').textContent = (d.getMonth()+1)+'/'+d.getDate()+' '+WEEKDAYS[d.getDay()];
+  // 当日のセットをサーバから取得 (キャッシュじゃなく最新を)
+  let sets = [];
+  try {
+    const r = await fetch(Store.API+'/api/sets?day='+dayKey+'&tag='+encodeURIComponent(currentTag));
+    if (r.ok) sets = (await r.json()).sets || [];
+  } catch {}
   const dLabel = DATA[currentTag]?.targetLabel || '';
   $('dayModalTitle').textContent = sets.length>0 ? `${dLabel}トレ · ${sets.length}セット` : `${dLabel}トレ`;
+  renderDayList(sets, dayKey);
+  $('dayModal').classList.add('on');
+}
+
+function renderDayList(sets, dayKey) {
+  let body = '';
   if (sets.length === 0) {
-    $('dayList').innerHTML = `<div style="text-align:center;color:var(--photo-dim);padding:30px 16px;font-size:12px;font-family:var(--f-jp)">この日は記録がありません</div>`;
+    body = `<div style="text-align:center;color:var(--photo-dim);padding:30px 16px;font-size:12px;font-family:var(--f-jp)">この日は記録がありません</div>`;
   } else {
-    // 種目ごとにグループ化
     const byEx = {};
-    for (const s of sets) {
-      if (!byEx[s.exercise_name]) byEx[s.exercise_name] = [];
-      byEx[s.exercise_name].push(s);
-    }
+    for (const s of sets) { (byEx[s.exercise_name] = byEx[s.exercise_name]||[]).push(s); }
     let totalVol = 0;
     const html = Object.entries(byEx).map(([name, list]) => {
       list.sort((a,b)=>a.set_no-b.set_no);
       const vol = list.reduce((sum,s)=>sum+(+s.weight||0)*(+s.reps||0), 0);
       totalVol += vol;
-      // 各セットを1行ずつ表示 (種目ごとにグループ化)
       const setRows = list.map(s => `
-        <div class="day-set-row">
+        <div class="day-set-row" data-set-id="${s.id}" data-w="${s.weight}" data-r="${s.reps}">
           <span class="n">${s.set_no}</span>
           <span class="vals"><b>${s.weight}</b><span class="x">kg ×</span><b>${s.reps}</b><span class="x">回</span></span>
           <span class="vol">${((+s.weight||0)*(+s.reps||0)).toLocaleString()}<small>kg</small></span>
-          ${s.recorded_at ? `<span class="t">${s.recorded_at}</span>` : '<span class="t"></span>'}
-        </div>
-      `).join('');
-      return `<div class="day-ex-group">
+          <button class="row-act edit" data-id="${s.id}" title="編集">✏</button>
+          <button class="row-act del" data-id="${s.id}" title="削除">🗑</button>
+        </div>`).join('');
+      return `<div class="day-ex-group" data-ex="${name}">
         <div class="day-ex-head">
           <div class="day-ex-name">${name}</div>
-          <div class="day-ex-meta"><b>${list.length}</b>セット ・ <b>${vol.toLocaleString()}</b>kg</div>
+          <div class="day-ex-meta"><b>${list.length}</b>セット ・ <b>${vol.toLocaleString()}</b>kg
+            <button class="row-act add-set" data-ex="${name}" title="セット追加" style="margin-left:6px">＋</button>
+          </div>
         </div>
         <div class="day-set-list">${setRows}</div>
       </div>`;
     }).join('');
-    $('dayList').innerHTML = `<div class="day-total">合計ボリューム <b>${totalVol.toLocaleString()}</b> KG</div>` + html;
+    body = `<div class="day-total">合計ボリューム <b>${totalVol.toLocaleString()}</b> KG</div>` + html;
   }
-  $('dayModal').classList.add('on');
+  // 記録追加 CTA
+  body += `<button class="cta-ghost" id="dayAddEx" style="margin-top:12px;width:100%">＋ ${currentTag === currentTag ? (DATA[currentTag]?.targetLabel||'') : ''}トレで種目を追加</button>`;
+  $('dayList').innerHTML = body;
+  // イベントバインド
+  $('dayList').querySelectorAll('.row-act.del').forEach(b => {
+    b.addEventListener('click', async () => {
+      if (!confirm('このセットを削除しますか？')) return;
+      const id = b.dataset.id;
+      try {
+        const r = await fetch(Store.API+'/api/sets/'+id, { method:'DELETE' });
+        if (!r.ok) throw new Error();
+        await openDayModal(dayKey); // 再描画
+        sessionStorage.removeItem('kinntore_prefetch_90d');
+        loadWeek(currentTag).then(()=>renderWeekAndProgram());
+        renderVolChart(currentTag);
+        renderAchievements(currentTag);
+      } catch { alert('削除に失敗しました'); }
+    });
+  });
+  $('dayList').querySelectorAll('.row-act.edit').forEach(b => {
+    b.addEventListener('click', () => editSetInline(b.closest('.day-set-row'), dayKey));
+  });
+  $('dayList').querySelectorAll('.row-act.add-set').forEach(b => {
+    b.addEventListener('click', () => openAddSetForm(dayKey, b.dataset.ex));
+  });
+  const addEx = $('dayAddEx');
+  if (addEx) addEx.addEventListener('click', () => openAddSetForm(dayKey));
+}
+
+// セット行をインラインで編集モードに
+function editSetInline(row, dayKey) {
+  if (!row || row.classList.contains('editing')) return;
+  row.classList.add('editing');
+  const w = +row.dataset.w, r = +row.dataset.r;
+  row.innerHTML = `
+    <input type="number" class="edit-w" value="${w}" step="2.5" style="width:64px"> kg ×
+    <input type="number" class="edit-r" value="${r}" step="1" style="width:48px"> 回
+    <button class="row-act save">保存</button>
+    <button class="row-act cancel">×</button>`;
+  row.querySelector('.cancel').onclick = () => openDayModal(dayKey);
+  row.querySelector('.save').onclick = async () => {
+    const newW = +row.querySelector('.edit-w').value;
+    const newR = +row.querySelector('.edit-r').value;
+    const id = row.dataset.setId;
+    try {
+      const res = await fetch(Store.API+'/api/sets/'+id, {
+        method:'PATCH',
+        headers:{'Content-Type':'application/json'},
+        body: JSON.stringify({ weight:newW, reps:newR })
+      });
+      if (!res.ok) throw new Error();
+      await openDayModal(dayKey);
+      sessionStorage.removeItem('kinntore_prefetch_90d');
+      renderVolChart(currentTag);
+      renderAchievements(currentTag);
+    } catch { alert('保存に失敗しました'); }
+  };
+}
+
+// セット追加フォームを開く (既存種目 or 新規種目)
+function openAddSetForm(dayKey, exName) {
+  const items = DATA[currentTag]?.items || [];
+  const choices = exName ? [{name:exName}] : items;
+  const html = `
+    <div class="add-form" style="background:var(--photo-card);border:1px solid var(--photo-line);border-radius:10px;padding:14px;margin-top:10px">
+      <div style="font-family:var(--f-display);font-size:10px;letter-spacing:.18em;color:var(--photo-mute);margin-bottom:8px">セット追加</div>
+      ${exName ? `<div style="font-family:var(--f-jp);font-weight:700;margin-bottom:10px">${exName}</div>` : `
+        <select id="addExSel" style="width:100%;background:#0a0a0a;color:var(--photo-text);border:1px solid var(--photo-line);padding:9px;border-radius:8px;margin-bottom:10px">
+          ${items.map(it => `<option value="${it.name}">${it.name}</option>`).join('')}
+        </select>`}
+      <div style="display:flex;gap:8px;align-items:center;margin-bottom:10px">
+        <input type="number" id="addW" placeholder="重量" step="2.5" style="flex:1"> kg ×
+        <input type="number" id="addR" placeholder="回数" step="1" style="flex:1"> 回
+      </div>
+      <input type="time" id="addT" style="width:100%;margin-bottom:10px">
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:8px">
+        <button class="cta-ghost" id="addCancel">キャンセル</button>
+        <button class="cta-main" id="addSave" style="margin:0;width:100%">追加</button>
+      </div>
+    </div>`;
+  const wrap = document.createElement('div');
+  wrap.innerHTML = html;
+  $('dayList').appendChild(wrap);
+  // 過去のセットがあれば最終値をプリフィル
+  const it = items.find(x => x.name === exName) || items[0];
+  $('addW').value = it?.weight || 60;
+  $('addR').value = it?.reps || 10;
+  const now = new Date();
+  $('addT').value = String(now.getHours()).padStart(2,'0')+':'+String(now.getMinutes()).padStart(2,'0');
+  $('addCancel').onclick = () => wrap.remove();
+  $('addSave').onclick = async () => {
+    const name = exName || ($('addExSel').value);
+    const weight = +$('addW').value;
+    const reps = +$('addR').value;
+    const recorded_at = $('addT').value || null;
+    if (!weight || !reps) { alert('重量と回数を入力してください'); return; }
+    try {
+      const r = await fetch(Store.API+'/api/sets', {
+        method:'POST',
+        headers:{'Content-Type':'application/json'},
+        body: JSON.stringify({ tag:currentTag, exercise_name:name, weight, reps, day:dayKey, recorded_at })
+      });
+      if (!r.ok) throw new Error();
+      await openDayModal(dayKey);
+      sessionStorage.removeItem('kinntore_prefetch_90d');
+      loadWeek(currentTag).then(()=>renderWeekAndProgram());
+      renderVolChart(currentTag);
+      renderAchievements(currentTag);
+    } catch { alert('追加に失敗しました'); }
+  };
 }
 $('dayClose').addEventListener('click', () => $('dayModal').classList.remove('on'));
 $('dayCancel').addEventListener('click', () => $('dayModal').classList.remove('on'));
