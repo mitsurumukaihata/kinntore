@@ -666,32 +666,32 @@ async function renderHomeData() {
     // メッセージ + ヒントを状態別に
     const surplus = todayVol - target;
     const remain = target - todayVol;
-    // 通常モード (熱量あり)
+    // 通常モード (熱量はあるが控えめ・絵文字なし・感嘆符は新記録のみ)
     const msgLoud = {
-      king: isNewPB ? '👑 新記録更新 — 王の風格' : '🔥 圧倒的ペース — 化け物か',
-      achieve: '🔥 101% 達成 — 昨日を超えた!',
-      cheer: pctRaw >= 70 ? 'もうちょい! あとひと押し' : 'いいペース、続けていこう',
-      down: '今日はそんな日。明日いこう',
-      encourage: todayVol > 0 ? 'いいぞ、その調子' : '昨日より 1% を超えていこう',
+      king: isNewPB ? '新記録だ。' : '今日は別格。',
+      achieve: '昨日を超えた。',
+      cheer: pctRaw >= 70 ? 'あとひと押し。' : '積み上がってる。',
+      down: '今日はここまでで十分。',
+      encourage: todayVol > 0 ? 'いいリズム。' : '今日も始めよう。',
     };
-    // silent モード (絵文字なし・短文・余韻)
+    // silent モード (より静か・気配だけ残す)
     const msgQuiet = {
-      king: isNewPB ? '新記録。' : '今日は伸びた。',
-      achieve: isLateNight ? '今日も超えた。' : (recentlyTrained ? 'お疲れさま。' : '昨日を超えた。'),
-      cheer: pctRaw >= 70 ? 'あと少し。' : '積み重ねていこう。',
-      down: isLateNight ? 'おやすみ。' : '今日はここまで。',
+      king: isNewPB ? '記録、更新。' : '今日は伸びた。',
+      achieve: isLateNight ? '今日も、超えた。' : (recentlyTrained ? 'お疲れさま。' : '超えた。'),
+      cheer: pctRaw >= 70 ? 'あと少し。' : '続いてる。',
+      down: isLateNight ? 'おやすみ。' : 'また明日。',
       encourage: isLateNight ? 'まだ起きてるのか。' : (todayVol > 0 ? 'その調子。' : '今日も来たな。'),
     };
     const hintLoud = {
       king: isNewPB
-        ? `過去最高を <b>+${(todayVol-allTimeMax).toLocaleString()}kg</b> 更新。歴代王者だ。`
-        : `前回 <b>${lastVol.toLocaleString()}kg</b> を <b>+${surplus.toLocaleString()}kg</b> も上回った。`,
-      achieve: `前回 <b>${lastVol.toLocaleString()}kg</b> を <b>+${surplus.toLocaleString()}kg</b> 上回った。明日もこの調子で。`,
-      cheer: `あと <b>${remain.toLocaleString()}kg</b> で目標達成 (前回 ${lastVol.toLocaleString()}kg)`,
-      down: `前回 <b>${lastVol.toLocaleString()}kg</b> に届かず。休息も大事、また明日。`,
+        ? `歴代最高を <b>+${(todayVol-allTimeMax).toLocaleString()}kg</b> 更新`
+        : `前回より <b>+${surplus.toLocaleString()}kg</b>`,
+      achieve: `前回 ${lastVol.toLocaleString()}kg / 今日 <b>${todayVol.toLocaleString()}kg</b>`,
+      cheer: `あと <b>${remain.toLocaleString()}kg</b>`,
+      down: `前回 ${lastVol.toLocaleString()}kg`,
       encourage: todayVol > 0
-        ? `今日 <b>${todayVol.toLocaleString()}kg</b> 進行中 (前回 ${lastVol.toLocaleString()}kg)`
-        : `前回は <b>${lastVol.toLocaleString()}kg</b>。今日はこれ以上を狙おう`,
+        ? `今日 <b>${todayVol.toLocaleString()}kg</b>`
+        : `前回 ${lastVol.toLocaleString()}kg`,
     };
     // silent ヒント: 数字は1段薄く・装飾コピーなし
     const hintQuiet = {
