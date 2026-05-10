@@ -300,14 +300,30 @@ body{font-family:var(--f-ui),var(--f-jp);color:var(--photo-text);min-height:100v
 .medals .m .lab b{color:var(--photo-text);display:block;font-size:11px;font-weight:700}
 
 /* ===== 実績解除ポップアップ ===== */
-.unlock-overlay{position:fixed;inset:0;z-index:300;background:rgba(0,0,0,.78);backdrop-filter:blur(8px);display:flex;align-items:center;justify-content:center;animation:unlock-bg .4s ease forwards;cursor:pointer}
+.unlock-overlay{position:fixed;inset:0;z-index:300;background:rgba(0,0,0,.82);backdrop-filter:blur(10px);display:flex;align-items:center;justify-content:center;animation:unlock-bg .4s ease forwards;cursor:pointer;padding:20px;-webkit-tap-highlight-color:transparent}
 .unlock-overlay.closing{animation:unlock-out .4s ease forwards}
-.unlock-card{position:relative;text-align:center;z-index:2;animation:unlock-card-in .8s cubic-bezier(.2,.8,.2,1) forwards;opacity:0;transform:scale(.6) rotate(-4deg)}
-.unlock-tag{font-family:var(--f-display);font-size:11px;letter-spacing:.32em;color:var(--photo-red);margin-bottom:18px;text-shadow:0 0 12px rgba(230,57,70,.6);animation:unlock-tag .6s ease .2s backwards}
-.unlock-medal{width:120px;height:120px;border-radius:24px;margin:0 auto 18px;display:flex;align-items:center;justify-content:center;box-shadow:0 12px 40px rgba(0,0,0,.6),0 0 60px rgba(230,57,70,.5);animation:unlock-medal-pulse 1.5s ease-in-out 1s infinite}
-.unlock-medal svg{width:64px;height:64px}
-.unlock-name{font-family:var(--f-jp);font-size:22px;font-weight:900;color:#fff;margin-bottom:6px;letter-spacing:-.01em;text-shadow:0 2px 12px rgba(0,0,0,.6)}
-.unlock-desc{font-family:var(--f-jp);font-size:12px;color:rgba(255,255,255,.7);max-width:280px;margin:0 auto;line-height:1.5}
+.unlock-content{position:relative;text-align:center;z-index:2;max-width:380px;width:100%}
+.unlock-tag{font-family:var(--f-display);font-size:12px;letter-spacing:.32em;color:var(--photo-red);margin-bottom:22px;text-shadow:0 0 12px rgba(230,57,70,.6);animation:unlock-tag .6s ease forwards;opacity:0}
+.unlock-cards{display:flex;flex-direction:column;gap:12px;max-height:60vh;overflow-y:auto;scrollbar-width:none;padding:4px}
+.unlock-cards::-webkit-scrollbar{display:none}
+/* 単一表示時: 縦並びで中央 */
+.unlock-overlay:not(.multi) .unlock-card{padding:0;background:transparent;border:0}
+.unlock-overlay:not(.multi) .unlock-medal{width:120px;height:120px;border-radius:24px;margin:0 auto 14px}
+.unlock-overlay:not(.multi) .unlock-medal svg{width:64px;height:64px}
+.unlock-overlay:not(.multi) .unlock-name{font-size:22px}
+.unlock-overlay:not(.multi) .unlock-desc{font-size:12px}
+/* 複数表示時: 横並びコンパクトカード */
+.unlock-overlay.multi .unlock-card{padding:12px 14px;background:linear-gradient(135deg,#1a0a0c,var(--photo-card) 80%);border:1px solid rgba(230,57,70,.25);border-radius:12px;display:flex;align-items:center;gap:14px;text-align:left}
+.unlock-overlay.multi .unlock-medal{width:54px;height:54px;border-radius:12px;flex-shrink:0;margin:0}
+.unlock-overlay.multi .unlock-medal svg{width:28px;height:28px}
+.unlock-overlay.multi .unlock-card-body{flex:1;min-width:0}
+.unlock-overlay.multi .unlock-name{font-size:14px;margin-bottom:3px}
+.unlock-overlay.multi .unlock-desc{font-size:11px;max-width:none;margin:0}
+.unlock-card{position:relative;animation:unlock-card-in .7s cubic-bezier(.2,.8,.2,1) backwards;opacity:0;transform:scale(.7) translateY(20px)}
+.unlock-medal{display:flex;align-items:center;justify-content:center;box-shadow:0 8px 28px rgba(0,0,0,.5),0 0 40px rgba(230,57,70,.4);animation:unlock-medal-pulse 1.6s ease-in-out infinite}
+.unlock-name{font-family:var(--f-jp);font-weight:900;color:#fff;letter-spacing:-.01em;text-shadow:0 2px 12px rgba(0,0,0,.6)}
+.unlock-desc{font-family:var(--f-jp);color:rgba(255,255,255,.7);max-width:280px;margin:0 auto;line-height:1.5}
+.unlock-hint{font-family:var(--f-display);font-size:9px;letter-spacing:.32em;color:rgba(255,255,255,.35);margin-top:18px;animation:unlock-tag .6s ease 1s backwards}
 .unlock-particles{position:absolute;inset:0;pointer-events:none;z-index:1}
 .unlock-particles span{position:absolute;left:50%;top:50%;width:4px;height:4px;border-radius:50%;background:#E63946;box-shadow:0 0 8px rgba(230,57,70,.8);animation:unlock-particle 1.8s ease-out forwards;opacity:0}
 .unlock-particles span:nth-child(1){--ang:0deg;animation-delay:.1s}
@@ -325,10 +341,9 @@ body{font-family:var(--f-ui),var(--f-jp);color:var(--photo-text);min-height:100v
 @keyframes unlock-bg{from{opacity:0}to{opacity:1}}
 @keyframes unlock-out{from{opacity:1}to{opacity:0}}
 @keyframes unlock-card-in{
-  0%{opacity:0;transform:scale(.6) rotate(-4deg)}
-  60%{opacity:1;transform:scale(1.08) rotate(2deg)}
-  85%{transform:scale(.98) rotate(-1deg)}
-  100%{opacity:1;transform:scale(1) rotate(0deg)}
+  0%{opacity:0;transform:scale(.7) translateY(20px)}
+  60%{opacity:1;transform:scale(1.04) translateY(-2px)}
+  100%{opacity:1;transform:scale(1) translateY(0)}
 }
 @keyframes unlock-tag{
   from{opacity:0;letter-spacing:.5em;transform:translateY(-6px)}
@@ -952,50 +967,55 @@ function checkUnlocks(list) {
   return newly;
 }
 
-function showUnlockAnimation(achievement) {
+// 複数達成時は一度にまとめて表示。どこをタップしても消える。
+function showUnlockAnimation(achievements) {
+  const arr = Array.isArray(achievements) ? achievements : [achievements];
+  if (arr.length === 0) return;
   const fills = { gold:'#3a2a00', silver:'#222', bronze:'#3a1f00' };
   const bgs = { gold:'linear-gradient(135deg,#E8C76C,#9A7A30)', silver:'linear-gradient(135deg,#D8D8D8,#888)', bronze:'linear-gradient(135deg,#C8895A,#6A3F1A)' };
   const overlay = document.createElement('div');
-  overlay.className = 'unlock-overlay';
+  overlay.className = 'unlock-overlay' + (arr.length > 1 ? ' multi' : '');
+  const cards = arr.map((a, i) => `
+    <div class="unlock-card" style="animation-delay:${i*0.12}s">
+      <div class="unlock-medal" style="background:${bgs[a.tier]||'#444'}">
+        <svg viewBox="0 0 24 24"><path d="M12 2 L14 9 L22 10 L16 15 L18 22 L12 18 L6 22 L8 15 L2 10 L10 9 Z" fill="${fills[a.tier]||'#444'}"/></svg>
+      </div>
+      <div class="unlock-card-body">
+        <div class="unlock-name">${a.name}</div>
+        <div class="unlock-desc">${a.desc}</div>
+      </div>
+    </div>`).join('');
   overlay.innerHTML = `
     <div class="unlock-particles">
       <span></span><span></span><span></span><span></span><span></span>
       <span></span><span></span><span></span><span></span><span></span>
       <span></span><span></span>
     </div>
-    <div class="unlock-card">
-      <div class="unlock-tag">ACHIEVEMENT UNLOCKED</div>
-      <div class="unlock-medal" style="background:${bgs[achievement.tier]||'#444'}">
-        <svg viewBox="0 0 24 24"><path d="M12 2 L14 9 L22 10 L16 15 L18 22 L12 18 L6 22 L8 15 L2 10 L10 9 Z" fill="${fills[achievement.tier]||'#444'}"/></svg>
-      </div>
-      <div class="unlock-name">${achievement.name}</div>
-      <div class="unlock-desc">${achievement.desc}</div>
+    <div class="unlock-content">
+      <div class="unlock-tag">${arr.length > 1 ? `${arr.length} ACHIEVEMENTS UNLOCKED` : 'ACHIEVEMENT UNLOCKED'}</div>
+      <div class="unlock-cards">${cards}</div>
+      <div class="unlock-hint">タップして閉じる</div>
     </div>`;
   document.body.appendChild(overlay);
-  // 触覚 (対応端末のみ)
-  if (navigator.vibrate) navigator.vibrate([20, 40, 20]);
-  // タップで即閉じ
-  overlay.addEventListener('click', () => overlay.classList.add('closing'));
-  // 自動クローズ
-  setTimeout(() => overlay.classList.add('closing'), 2800);
+  if (navigator.vibrate) navigator.vibrate(arr.length > 1 ? [25,40,25,40,25] : [20,40,20]);
+  // どこをタップしても閉じる
+  const close = () => {
+    if (overlay.classList.contains('closing')) return;
+    overlay.classList.add('closing');
+  };
+  overlay.addEventListener('click', close);
+  overlay.addEventListener('touchend', close);
+  // 自動クローズ (複数なら長め)
+  const auto = 2400 + arr.length * 500;
+  setTimeout(close, Math.min(auto, 6500));
   overlay.addEventListener('animationend', e => {
     if (e.animationName === 'unlock-out') overlay.remove();
   });
 }
 
-// 解除待ちキューを順番に表示
-let _unlockQueue = [];
-let _unlockShowing = false;
+// 一度に全部表示する (キュー方式は廃止)
 function queueUnlocks(list) {
-  _unlockQueue.push(...list);
-  drainUnlockQueue();
-}
-function drainUnlockQueue() {
-  if (_unlockShowing || _unlockQueue.length === 0) return;
-  _unlockShowing = true;
-  const a = _unlockQueue.shift();
-  showUnlockAnimation(a);
-  setTimeout(() => { _unlockShowing = false; drainUnlockQueue(); }, 3400);
+  if (list && list.length > 0) showUnlockAnimation(list);
 }
 
 function renderAchievements(tag) {
