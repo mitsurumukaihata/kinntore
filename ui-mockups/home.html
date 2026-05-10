@@ -43,13 +43,11 @@
 :root[data-theme="light"] .topbar .nav-btn{background:rgba(255,255,255,.55);color:#000;border-color:rgba(0,0,0,0.1)}
 :root[data-theme="light"] .modal-card,:root[data-theme="light"] .ws-card{background:#fff}
 :root[data-theme="light"] .modal-head,:root[data-theme="light"] .ws-head{background:#fff}
-/* 部位タイル: ダーク版はラベル/矢印が画像に焼込済 → ダーク時は arrow 非表示 */
-.parts .p .arrow{display:none}
-/* ライトモード: 画像にラベル無いので CSS で重ねる */
-:root[data-theme="light"] .parts .p{background:#fafafa}
-:root[data-theme="light"] .parts .p::before{content:attr(data-jp);position:absolute;left:14px;bottom:42px;font-family:var(--f-jp);font-size:24px;font-weight:900;color:#0a0a0a;letter-spacing:-.02em;z-index:3;text-shadow:0 1px 2px rgba(255,255,255,.5)}
-:root[data-theme="light"] .parts .p::after{content:attr(data-en);position:absolute;left:14px;bottom:24px;font-family:var(--f-display);font-size:11px;color:rgba(0,0,0,.55);letter-spacing:.18em;font-weight:400;z-index:3}
-:root[data-theme="light"] .parts .p .arrow{display:flex;position:absolute;right:12px;bottom:12px;width:28px;height:28px;border-radius:50%;background:var(--photo-red);align-items:center;justify-content:center;color:#fff;font-family:var(--f-ui);font-size:14px;font-weight:700;z-index:3;box-shadow:0 2px 8px rgba(230,57,70,.4)}
+/* 部位タイル: 白背景版を常用するのでラベル/矢印を CSS で重ねる (両テーマ共通) */
+.parts .p{background:#fafafa}
+.parts .p::before{content:attr(data-jp);position:absolute;left:14px;bottom:44px;font-family:var(--f-jp);font-size:24px;font-weight:900;color:#0a0a0a;letter-spacing:-.02em;z-index:3;text-shadow:0 1px 2px rgba(255,255,255,.5);pointer-events:none}
+.parts .p::after{content:attr(data-en);position:absolute;left:14px;bottom:24px;font-family:var(--f-display);font-size:11px;color:rgba(0,0,0,.55);letter-spacing:.18em;font-weight:400;z-index:3;pointer-events:none}
+.parts .p .arrow{display:flex;position:absolute;right:12px;bottom:12px;width:30px;height:30px;border-radius:50%;background:var(--photo-red);align-items:center;justify-content:center;color:#fff;font-family:var(--f-ui);font-size:15px;font-weight:700;z-index:3;box-shadow:0 2px 8px rgba(230,57,70,.4);pointer-events:none}
 *{box-sizing:border-box;margin:0;padding:0;-webkit-tap-highlight-color:transparent}
 html,body{background:#000;overscroll-behavior-y:contain;-webkit-text-size-adjust:100%;text-size-adjust:100%;touch-action:manipulation}
 
@@ -397,9 +395,10 @@ swipe.addEventListener('scroll', () => {
   const theme = localStorage.getItem('kinntore_theme') || 'dark';
   const isLight = theme === 'light';
   if (isLight) document.documentElement.setAttribute('data-theme', 'light');
+  // ダッシュボードタイルは白背景版を常用 (テーマ問わず)
   document.querySelectorAll('.part-img').forEach(img => {
     const part = img.dataset.part;
-    if (part) img.src = isLight ? `img/part-${part}-light.png` : `img/part-${part}.png`;
+    if (part) img.src = `img/part-${part}-light.png`;
   });
   // 表示名 (設定画面で保存した値、未設定は「あなた」)
   const name = (localStorage.getItem('kinntore_user_name') || '').trim();
