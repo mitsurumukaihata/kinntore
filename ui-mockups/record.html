@@ -128,6 +128,18 @@ body{font-family:var(--f-ui),var(--f-jp);color:var(--photo-text);min-height:100v
 .day-set-row .vol{font-family:var(--f-mono);font-size:11px;color:var(--photo-mute);letter-spacing:-.01em}
 .day-set-row .vol small{font-family:var(--f-display);font-size:9px;letter-spacing:.05em;margin-left:1px}
 .day-set-row .t{font-family:var(--f-display);font-size:10px;color:var(--photo-dim);min-width:36px;text-align:right}
+.day-set-row{grid-template-columns:32px 1fr auto auto auto !important;gap:8px}
+.day-set-row.editing{grid-template-columns:auto auto auto auto auto auto !important;align-items:center;gap:6px}
+.day-set-row.editing input{background:#0a0a0a;border:1px solid var(--photo-line);color:var(--photo-text);padding:6px 8px;border-radius:6px;font-family:var(--f-mono);font-size:13px;text-align:center}
+.row-act{background:transparent;border:0;color:var(--photo-mute);font-size:14px;cursor:pointer;padding:4px 6px;border-radius:6px;line-height:1}
+.row-act:hover{color:var(--photo-text);background:rgba(255,255,255,0.04)}
+.row-act.del:hover{color:var(--photo-red)}
+.row-act.save{background:var(--photo-red);color:#fff;font-family:var(--f-jp);font-size:11px;font-weight:700;padding:6px 10px}
+.row-act.cancel{font-size:18px}
+.row-act.add-set{background:var(--photo-red-soft);color:var(--photo-red);font-size:13px;padding:2px 8px;font-weight:700}
+.add-form input,.add-form select{background:#0a0a0a;border:1px solid var(--photo-line);color:var(--photo-text);padding:9px 10px;border-radius:8px;font-family:var(--f-mono);font-size:14px}
+.add-form input::placeholder{color:var(--photo-dim)}
+.add-form select{font-family:var(--f-jp)}
 </style>
 </head>
 <body>
@@ -293,38 +305,182 @@ function renderCalendar() {
   document.querySelectorAll('.cal-grid .day[data-day]').forEach(c => c.addEventListener('click', () => openDay(c.dataset.day)));
 }
 
-function openDay(dayKey) {
-  const s = allSessions.find(x => x.day === dayKey);
+async function openDay(dayKey) {
   const d = new Date(dayKey);
   $('dayModalSub').textContent = (d.getMonth()+1)+'/'+d.getDate()+' '+WEEKDAYS[d.getDay()]+'曜';
-  if (!s) {
-    $('dayModalTitle').textContent = 'この日は記録なし';
-    $('dayList').innerHTML = '<div class="empty-msg"><span class="ic">📭</span>記録がありません</div>';
+  // 最新を直接 API から取得 (キャッシュ古いと編集後に古いID表示してしまう)
+  let sets = [];
+  try {
+    const r = await fetch(API+'/api/sets?day='+dayKey);
+    if (r.ok) sets = (await r.json()).sets || [];
+  } catch {}
+  renderDayContent(dayKey, sets);
+  $('dayModal').classList.add('on');
+}
+
+function renderDayContent(dayKey, sets) {
+  const tagSet = new Set(sets.map(s => s.tag));
+  const tagLabels = [...tagSet].map(t => TAG_LABEL[t]||t).join('・');
+  $('dayModalTitle').textContent = sets.length > 0 ? `${tagLabels}トレ · ${sets.length}セット` : 'この日は記録なし';
+  let body = '';
+  if (sets.length === 0) {
+    body = '<div class="empty-msg"><span class="ic">📭</span>記録がありません<br><span style="font-size:11px;color:var(--photo-mute)">下のボタンから追加できます</span></div>';
   } else {
-    const tagLabels = Object.keys(s.byTag).map(t=>TAG_LABEL[t]||t).join('・');
-    $('dayModalTitle').textContent = tagLabels+'トレ · '+s.sets.length+'セット';
     const byEx = {};
-    for (const x of s.sets) { (byEx[x.exercise_name] = byEx[x.exercise_name]||[]).push(x); }
+    for (const x of sets) { (byEx[x.exercise_name] = byEx[x.exercise_name]||[]).push({ ...x }); }
     let total = 0;
     const html = Object.entries(byEx).map(([name, list]) => {
       list.sort((a,b)=>(a.set_no||0)-(b.set_no||0));
       const vol = list.reduce((sum,x)=>sum+(+x.weight||0)*(+x.reps||0),0);
+      const tag = list[0].tag;
       total += vol;
       const rows = list.map(x => `
-        <div class="day-set-row">
+        <div class="day-set-row" data-set-id="${x.id}" data-w="${x.weight}" data-r="${x.reps}">
           <span class="n">${x.set_no}</span>
           <span class="vals"><b>${x.weight}</b><span class="x">kg ×</span><b>${x.reps}</b><span class="x">回</span></span>
           <span class="vol">${((+x.weight||0)*(+x.reps||0)).toLocaleString()}<small>kg</small></span>
-          <span class="t">${x.recorded_at||''}</span>
+          <button class="row-act edit" data-id="${x.id}" title="編集">✏</button>
+          <button class="row-act del" data-id="${x.id}" title="削除">🗑</button>
         </div>`).join('');
       return `<div class="day-ex-group">
-        <div class="day-ex-head"><div class="day-ex-name">${name}</div><div class="day-ex-meta"><b>${list.length}</b>セット ・ <b>${vol.toLocaleString()}</b>kg</div></div>
+        <div class="day-ex-head">
+          <div class="day-ex-name">${name} <span style="font-size:10px;color:var(--photo-mute);font-weight:500">${TAG_LABEL[tag]||''}</span></div>
+          <div class="day-ex-meta"><b>${list.length}</b>セット ・ <b>${vol.toLocaleString()}</b>kg
+            <button class="row-act add-set" data-ex="${name}" data-tag="${tag}" title="セット追加" style="margin-left:6px">＋</button>
+          </div>
+        </div>
         <div class="day-set-list">${rows}</div>
       </div>`;
     }).join('');
-    $('dayList').innerHTML = `<div class="day-total">合計ボリューム <b>${total.toLocaleString()}</b> KG</div>` + html;
+    body = `<div class="day-total">合計ボリューム <b>${total.toLocaleString()}</b> KG</div>` + html;
   }
-  $('dayModal').classList.add('on');
+  body += `<button class="cta-ghost" id="dayAddEx" style="margin-top:14px;width:100%">＋ 種目を追加</button>`;
+  $('dayList').innerHTML = body;
+
+  $('dayList').querySelectorAll('.row-act.del').forEach(b => {
+    b.addEventListener('click', async () => {
+      if (!confirm('このセットを削除しますか？')) return;
+      try {
+        const r = await fetch(API+'/api/sets/'+b.dataset.id, { method:'DELETE' });
+        if (!r.ok) throw new Error();
+        sessionStorage.removeItem('kinntore_prefetch_90d');
+        await openDay(dayKey);
+        await reload();
+      } catch { alert('削除に失敗しました'); }
+    });
+  });
+  $('dayList').querySelectorAll('.row-act.edit').forEach(b => {
+    b.addEventListener('click', () => editSetInline(b.closest('.day-set-row'), dayKey));
+  });
+  $('dayList').querySelectorAll('.row-act.add-set').forEach(b => {
+    b.addEventListener('click', () => openAddSetForm(dayKey, b.dataset.tag, b.dataset.ex));
+  });
+  document.getElementById('dayAddEx').addEventListener('click', () => openAddSetForm(dayKey));
+}
+
+function editSetInline(row, dayKey) {
+  if (!row || row.classList.contains('editing')) return;
+  row.classList.add('editing');
+  const w = +row.dataset.w, r = +row.dataset.r;
+  row.innerHTML = `
+    <input type="number" class="edit-w" value="${w}" step="2.5" style="width:64px"> kg ×
+    <input type="number" class="edit-r" value="${r}" step="1" style="width:48px"> 回
+    <button class="row-act save">保存</button>
+    <button class="row-act cancel">×</button>`;
+  row.querySelector('.cancel').onclick = () => openDay(dayKey);
+  row.querySelector('.save').onclick = async () => {
+    const newW = +row.querySelector('.edit-w').value;
+    const newR = +row.querySelector('.edit-r').value;
+    const id = row.dataset.setId;
+    try {
+      const res = await fetch(API+'/api/sets/'+id, {
+        method:'PATCH',
+        headers:{'Content-Type':'application/json'},
+        body: JSON.stringify({ weight:newW, reps:newR })
+      });
+      if (!res.ok) throw new Error();
+      sessionStorage.removeItem('kinntore_prefetch_90d');
+      await openDay(dayKey);
+      await reload();
+    } catch { alert('保存に失敗しました'); }
+  };
+}
+
+const EXERCISES_BY_TAG = {
+  chest: ['ベンチプレス','ダンベルプレス','インクラインダンベル','ダンベルフライ','ペックフライ','ケーブルフライ','プッシュアップ','ディップス'],
+  shoulder: ['ショルダープレス','サイドレイズ','フロントレイズ','リアデルトフライ','ペックデック (リア)','アップライトロウ','シュラッグ'],
+  back: ['ラットプルダウン','ベントオーバーロウ','デッドリフト','アシステッド懸垂','ケーブルロウ','ワンハンドロウ'],
+  leg: ['バーベルスクワット','レッグプレス','レッグエクステンション','レッグカール','カーフレイズ','ランジ','ヒップスラスト'],
+  abs: ['アブクランチ','レッグレイズ','プランク','ロシアンツイスト','ハンギングレッグレイズ'],
+  hip: ['ヒップスラスト','ブルガリアンスクワット','グルートブリッジ','キックバック','アブダクション']
+};
+
+function openAddSetForm(dayKey, fixedTag, fixedEx) {
+  const tags = ['chest','shoulder','back','leg','abs','hip'];
+  const initialTag = fixedTag || 'chest';
+  const exList = EXERCISES_BY_TAG[initialTag];
+  const html = `
+    <div class="add-form" style="background:var(--photo-card);border:1px solid var(--photo-line);border-radius:10px;padding:14px;margin-top:10px">
+      <div style="font-family:var(--f-display);font-size:10px;letter-spacing:.18em;color:var(--photo-mute);margin-bottom:8px">セット追加</div>
+      ${fixedTag ? `<div style="font-family:var(--f-jp);font-weight:700;margin-bottom:10px;font-size:13px">${TAG_LABEL[fixedTag]} ・ ${fixedEx}</div>` : `
+        <div style="display:grid;grid-template-columns:1fr 2fr;gap:8px;margin-bottom:10px">
+          <select id="addTagSel">${tags.map(t=>`<option value="${t}">${TAG_LABEL[t]}</option>`).join('')}</select>
+          <select id="addExSel">${exList.map(n=>`<option>${n}</option>`).join('')}</select>
+        </div>
+        <input type="text" id="addExCustom" placeholder="または種目名を直接入力" style="width:100%;margin-bottom:10px;padding:9px 10px;background:#0a0a0a;border:1px solid var(--photo-line);color:var(--photo-text);border-radius:8px">
+      `}
+      <div style="display:flex;gap:8px;align-items:center;margin-bottom:10px">
+        <input type="number" id="addW" placeholder="重量" step="2.5" style="flex:1"> kg ×
+        <input type="number" id="addR" placeholder="回数" step="1" style="flex:1"> 回
+      </div>
+      <input type="time" id="addT" style="width:100%;margin-bottom:10px;padding:9px 10px;background:#0a0a0a;border:1px solid var(--photo-line);color:var(--photo-text);border-radius:8px">
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:8px">
+        <button class="cta-ghost" id="addCancel">キャンセル</button>
+        <button class="cta-main" id="addSave" style="margin:0;width:100%">追加</button>
+      </div>
+    </div>`;
+  const wrap = document.createElement('div');
+  wrap.innerHTML = html;
+  $('dayList').appendChild(wrap);
+  // 部位変更で種目候補を更新
+  const tagSel = document.getElementById('addTagSel');
+  const exSel = document.getElementById('addExSel');
+  if (tagSel) {
+    tagSel.onchange = () => {
+      const list = EXERCISES_BY_TAG[tagSel.value] || [];
+      exSel.innerHTML = list.map(n => `<option>${n}</option>`).join('');
+    };
+  }
+  document.getElementById('addW').value = 60;
+  document.getElementById('addR').value = 10;
+  const now = new Date();
+  document.getElementById('addT').value = String(now.getHours()).padStart(2,'0')+':'+String(now.getMinutes()).padStart(2,'0');
+  document.getElementById('addCancel').onclick = () => wrap.remove();
+  document.getElementById('addSave').onclick = async () => {
+    const tag = fixedTag || tagSel.value;
+    const customName = document.getElementById('addExCustom')?.value?.trim();
+    const exercise_name = fixedEx || customName || exSel.value;
+    const weight = +document.getElementById('addW').value;
+    const reps = +document.getElementById('addR').value;
+    const recorded_at = document.getElementById('addT').value || null;
+    if (!weight || !reps) { alert('重量と回数を入力してください'); return; }
+    try {
+      const r = await fetch(API+'/api/sets', {
+        method:'POST',
+        headers:{'Content-Type':'application/json'},
+        body: JSON.stringify({ tag, exercise_name, weight, reps, day:dayKey, recorded_at })
+      });
+      if (!r.ok) throw new Error();
+      sessionStorage.removeItem('kinntore_prefetch_90d');
+      await openDay(dayKey);
+      await reload();
+    } catch { alert('追加に失敗しました'); }
+  };
+}
+
+// セッション一覧を再取得
+async function reload() {
+  await loadAll();
 }
 
 $('dayClose').onclick = $('dayCancel').onclick = () => $('dayModal').classList.remove('on');
