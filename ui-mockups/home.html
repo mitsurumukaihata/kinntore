@@ -9,7 +9,13 @@
 <link rel="manifest" href="manifest.json">
 <link rel="apple-touch-icon" href="img/icon-192.png">
 <title>kinntore — ホーム</title>
-<script>(function(){var t=localStorage.getItem('kinntore_theme');if(t==='light')document.documentElement.dataset.theme='light';})();</script>
+<script>(function(){
+  var t=localStorage.getItem('kinntore_theme');if(t==='light')document.documentElement.dataset.theme='light';
+  // 時間帯による空気演出: 5-10 morning / 10-17 day / 17-22 evening / 22-5 night
+  var h=new Date().getHours();
+  var p=h>=22||h<5?'night':h<10?'morning':h<17?'day':'evening';
+  document.documentElement.dataset.period=p;
+})();</script>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Inter+Tight:wght@400;500;600;700;800;900&family=JetBrains+Mono:wght@400;500;600&family=Zen+Kaku+Gothic+New:wght@400;500;700;900&display=swap" rel="stylesheet">
@@ -25,6 +31,32 @@
   --f-display:'Bebas Neue','Inter Tight',system-ui,sans-serif;
   --f-mono:'JetBrains Mono',ui-monospace,monospace;
 }
+/* ===== 時間帯による空気演出 (subtle、感情の空気) ===== */
+/* morning 5-10: 少し白っぽく、空気が静かに動き出す */
+:root[data-period="morning"]{
+  --photo-red:#E85565;
+  --photo-red-soft:rgba(232,85,101,0.12);
+}
+:root[data-period="morning"] body{background:radial-gradient(120% 80% at 50% -20%, rgba(255,240,235,0.05) 0%, transparent 60%), #0a0a0a}
+:root[data-period="morning"] .onepct{box-shadow:0 8px 32px rgba(232,85,101,.08)}
+
+/* evening 17-22: 赤を少し弱め、間を広げる */
+:root[data-period="evening"]{
+  --photo-red:#D43D4D;
+  --photo-red-soft:rgba(212,61,77,0.10);
+}
+:root[data-period="evening"] body{background:radial-gradient(120% 80% at 50% -20%, rgba(40,30,40,0.4) 0%, transparent 60%), #0a0a0a}
+:root[data-period="evening"] .onepct{box-shadow:0 8px 32px rgba(212,61,77,.07);border-color:rgba(212,61,77,.28)}
+
+/* night 22-5: 最も静か。赤を最小限に */
+:root[data-period="night"]{
+  --photo-red:#B83340;
+  --photo-red-soft:rgba(184,51,64,0.08);
+}
+:root[data-period="night"] body{background:radial-gradient(120% 80% at 50% -20%, rgba(20,20,30,0.5) 0%, transparent 60%), #060608}
+:root[data-period="night"] .onepct{box-shadow:0 8px 24px rgba(184,51,64,.06);border-color:rgba(184,51,64,.22)}
+:root[data-period="night"] .onepct-bg{opacity:.5}
+
 /* ===== ライトモード ===== */
 :root[data-theme="light"]{
   --photo-bg:#f4f4f5;
