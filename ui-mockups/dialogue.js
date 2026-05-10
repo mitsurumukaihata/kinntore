@@ -212,8 +212,15 @@ window.pickDialogue = function(state, opts) {
   }
   var character = opts.character || chars[Math.floor(Math.random() * chars.length)];
 
-  // スタイル選択 (default: localStorage / balanced)
-  var style = opts.style || localStorage.getItem('kinntore_interaction_style') || 'balanced';
+  // スタイル選択 (default: mixed = 毎回ランダム)
+  var styleSetting = opts.style || localStorage.getItem('kinntore_interaction_style') || 'mixed';
+  var style;
+  if (styleSetting === 'mixed') {
+    var styles = ['gentle', 'balanced', 'strict'];
+    style = styles[Math.floor(Math.random() * styles.length)];
+  } else {
+    style = styleSetting;
+  }
 
   function getPool(ch, st) {
     return (data[state][ch] && data[state][ch][st]) ? data[state][ch][st] : null;

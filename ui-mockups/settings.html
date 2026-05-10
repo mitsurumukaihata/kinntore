@@ -150,6 +150,20 @@ body{font-family:var(--f-ui),var(--f-jp);color:var(--photo-text);min-height:100v
           </div>
         </div>
       </div>
+      <div class="row">
+        <div class="l">
+          <div class="nm">セリフの温度</div>
+          <div class="desc">モリゾウとリンの距離感 (Mixed = 毎回変わる)</div>
+        </div>
+        <div class="r">
+          <div class="seg" id="segStyle">
+            <button data-v="gentle">Gentle</button>
+            <button data-v="balanced">Balanced</button>
+            <button data-v="strict">Strict</button>
+            <button data-v="mixed" class="on">Mixed</button>
+          </div>
+        </div>
+      </div>
     </div>
   </div>
 
@@ -371,6 +385,7 @@ function bindSeg(segId, key, def) {
     };
   });
 })();
+bindSeg('segStyle','interaction_style','mixed');
 bindSeg('segUnit','unit','kg');
 bindSeg('segWStep','weight_step','2.5');
 bindSeg('segRStep','rep_step','1');
