@@ -124,7 +124,7 @@ body{font-family:var(--f-ui),var(--f-jp);color:var(--photo-text);min-height:100v
 .tag:active{transform:scale(.96)}
 
 /* ヒーロー (キャラクターのみの画像 + HTML側で文字オーバーレイ + 赤ストリップアクセント) */
-.hero{position:relative;height:calc(380px + env(safe-area-inset-top));overflow:hidden;background:var(--photo-bg)}
+.hero{position:relative;height:380px;overflow:hidden;background:#0a0a0a}
 .hero img{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;object-position:center 22%;display:block;transition:opacity .35s,transform .35s}
 /* ヒーロー登場アニメ (キャラが下からせり上がりつつ拡大) */
 .hero img.hero-enter{animation:hero-enter .85s cubic-bezier(.2,.8,.2,1) forwards}
