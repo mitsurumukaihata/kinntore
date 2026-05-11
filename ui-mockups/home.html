@@ -95,17 +95,17 @@
 *{box-sizing:border-box;margin:0;padding:0;-webkit-tap-highlight-color:transparent}
 html,body{background:#000;overscroll-behavior-y:contain;-webkit-text-size-adjust:100%;text-size-adjust:100%;touch-action:manipulation}
 
-/* ===== CORE24 スプラッシュ (約 2.8s · 静かに入る) ===== */
-.splash{position:fixed;inset:0;background:#070708;z-index:200;display:flex;flex-direction:column;align-items:center;justify-content:center;overflow:hidden;animation:splash-out 1.0s ease-in-out 2.0s forwards}
+/* ===== CORE24 スプラッシュ (約 4.6s · ゆったり静か) ===== */
+.splash{position:fixed;inset:0;background:#070708;z-index:200;display:flex;flex-direction:column;align-items:center;justify-content:center;overflow:hidden;animation:splash-out 1.6s ease-in-out 3.0s forwards}
 .splash.skip{display:none}
-.splash-glow{position:absolute;width:60vw;height:60vw;max-width:500px;max-height:500px;background:radial-gradient(circle,rgba(230,57,70,.06) 0%,transparent 65%);filter:blur(50px);opacity:0;animation:splash-glow 3.0s ease-in-out forwards;z-index:1;pointer-events:none}
-.splash-brand{position:relative;z-index:2;text-align:center;opacity:0;animation:splash-brand-in 1.4s cubic-bezier(.4,0,.2,1) .25s forwards}
+.splash-glow{position:absolute;width:60vw;height:60vw;max-width:500px;max-height:500px;background:radial-gradient(circle,rgba(230,57,70,.06) 0%,transparent 65%);filter:blur(50px);opacity:0;animation:splash-glow 4.4s ease-in-out forwards;z-index:1;pointer-events:none}
+.splash-brand{position:relative;z-index:2;text-align:center;opacity:0;animation:splash-brand-in 1.6s cubic-bezier(.4,0,.2,1) .3s forwards}
 .splash-core24{font-family:'Bebas Neue','Inter Tight',system-ui,sans-serif;font-size:64px;letter-spacing:.18em;color:#fff;font-weight:400;line-height:1;padding-left:.18em}
 .splash-core24 .splash-24{color:#E63946}
 .splash-sub{margin-top:14px;font-family:'Bebas Neue','Inter Tight',system-ui,sans-serif;font-size:10px;letter-spacing:.36em;color:rgba(255,255,255,.55);font-weight:400;padding-left:.36em}
 .splash-whisper{position:absolute;bottom:18%;font-family:var(--f-jp),'Zen Kaku Gothic New',sans-serif;font-size:13px;color:rgba(255,255,255,.5);font-weight:400;letter-spacing:.04em;opacity:0;z-index:2}
-.splash-whisper.show{animation:splash-whisper-in 1.2s cubic-bezier(.4,0,.2,1) 1.0s forwards}
-.splash-footer{position:absolute;bottom:6%;font-family:'Bebas Neue','Inter Tight',system-ui,sans-serif;font-size:9px;letter-spacing:.32em;color:rgba(255,255,255,.28);font-weight:400;opacity:0;animation:splash-footer-in 1.0s ease-in .8s forwards;z-index:2;padding-left:.32em}
+.splash-whisper.show{animation:splash-whisper-in 1.8s cubic-bezier(.4,0,.2,1) .8s forwards}
+.splash-footer{position:absolute;bottom:6%;font-family:'Bebas Neue','Inter Tight',system-ui,sans-serif;font-size:9px;letter-spacing:.32em;color:rgba(255,255,255,.28);font-weight:400;opacity:0;animation:splash-footer-in 1.4s ease-in 1.0s forwards;z-index:2;padding-left:.32em}
 @keyframes splash-brand-in{
   0%{opacity:0;transform:translateY(4px)}
   100%{opacity:1;transform:translateY(0)}
@@ -119,14 +119,15 @@ html,body{background:#000;overscroll-behavior-y:contain;-webkit-text-size-adjust
 }
 @keyframes splash-glow{
   0%{opacity:0}
-  40%{opacity:1}
+  35%{opacity:1}
+  85%{opacity:1}
   100%{opacity:0}
 }
 @keyframes splash-out{
   to{opacity:0;visibility:hidden;pointer-events:none}
 }
-/* ダッシュボード本体はスプラッシュとクロスフェード */
-.app{opacity:0;animation:app-in 1.0s ease-in-out 2.1s forwards}
+/* ダッシュボード本体はスプラッシュとクロスフェード (ゆったり) */
+.app{opacity:0;animation:app-in 1.4s ease-in-out 3.2s forwards}
 .splash.skip ~ .app{opacity:1;animation:none}
 @keyframes app-in{from{opacity:0}to{opacity:1}}
 button,a,.card,.btn,.tab a{touch-action:manipulation;-webkit-touch-callout:none;-webkit-user-select:none;user-select:none}
