@@ -780,15 +780,23 @@ async function renderHomeData() {
       encourage: '',
     };
     const hintQuiet = hintLoud;
-    // ===== A+B+C: 表示頻度・重複防止・沈黙演出 =====
+    // ===== セリフは「状態変化」時のみ更新 (画面操作では変えない) =====
+    // stateHash で「観測できた事実」をまとめ、変化があった時だけ engine を呼ぶ
+    const period = document.documentElement.dataset.period || 'day';
+    const stateHash = [
+      todayKey,
+      state,
+      isNewPB ? 1 : 0,
+      isHuge ? 1 : 0,
+      achieved ? 1 : 0,
+      period,
+      deepSilent ? 1 : 0,
+      lastSetMs || 0
+    ].join('|');
     let stateLog = {};
     try { stateLog = JSON.parse(localStorage.getItem('kt_101_log') || '{}'); } catch(_) {}
-    const stateChanged = stateLog.lastState !== state;
-    const dayChanged = stateLog.lastDate !== todayKey;
-    // C: 状態変化なし時のみ沈黙確率 (通常20% / silent 30%)
-    const muteChance = (!stateChanged && !dayChanged) ? (silent ? 0.30 : 0.20) : 0;
-    // deepSilent は state 変化に関わらず強制ミュート (案X: msg空白 + hint最小)
-    const shouldMute = deepSilent || (Math.random() < muteChance);
+    const stateChanged = stateLog.stateHash !== stateHash;
+    const shouldMute = deepSilent;
 
     // daysSinceLast / dailyStreak は moodTag 用に外で計算
     let daysSinceLast = 0;
@@ -826,10 +834,18 @@ async function renderHomeData() {
       if (moodTagEl) moodTagEl.textContent = moodLabel;
     }
 
-    // Dialogue engine (v1.1) で msg を選択。fallback は既存 pool
+    // Dialogue engine: 状態変化時のみ新規 pick、それ以外は pinned を再利用
     let pickedMsg = '';
     let pickedCharacter = null;
-    if (!shouldMute) {
+    if (shouldMute) {
+      // deepSilent: msg 空白固定 (pinned には触らない)
+      pickedMsg = '';
+    } else if (!stateChanged && stateLog.pinnedMsg) {
+      // 状態変化なし: pinned を再利用 (タブ切替/再表示で同じセリフ)
+      pickedMsg = stateLog.pinnedMsg;
+      pickedCharacter = stateLog.pinnedCharacter || null;
+    } else {
+      // 状態変化: 新規 pick
       const dialogueState = (window.mapToDialogueState ? window.mapToDialogueState({
         isNewPB, isHuge, achieved,
         lastVol, todayVol, daysSinceLast,
@@ -856,11 +872,12 @@ async function renderHomeData() {
         const fromPool = candidates.length ? candidates : pool;
         pickedMsg = fromPool[Math.floor(Math.random() * fromPool.length)] || '';
       }
-      // 記録
+      // 新規 pick を pinned に保存
+      stateLog.pinnedMsg = pickedMsg;
+      stateLog.pinnedCharacter = pickedCharacter;
       stateLog.recent = [...(stateLog.recent || []), { msg: pickedMsg, ts: Date.now() }].slice(-20);
     }
-    stateLog.lastState = state;
-    stateLog.lastDate = todayKey;
+    stateLog.stateHash = stateHash;
     try { localStorage.setItem('kt_101_log', JSON.stringify(stateLog)); } catch(_) {}
     const hint = (silent ? hintQuiet : hintLoud)[state] || '';
     $$('onepctMsg').textContent = pickedMsg;
