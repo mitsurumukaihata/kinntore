@@ -5,7 +5,7 @@
   "start_url": "home.html",
   "scope": "./",
   "display": "standalone",
-  "orientation": "portrait",
+  "orientation": "any",
   "background_color": "#070708",
   "theme_color": "#070708",
   "lang": "ja",
