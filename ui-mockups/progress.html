@@ -59,9 +59,9 @@ body{font-family:var(--f-ui),var(--f-jp);color:var(--photo-text);min-height:100v
 .part-vol{background:var(--photo-card);border:1px solid var(--photo-line);border-radius:12px;padding:14px 16px;position:relative;overflow:hidden}
 .part-vol-head{display:flex;justify-content:space-between;align-items:baseline;margin-bottom:10px}
 .part-vol-name{font-family:var(--f-jp);font-size:14px;font-weight:700;color:var(--photo-text)}
-.part-vol-name .delta{font-family:var(--f-mono);font-size:10px;font-weight:600;letter-spacing:-.01em;margin-left:8px;padding:2px 7px;border-radius:50px;background:var(--photo-red-soft);color:var(--photo-red)}
-.part-vol-name .delta.up{background:rgba(79,176,122,.15);color:var(--ok)}
-.part-vol-name .delta.flat{background:rgba(255,255,255,.05);color:var(--photo-mute)}
+.part-vol-name .delta{font-family:var(--f-mono);font-size:10px;font-weight:500;letter-spacing:-.01em;margin-left:8px;padding:2px 7px;border-radius:50px;background:rgba(255,255,255,.04);color:var(--photo-mute)}
+.part-vol-name .delta.up{background:rgba(79,176,122,.10);color:rgba(79,176,122,.85)}
+.part-vol-name .delta.flat{background:rgba(255,255,255,.04);color:var(--photo-mute)}
 .part-vol-total{font-family:var(--f-mono);font-size:14px;color:var(--photo-text);font-weight:600;letter-spacing:-.01em}
 .part-vol-total small{font-family:var(--f-display);font-size:9px;color:var(--photo-mute);letter-spacing:.18em;margin-left:2px;font-weight:400}
 .spark{width:100%;height:48px;display:block}
@@ -75,7 +75,8 @@ body{font-family:var(--f-ui),var(--f-jp);color:var(--photo-text);min-height:100v
 .ex-stat .l{font-family:var(--f-display);font-size:9px;color:var(--photo-dim);letter-spacing:.18em;margin-bottom:4px}
 .ex-stat .v{font-family:var(--f-mono);font-size:18px;font-weight:600;color:var(--photo-text);letter-spacing:-.01em;line-height:1}
 .ex-stat .v small{font-family:var(--f-display);font-size:9px;color:var(--photo-mute);letter-spacing:.1em;margin-left:1px;font-weight:400}
-.ex-stat.r .v{color:var(--photo-red)}
+.ex-stat.r .v{color:var(--photo-mute)}
+.ex-stat.r.up .v{color:var(--ok)}
 .ex-stat.g .v{color:var(--ok)}
 .ex-chart{width:100%;height:140px;display:block}
 .ex-chart-empty{height:140px;display:flex;align-items:center;justify-content:center;color:var(--photo-dim);font-size:12px;font-family:var(--f-jp)}
@@ -118,11 +119,11 @@ body{font-family:var(--f-ui),var(--f-jp);color:var(--photo-text);min-height:100v
   <div id="loading" class="loading">データ読込中…</div>
 
   <div id="content" style="display:none">
-    <!-- 部位別ボリューム推移 -->
+    <!-- 部位別 積み上げ軌跡 -->
     <div class="section">
       <div class="section-head">
-        <h2>部位別ボリューム推移<small>VOLUME TREND</small></h2>
-        <div class="h-meta">合計 <b id="totalVol">0</b>kg</div>
+        <h2>積み上げの軌跡<small>ACCUMULATION</small></h2>
+        <div class="h-meta">ここまで <b id="totalVol">0</b>kg</div>
       </div>
       <div class="parts-vols" id="partsVols"></div>
     </div>
@@ -130,7 +131,7 @@ body{font-family:var(--f-ui),var(--f-jp);color:var(--photo-text);min-height:100v
     <!-- 種目別重量伸び -->
     <div class="section">
       <div class="section-head">
-        <h2>種目別の伸び<small>EXERCISE PROGRESSION</small></h2>
+        <h2>種目の伸び<small>EXERCISE PROGRESSION</small></h2>
       </div>
       <div class="ex-prog-card">
         <select class="ex-select" id="exSelect"></select>
@@ -210,45 +211,51 @@ function render() {
   renderPR();
 }
 
-// 期間半分前の比較で前期間比を計算
+// 累積ボリューム軌跡: 「積み上がってきた量」を見せる (ゼロ日は plateau)
 function renderPartsVols() {
-  const half = Math.floor(period/2);
   let total = 0;
   const cards = TAGS.map(tag => {
-    // 各日のボリューム
-    const series = allData.map(d => {
+    // 古い順に並べた各日のボリューム
+    const sorted = [...allData].sort((a,b)=>a.day.localeCompare(b.day));
+    const dailyVols = sorted.map(d => {
       let v = 0; for (const s of d.sets) if (s.tag===tag) v += (+s.weight||0)*(+s.reps||0);
       return v;
     });
-    const vol = series.reduce((a,b)=>a+b,0);
+    // 累積 (常に非減少: トレない日は前日値を維持)
+    const cum = [];
+    let acc = 0;
+    for (const v of dailyVols) { acc += v; cum.push(acc); }
+    const vol = acc;
     total += vol;
-    const recent = series.slice(0, half).reduce((a,b)=>a+b,0);
-    const past = series.slice(half).reduce((a,b)=>a+b,0);
+    // 「ここまでの積み上げ」バッジ
     let delta = '--', deltaCls = 'flat';
-    if (past > 0) {
-      const pct = Math.round(((recent-past)/past)*100);
-      delta = (pct>=0?'+':'')+pct+'%';
-      deltaCls = pct>=5 ? 'up' : (pct<=-5 ? '' : 'flat');
-    } else if (recent > 0) { delta = 'NEW'; deltaCls = 'up'; }
-    // sparkline (newest right, so reverse)
-    const sparkVals = series.slice(0, period).reverse();
-    const max = Math.max(1, ...sparkVals);
-    const points = sparkVals.map((v,i) => {
-      const x = (i/(sparkVals.length-1||1))*340;
-      const y = 44 - (v/max)*40;
-      return `${x.toFixed(1)},${y.toFixed(1)}`;
-    }).join(' ');
-    const hasData = vol > 0;
+    if (vol > 0) {
+      delta = '+' + vol.toLocaleString() + 'kg';
+      deltaCls = 'up';
+    }
+    // 累積カーブ (常に右肩上がり)
+    let svg = '';
+    if (vol > 0 && cum.length > 1) {
+      const maxVal = cum[cum.length - 1] || 1;
+      const points = cum.map((v,i) => {
+        const x = (i/(cum.length-1))*340;
+        const y = 44 - (v/maxVal)*40;
+        return `${x.toFixed(1)},${y.toFixed(1)}`;
+      }).join(' ');
+      svg = `<svg class="spark" viewBox="0 0 340 48" preserveAspectRatio="none">
+        <defs><linearGradient id="g${tag}" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#E63946" stop-opacity=".25"/><stop offset="1" stop-color="#E63946" stop-opacity="0"/></linearGradient></defs>
+        <polygon points="0,48 ${points} 340,48" fill="url(#g${tag})"/>
+        <polyline points="${points}" fill="none" stroke="#E63946" stroke-width="1.5" stroke-linejoin="round" stroke-linecap="round" opacity=".75"/>
+      </svg>`;
+    } else {
+      svg = '<div class="spark-empty">まだ記録なし</div>';
+    }
     return `<div class="part-vol">
       <div class="part-vol-head">
         <div class="part-vol-name">${TAG_LABEL[tag]} <span class="delta ${deltaCls}">${delta}</span></div>
         <div class="part-vol-total">${vol.toLocaleString()}<small>KG</small></div>
       </div>
-      ${hasData ? `<svg class="spark" viewBox="0 0 340 48" preserveAspectRatio="none">
-        <defs><linearGradient id="g${tag}" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#E63946" stop-opacity=".4"/><stop offset="1" stop-color="#E63946" stop-opacity="0"/></linearGradient></defs>
-        <polyline points="${points}" fill="none" stroke="#E63946" stroke-width="2" stroke-linejoin="round" stroke-linecap="round"/>
-        <polygon points="0,48 ${points} 340,48" fill="url(#g${tag})"/>
-      </svg>` : '<div class="spark-empty">期間内に記録なし</div>'}
+      ${svg}
     </div>`;
   }).join('');
   $('partsVols').innerHTML = cards;
@@ -292,6 +299,9 @@ function renderExSelect() {
     $('exFirst').innerHTML = first+'<small>kg</small>';
     $('exCurrent').innerHTML = cur+'<small>kg</small>';
     $('exDelta').innerHTML = (delta>=0?'+':'')+delta.toFixed(1)+'<small>kg</small>';
+    // 伸びてる時だけ緑、それ以外はミュート (赤強調しない)
+    const deltaCell = $('exDelta').closest('.ex-stat');
+    if (deltaCell) deltaCell.classList.toggle('up', delta > 0);
     const max = Math.max(...weights), min = Math.min(...weights);
     const range = Math.max(1, max-min);
     const points = weights.map((w,i) => {
