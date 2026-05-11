@@ -10,11 +10,13 @@
 /* === CRITICAL: splash を即描画するための最小CSS (大きな style ブロックより前) === */
 html,body{background:#070708;margin:0;color:#fff}
 .splash{position:fixed;inset:0;background:#070708;z-index:200;display:flex;flex-direction:column;align-items:center;justify-content:center;overflow:hidden}
-.splash-brand{position:relative;z-index:2;text-align:center}
+.splash-brand{position:relative;z-index:2;text-align:center;opacity:0;animation:splash-brand-rise .9s cubic-bezier(.25,.1,.25,1) .15s forwards}
 .splash-core24{font-family:'Bebas Neue','Helvetica Neue',Impact,sans-serif;font-size:64px;letter-spacing:.18em;color:#fff;font-weight:400;line-height:1;padding-left:.18em}
 .splash-core24 .splash-24{color:#E63946}
 .splash-sub{margin-top:14px;font-family:'Bebas Neue','Helvetica Neue',Impact,sans-serif;font-size:10px;letter-spacing:.36em;color:rgba(255,255,255,.55);font-weight:400;padding-left:.36em}
-.splash-footer{position:absolute;bottom:6%;font-family:'Bebas Neue','Helvetica Neue',Impact,sans-serif;font-size:9px;letter-spacing:.32em;color:rgba(255,255,255,.28);font-weight:400;z-index:2;padding-left:.32em}
+.splash-footer{position:absolute;bottom:6%;font-family:'Bebas Neue','Helvetica Neue',Impact,sans-serif;font-size:9px;letter-spacing:.32em;color:rgba(255,255,255,.28);font-weight:400;z-index:2;padding-left:.32em;opacity:0;animation:splash-footer-rise 1.2s ease-out .6s forwards}
+@keyframes splash-brand-rise{from{opacity:0}to{opacity:1}}
+@keyframes splash-footer-rise{from{opacity:0}to{opacity:1}}
 </style>
 <link rel="manifest" href="manifest.json">
 <link rel="apple-touch-icon" href="img/icon-192.png">
