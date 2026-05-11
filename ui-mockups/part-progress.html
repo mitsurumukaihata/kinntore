@@ -57,6 +57,11 @@ body{font-family:var(--f-ui),var(--f-jp);color:var(--photo-text);min-height:100v
 .head h1{font-family:var(--f-jp);font-size:24px;font-weight:900;letter-spacing:-.01em;flex:1}
 .head h1 small{display:block;font-family:var(--f-display);font-size:10px;color:var(--photo-mute);letter-spacing:.18em;margin-top:2px;font-weight:400}
 
+.seg-period{margin:6px 16px 14px;background:rgba(26,26,26,.4);border:1px solid rgba(255,255,255,.04);border-radius:50px;padding:4px;display:grid;grid-template-columns:1fr 1fr 1fr;gap:0}
+.seg-period button{background:transparent;border:0;color:var(--photo-mute);font-family:var(--f-jp);font-size:12px;font-weight:700;padding:9px 0;border-radius:50px;cursor:pointer;letter-spacing:.04em;transition:.15s}
+.seg-period button.on{background:var(--photo-red);color:var(--photo-text);box-shadow:0 2px 8px rgba(230,57,70,.3)}
+:root[data-theme="light"] .seg-period{background:rgba(255,255,255,.6) !important;border-color:rgba(0,0,0,.06) !important}
+
 .summary{margin:6px 16px 20px;background:linear-gradient(135deg,rgba(26,10,12,.4),rgba(26,26,26,.2) 70%);border:1px solid rgba(230,57,70,.08);border-radius:14px;padding:18px 18px;display:flex;justify-content:space-between;align-items:baseline}
 .summary .l{font-family:var(--f-display);font-size:10px;color:var(--photo-mute);letter-spacing:.2em;margin-bottom:4px}
 .summary .v{font-family:var(--f-mono);font-size:24px;font-weight:600;color:var(--photo-text);letter-spacing:-.02em;line-height:1}
@@ -108,8 +113,14 @@ body{font-family:var(--f-ui),var(--f-jp);color:var(--photo-text);min-height:100v
 <body style="background:#070708;margin:0">
 <div class="app">
   <div class="head">
-    <a class="back" href="progress.html">‹</a>
+    <a class="back" href="progress.html" id="backLink">‹</a>
     <h1 id="partName">部位<small id="partEn">PART</small></h1>
+  </div>
+
+  <div class="seg-period" id="segPeriod">
+    <button data-p="30">月</button>
+    <button data-p="90">3ヶ月</button>
+    <button data-p="365">年</button>
   </div>
 
   <div class="summary" id="summary" style="display:none">
@@ -152,10 +163,26 @@ const fmt = d => d.getFullYear()+'-'+String(d.getMonth()+1).padStart(2,'0')+'-'+
 
 const params = new URLSearchParams(location.search);
 const part = params.get('part') || 'chest';
-const PERIOD_DAYS = 90; // prefetch が 90日分、即表示優先 (将来「全期間」トグル可)
+let PERIOD_DAYS = Math.max(7, Math.min(365, parseInt(params.get('period') || '90', 10) || 90));
 
 $('partName').firstChild.textContent = TAG_LABEL[part] || '部位';
 $('partEn').textContent = TAG_EN[part] || 'PART';
+
+// 戻るリンクに period を引き継ぐ
+$('backLink').href = `progress.html?p=${PERIOD_DAYS}`;
+
+// 期間タブ初期化
+document.querySelectorAll('#segPeriod button').forEach(b => {
+  b.classList.toggle('on', +b.dataset.p === PERIOD_DAYS);
+  b.addEventListener('click', () => {
+    const p = +b.dataset.p;
+    if (p === PERIOD_DAYS) return;
+    // URL 書き換え + リロード (シンプル)
+    const url = new URL(location.href);
+    url.searchParams.set('period', p);
+    location.href = url.toString();
+  });
+});
 
 async function fetchDay(d) {
   try { const r = await fetch(API+'/api/sets?day='+d); if(!r.ok)return []; return (await r.json()).sets||[]; } catch{return []}

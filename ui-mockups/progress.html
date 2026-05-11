@@ -132,9 +132,9 @@ body{font-family:var(--f-ui),var(--f-jp);color:var(--photo-text);min-height:100v
     <h1>進捗<small>PROGRESS</small></h1>
   </div>
 
-  <div class="seg-period">
+  <div class="seg-period" id="segPeriod">
     <button data-p="30">月</button>
-    <button data-p="90" class="on">3ヶ月</button>
+    <button data-p="90">3ヶ月</button>
     <button data-p="365">年</button>
   </div>
 
@@ -184,7 +184,11 @@ const $ = id => document.getElementById(id);
 const fmt = d => d.getFullYear()+'-'+String(d.getMonth()+1).padStart(2,'0')+'-'+String(d.getDate()).padStart(2,'0');
 
 let allData = []; // [{day, sets}]
-let period = 90;
+// URL の ?p= から period を読む (部位ページから戻ってきた時)
+let period = (function(){
+  const p = parseInt(new URLSearchParams(location.search).get('p') || '90', 10);
+  return [30, 90, 365].includes(p) ? p : 90;
+})();
 
 async function fetchDay(d) {
   try { const r = await fetch(API+'/api/sets?day='+d); if(!r.ok)return []; return (await r.json()).sets||[]; } catch{return []}
@@ -284,11 +288,11 @@ function renderPartsVols() {
   }).join('');
   $('partsVols').innerHTML = cards;
   $('totalVol').textContent = total.toLocaleString();
-  // 部位カードタップ → 部位ページへ遷移
+  // 部位カードタップ → 部位ページへ遷移 (現在の period を引き継ぐ)
   document.querySelectorAll('.part-vol').forEach(el => {
     el.addEventListener('click', () => {
       const tag = el.dataset.tag;
-      window.location.href = `part-progress.html?part=${tag}`;
+      window.location.href = `part-progress.html?part=${tag}&period=${period}`;
     });
   });
 }
@@ -371,6 +375,7 @@ function renderRecentPR() {
 }
 
 document.querySelectorAll('.seg-period button').forEach(b => {
+  b.classList.toggle('on', +b.dataset.p === period);
   b.onclick = () => {
     document.querySelectorAll('.seg-period button').forEach(x=>x.classList.remove('on'));
     b.classList.add('on');
