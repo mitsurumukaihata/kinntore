@@ -215,36 +215,31 @@ function render() {
   renderRecentPR();
 }
 
-// 部位ボリューム: 7日ローリング合計で「流れ」を見せる (波OK / 下降を責めない)
+// 部位ボリューム: トレした日だけプロット (セッション順)、下落感をなくし「積み上げ」を強調
 function renderPartsVols() {
   let total = 0;
+  const sorted = [...allData].sort((a,b)=>a.day.localeCompare(b.day));
   const cards = TAGS.map(tag => {
-    // 古い順に並べた各日のボリューム
-    const sorted = [...allData].sort((a,b)=>a.day.localeCompare(b.day));
-    const dailyVols = sorted.map(d => {
+    // 日ごとのボリューム → トレした日 (vol > 0) のみ
+    const sessions = [];
+    for (const d of sorted) {
       let v = 0; for (const s of d.sets) if (s.tag===tag) v += (+s.weight||0)*(+s.reps||0);
-      return v;
-    });
-    const vol = dailyVols.reduce((a,b)=>a+b,0);
+      if (v > 0) sessions.push(v);
+    }
+    const vol = sessions.reduce((a,b)=>a+b,0);
     total += vol;
-    // 7日ローリング合計: 「直近1週間でどう積んでいるか」の流れ
-    const rolling = dailyVols.map((_, i) => {
-      let s = 0;
-      for (let j = Math.max(0, i-6); j <= i; j++) s += dailyVols[j];
-      return s;
-    });
     // 期間内の積み上げバッジ
     let delta = '--', deltaCls = 'flat';
     if (vol > 0) {
       delta = '+' + vol.toLocaleString() + 'kg';
       deltaCls = 'up';
     }
-    // ローリング曲線 (波あり・流れあり)
+    // セッション毎のボリュームをプロット (X = セッション順 / Y = vol)
     let svg = '';
-    if (vol > 0 && rolling.length > 1) {
-      const maxVal = Math.max(1, ...rolling);
-      const points = rolling.map((v,i) => {
-        const x = (i/(rolling.length-1))*340;
+    if (sessions.length >= 2) {
+      const maxVal = Math.max(1, ...sessions);
+      const points = sessions.map((v,i) => {
+        const x = (i/(sessions.length-1))*340;
         const y = 44 - (v/maxVal)*40;
         return `${x.toFixed(1)},${y.toFixed(1)}`;
       }).join(' ');
@@ -253,9 +248,12 @@ function renderPartsVols() {
         <polygon points="0,48 ${points} 340,48" fill="url(#g${tag})"/>
         <polyline points="${points}" fill="none" stroke="#E63946" stroke-width="1.5" stroke-linejoin="round" stroke-linecap="round" opacity=".7"/>
       </svg>`;
+    } else if (sessions.length === 1) {
+      svg = `<div class="spark-empty">1セッション (${sessions[0].toLocaleString()}kg)</div>`;
     } else {
       svg = '<div class="spark-empty">まだ記録なし</div>';
     }
+    const sessLabel = sessions.length > 0 ? `${sessions.length}セッション` : '';
     return `<div class="part-vol" data-tag="${tag}">
       <div class="part-vol-head">
         <div class="part-vol-name">${TAG_LABEL[tag]} <span class="delta ${deltaCls}">${delta}</span></div>

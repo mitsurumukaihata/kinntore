@@ -67,7 +67,8 @@ body{font-family:var(--f-ui),var(--f-jp);color:var(--photo-text);min-height:100v
 .ex-stat.best .v{color:var(--gold)}
 .ex-stat.delta.up .v{color:var(--ok)}
 .ex-stat.delta .v{color:var(--photo-mute)}
-.ex-track{font-family:var(--f-mono);font-size:12px;color:var(--photo-mute);letter-spacing:-.01em;padding-top:8px;border-top:1px solid rgba(255,255,255,.04);line-height:1.6;word-break:break-all}
+.ex-chart{width:100%;height:70px;display:block;margin-top:8px;padding-top:8px;border-top:1px solid rgba(255,255,255,.04)}
+.ex-track{font-family:var(--f-mono);font-size:11px;color:var(--photo-mute);letter-spacing:-.01em;margin-top:8px;line-height:1.6;word-break:break-all}
 .ex-track .arrow{color:var(--photo-dim);margin:0 5px;font-size:10px}
 .ex-track .cur{color:var(--photo-text);font-weight:600}
 .ex-track .best{color:var(--gold);font-weight:600}
@@ -231,6 +232,32 @@ function render() {
           return `<span class="${cls}">${w}</span>` + (i < displayTrace.length - 1 ? '<span class="arrow">→</span>' : '');
         }).join('')
       : '<span class="ex-track-empty">1回のみ記録</span>';
+    // 重量推移グラフ (セッションごと、トレない日は省略)
+    let chartSvg = '';
+    if (weights.length >= 2) {
+      const max = Math.max(...weights), min = Math.min(...weights);
+      const range = Math.max(0.5, max - min);
+      const pts = weights.map((w,i) => {
+        const x = (i/(weights.length-1))*340 + 10;
+        const y = 60 - ((w-min)/range)*50;
+        return `${x.toFixed(1)},${y.toFixed(1)}`;
+      }).join(' ');
+      const dots = weights.map((w,i) => {
+        const x = (i/(weights.length-1))*340 + 10;
+        const y = 60 - ((w-min)/range)*50;
+        const isBest = w === best;
+        const isCur = i === weights.length-1;
+        const r = isCur ? 3.5 : isBest ? 3 : 2;
+        const fill = isBest ? '#D4A04B' : '#E63946';
+        return `<circle cx="${x.toFixed(1)}" cy="${y.toFixed(1)}" r="${r}" fill="${fill}"/>`;
+      }).join('');
+      chartSvg = `<svg class="ex-chart" viewBox="0 0 360 70" preserveAspectRatio="none">
+        <defs><linearGradient id="exg-${name.replace(/[^a-z]/gi,'')}" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#E63946" stop-opacity=".22"/><stop offset="1" stop-color="#E63946" stop-opacity="0"/></linearGradient></defs>
+        <polygon points="10,70 ${pts} 350,70" fill="url(#exg-${name.replace(/[^a-z]/gi,'')})"/>
+        <polyline points="${pts}" fill="none" stroke="#E63946" stroke-width="1.5" stroke-linejoin="round" opacity=".7"/>
+        ${dots}
+      </svg>`;
+    }
     return `<div class="ex-card">
       <div class="ex-name">
         <span>${name}</span>
@@ -241,6 +268,7 @@ function render() {
         <div class="ex-stat"><div class="l">CURRENT</div><div class="v">${cur}<small>kg</small></div></div>
         <div class="ex-stat delta ${delta>0?'up':''}"><div class="l">DELTA</div><div class="v">${delta>=0?'+':''}${delta.toFixed(1)}<small>kg</small></div></div>
       </div>
+      ${chartSvg}
       <div class="ex-track">${traceHtml}</div>
     </div>`;
   }).join('');
