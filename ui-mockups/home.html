@@ -148,7 +148,7 @@ body{font-family:var(--f-ui),var(--f-jp);color:var(--photo-text);min-height:100v
 .head .av{width:42px;height:42px;border-radius:50%;background:linear-gradient(135deg,#2a2a2a,#0a0a0a);display:flex;align-items:center;justify-content:center;border:1px solid var(--photo-line);font-family:var(--f-jp);font-weight:700;color:var(--photo-text);font-size:16px}
 
 /* ===== 101% ルール カード (ダッシュボードのトップ) ===== */
-.onepct{position:relative;margin:14px 16px 22px;background:linear-gradient(135deg,#1f0a0e 0%,#0f0a0c 100%);border:1px solid rgba(230,57,70,.35);border-radius:16px;padding:22px 20px 20px;overflow:hidden;box-shadow:0 8px 32px rgba(230,57,70,.12);min-height:248px}
+.onepct{position:relative;margin:14px 16px 22px;background:linear-gradient(135deg,rgba(31,10,14,.6) 0%,rgba(15,10,12,.4) 100%);border:1px solid rgba(230,57,70,.14);border-radius:14px;padding:22px 20px 20px;overflow:hidden;box-shadow:none;min-height:248px}
 :root[data-theme="light"] .onepct{background:linear-gradient(135deg,#fff5f6,#fff 100%) !important;border-color:rgba(230,57,70,.3) !important}
 .onepct.achieved{background:linear-gradient(135deg,#0a1f10 0%,#0f0a0c 100%);border-color:rgba(79,176,122,.5);box-shadow:0 8px 32px rgba(79,176,122,.18)}
 :root[data-theme="light"] .onepct.achieved{background:linear-gradient(135deg,#e8fff0,#fff 100%) !important;border-color:rgba(79,176,122,.45) !important}
@@ -169,8 +169,8 @@ body{font-family:var(--f-ui),var(--f-jp);color:var(--photo-text);min-height:100v
 .onepct-bg{position:absolute;right:-40px;top:-40px;width:180px;height:180px;background:radial-gradient(circle,rgba(230,57,70,.22) 0%,transparent 70%);filter:blur(20px);pointer-events:none}
 .onepct.achieved .onepct-bg{background:radial-gradient(circle,rgba(79,176,122,.25) 0%,transparent 70%)}
 /* キャラクター画像 (右側に配置、コンテンツとオーバーラップ) */
-.onepct-char{position:absolute;right:-18px;bottom:-12px;height:108%;width:auto;max-height:280px;z-index:1;pointer-events:none;opacity:0;transform:translateY(8px) scale(.96);transition:opacity .5s,transform .5s,filter .5s;filter:drop-shadow(0 6px 20px rgba(0,0,0,.4))}
-.onepct-char.show{opacity:1;transform:translateY(0) scale(1)}
+.onepct-char{position:absolute;right:-18px;bottom:-12px;height:108%;width:auto;max-height:280px;z-index:1;pointer-events:none;opacity:0;--char-dx:0px;--char-dy:0px;--char-ds:1;transform:translate(var(--char-dx), calc(8px + var(--char-dy))) scale(calc(.96 * var(--char-ds)));transition:opacity .5s,transform .5s,filter .5s;filter:drop-shadow(0 6px 20px rgba(0,0,0,.4))}
+.onepct-char.show{opacity:1;transform:translate(var(--char-dx), var(--char-dy)) scale(var(--char-ds))}
 .onepct.achieved .onepct-char{filter:drop-shadow(0 6px 24px rgba(79,176,122,.3))}
 .onepct-content{position:relative;z-index:2;max-width:65%}
 @media (max-width:380px){
@@ -206,7 +206,7 @@ body{font-family:var(--f-ui),var(--f-jp);color:var(--photo-text);min-height:100v
 .onepct.silent .onepct-tag{opacity:.6}
 
 /* 連続記録ストリップ (デイリー + 週間ハイブリッド) */
-.streak{margin:8px 16px 16px;background:linear-gradient(135deg,#1a0a0c,var(--photo-card) 70%);border:1px solid rgba(230,57,70,.2);border-radius:12px;padding:14px 16px;position:relative;overflow:hidden}
+.streak{margin:8px 16px 16px;background:linear-gradient(135deg,rgba(26,10,12,.5),rgba(26,26,26,.3) 70%);border:1px solid rgba(230,57,70,.08);border-radius:12px;padding:14px 16px;position:relative;overflow:hidden}
 .streak::before{content:'';position:absolute;right:-30px;top:-20px;width:140px;height:140px;background:radial-gradient(circle,rgba(230,57,70,.18) 0%,transparent 70%);pointer-events:none}
 .streak-grid{display:grid;grid-template-columns:1fr 1px 1fr;gap:14px;align-items:center;margin-bottom:8px;position:relative;z-index:1}
 .streak-cell{text-align:center;min-width:0}
@@ -218,7 +218,7 @@ body{font-family:var(--f-ui),var(--f-jp);color:var(--photo-text);min-height:100v
 .streak .desc b{color:var(--photo-text);font-weight:700}
 
 /* 前回トレ カード */
-.last{margin:0 16px 16px;background:var(--photo-card);border:1px solid var(--photo-line);border-radius:12px;padding:14px 16px}
+.last{margin:0 16px 16px;background:rgba(26,26,26,.4);border:1px solid rgba(255,255,255,.04);border-radius:12px;padding:14px 16px}
 .last .ttl{display:flex;justify-content:space-between;align-items:center;margin-bottom:10px}
 .last .ttl h3{font-family:var(--f-jp);font-size:13px;font-weight:700}
 .last .ttl small{font-family:var(--f-display);font-size:10px;color:var(--photo-dim);letter-spacing:.15em}
@@ -296,7 +296,7 @@ body{font-family:var(--f-ui),var(--f-jp);color:var(--photo-text);min-height:100v
 
 /* 最近の履歴 */
 .recent{margin:0 16px 14px;display:flex;flex-direction:column;gap:8px}
-.recent .item{background:var(--photo-card);border:1px solid var(--photo-line);border-radius:10px;padding:12px 14px;display:grid;grid-template-columns:auto 1fr auto;gap:12px;align-items:center}
+.recent .item{background:rgba(26,26,26,.35);border:1px solid rgba(255,255,255,.03);border-radius:10px;padding:12px 14px;display:grid;grid-template-columns:auto 1fr auto;gap:12px;align-items:center}
 .recent .item .dot{width:8px;height:8px;border-radius:50%;background:var(--photo-red)}
 .recent .item.done .dot{background:var(--ok)}
 .recent .item .info .ttl{font-family:var(--f-jp);font-size:13px;font-weight:700}
@@ -718,6 +718,17 @@ async function renderHomeData() {
       const showChar = () => requestAnimationFrame(() => charImg.classList.add('show'));
       if (charImg.complete && charImg.naturalWidth > 0) showChar();
       else charImg.addEventListener('load', showChar, { once:true });
+      // 「たまたまそこにいる」感: 日付シードでわずかな位置/サイズ揺らぎ (1日固定)
+      const seedStr = todayKey;
+      let seed = 0;
+      for (let i = 0; i < seedStr.length; i++) seed = ((seed << 5) - seed + seedStr.charCodeAt(i)) | 0;
+      const rand = (n) => { seed = (seed * 9301 + 49297) % 233280; return seed / 233280 * n; };
+      const dx = (rand(2) - 1) * 8;    // ±8px
+      const dy = (rand(2) - 1) * 6;    // ±6px
+      const ds = 1 + (rand(2) - 1) * 0.015; // ±1.5%
+      charImg.style.setProperty('--char-dx', dx.toFixed(1) + 'px');
+      charImg.style.setProperty('--char-dy', dy.toFixed(1) + 'px');
+      charImg.style.setProperty('--char-ds', ds.toFixed(3));
     }
 
     // 全状態を解除してから付与
@@ -760,25 +771,15 @@ async function renderHomeData() {
       down: isLateNight ? ['おやすみ。','また明日。'] : ['また明日。'],
       encourage: isLateNight ? ['まだ起きてるのか。'] : (todayVol > 0 ? ['その調子。'] : ['今日も来たな。']),
     };
+    // hint は最小化 (装飾コピーなし、数字のみ。多くの場面で空)
     const hintLoud = {
-      king: isNewPB
-        ? `歴代最高を <b>+${(todayVol-allTimeMax).toLocaleString()}kg</b> 更新`
-        : `前回より <b>+${surplus.toLocaleString()}kg</b>`,
-      achieve: `前回 ${lastVol.toLocaleString()}kg / 今日 <b>${todayVol.toLocaleString()}kg</b>`,
-      cheer: `あと <b>${remain.toLocaleString()}kg</b>`,
-      down: `前回 ${lastVol.toLocaleString()}kg`,
-      encourage: todayVol > 0
-        ? `今日 <b>${todayVol.toLocaleString()}kg</b>`
-        : `前回 ${lastVol.toLocaleString()}kg`,
+      king: '',
+      achieve: '',
+      cheer: '',
+      down: '',
+      encourage: '',
     };
-    // silent ヒント: 数字は1段薄く・装飾コピーなし
-    const hintQuiet = {
-      king: `前回 ${lastVol.toLocaleString()}kg / 今日 ${todayVol.toLocaleString()}kg`,
-      achieve: `前回 ${lastVol.toLocaleString()}kg / 今日 ${todayVol.toLocaleString()}kg`,
-      cheer: `あと ${remain.toLocaleString()}kg`,
-      down: `前回 ${lastVol.toLocaleString()}kg`,
-      encourage: todayVol > 0 ? `今日 ${todayVol.toLocaleString()}kg` : `前回 ${lastVol.toLocaleString()}kg`,
-    };
+    const hintQuiet = hintLoud;
     // ===== A+B+C: 表示頻度・重複防止・沈黙演出 =====
     let stateLog = {};
     try { stateLog = JSON.parse(localStorage.getItem('kt_101_log') || '{}'); } catch(_) {}
@@ -817,6 +818,25 @@ async function renderHomeData() {
         dailyStreak: ds, isLateNight
       }) : null);
 
+      // 「今日の空気」タグ: 状況に応じて文脈ラベルを選択
+      const moodTags = [];
+      if (isNewPB) moodTags.push('新記録');
+      else if (isHuge) moodTags.push('別格の日');
+      else if (achieved) moodTags.push('101% 達成');
+      else if (ds >= 30) moodTags.push(ds + '日連続');
+      else if (ds >= 7) moodTags.push(ds + '日連続');
+      else if (ds >= 3) moodTags.push(ds + '日連続');
+      else if (daysSinceLast >= 7) moodTags.push(daysSinceLast + '日ぶり');
+      else if (daysSinceLast >= 3) moodTags.push(daysSinceLast + '日ぶり');
+      else if (deepNight) moodTags.push('深夜');
+      else if (hour < 7) moodTags.push('早朝');
+      else if (hour < 10) moodTags.push('朝');
+      else if (hour >= 22) moodTags.push('夜');
+      else if (todayVol === 0 && lastVol === 0) moodTags.push('はじまり');
+      else moodTags.push('静か');
+      const moodTagEl = document.querySelector('#onepct .onepct-tag');
+      if (moodTagEl) moodTagEl.textContent = moodTags[0];
+
       const recentMsgs = (stateLog.recent || []).filter(r => Date.now() - r.ts < 24*3600*1000).map(r => r.msg);
 
       let result = null;
@@ -843,10 +863,11 @@ async function renderHomeData() {
     stateLog.lastState = state;
     stateLog.lastDate = todayKey;
     try { localStorage.setItem('kt_101_log', JSON.stringify(stateLog)); } catch(_) {}
-    const hint = (silent ? hintQuiet : hintLoud)[state];
+    const hint = (silent ? hintQuiet : hintLoud)[state] || '';
     $$('onepctMsg').textContent = pickedMsg;
     $$('onepctMsg').style.display = pickedMsg ? '' : 'none';
     $$('onepctHint').innerHTML = hint;
+    $$('onepctHint').style.display = hint ? '' : 'none';
   })();
 
   // 最近の履歴 (記録のあった日 直近3日)
