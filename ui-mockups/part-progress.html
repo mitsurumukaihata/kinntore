@@ -129,7 +129,7 @@ const fmt = d => d.getFullYear()+'-'+String(d.getMonth()+1).padStart(2,'0')+'-'+
 
 const params = new URLSearchParams(location.search);
 const part = params.get('part') || 'chest';
-const PERIOD_DAYS = 365; // 部位ページは1年分
+const PERIOD_DAYS = 90; // prefetch が 90日分、即表示優先 (将来「全期間」トグル可)
 
 $('partName').firstChild.textContent = TAG_LABEL[part] || '部位';
 $('partEn').textContent = TAG_EN[part] || 'PART';
