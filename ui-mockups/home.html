@@ -1,11 +1,11 @@
 <!DOCTYPE html>
-<html lang="ja"><head><meta charset="UTF-8">
+<html lang="ja" style="background:#070708"><head><meta charset="UTF-8">
 <meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,minimum-scale=1,user-scalable=no,viewport-fit=cover">
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
 <meta name="apple-mobile-web-app-title" content="kinntore">
-<meta name="theme-color" content="#0a0a0a">
+<meta name="theme-color" content="#070708">
 <link rel="manifest" href="manifest.json">
 <link rel="apple-touch-icon" href="img/icon-192.png">
 <script src="dialogue.js" defer></script>
@@ -103,7 +103,7 @@ html,body{background:#000;overscroll-behavior-y:contain;-webkit-text-size-adjust
 .splash-core24{font-family:'Bebas Neue','Inter Tight',system-ui,sans-serif;font-size:64px;letter-spacing:.18em;color:#fff;font-weight:400;line-height:1;padding-left:.18em}
 .splash-core24 .splash-24{color:#E63946}
 .splash-sub{margin-top:14px;font-family:'Bebas Neue','Inter Tight',system-ui,sans-serif;font-size:10px;letter-spacing:.36em;color:rgba(255,255,255,.55);font-weight:400;padding-left:.36em}
-.splash-whisper{position:absolute;bottom:18%;font-family:var(--f-jp),'Zen Kaku Gothic New',sans-serif;font-size:14px;color:rgba(255,255,255,.62);font-weight:400;letter-spacing:.04em;opacity:0;z-index:2;max-width:80%;text-align:center;line-height:1.5}
+.splash-whisper{position:absolute;bottom:18%;font-family:var(--f-jp),'Zen Kaku Gothic New',sans-serif;font-size:14px;color:rgba(255,255,255,.72);font-weight:400;letter-spacing:.04em;opacity:0;z-index:2;max-width:80%;text-align:center;line-height:1.5}
 .splash-whisper.show{animation:splash-whisper-in 1.8s cubic-bezier(.4,0,.2,1) .8s forwards}
 .splash-footer{position:absolute;bottom:6%;font-family:'Bebas Neue','Inter Tight',system-ui,sans-serif;font-size:9px;letter-spacing:.32em;color:rgba(255,255,255,.28);font-weight:400;opacity:0;animation:splash-footer-in 1.4s ease-in 1.0s forwards;z-index:2;padding-left:.32em}
 @keyframes splash-brand-in{
@@ -112,7 +112,7 @@ html,body{background:#000;overscroll-behavior-y:contain;-webkit-text-size-adjust
 }
 @keyframes splash-whisper-in{
   0%{opacity:0;transform:translateY(3px)}
-  100%{opacity:.7;transform:translateY(0)}
+  100%{opacity:1;transform:translateY(0)}
 }
 @keyframes splash-footer-in{
   to{opacity:1}
@@ -312,7 +312,7 @@ body{font-family:var(--f-ui),var(--f-jp);color:var(--photo-text);min-height:100v
 .tab a .ic{font-size:18px;line-height:1;font-family:var(--f-ui)}
 </style>
 </head>
-<body>
+<body style="background:#070708;margin:0">
 
 <!-- スプラッシュスクリーン (CORE24) -->
 <div class="splash" id="splash">
