@@ -32,6 +32,18 @@
 }
 :root[data-theme="light"] html,:root[data-theme="light"] body{background:#e8e8ea}
 :root[data-theme="light"] .tab{background:rgba(255,255,255,.95);border-top-color:rgba(0,0,0,0.08)}
+/* ライトモード: 半透明黒系の bg を白系に置換 */
+:root[data-theme="light"] .summary{background:linear-gradient(135deg,rgba(255,236,238,.6),rgba(255,255,255,.4) 70%) !important;border-color:rgba(230,57,70,.18) !important}
+:root[data-theme="light"] .ex-card{background:rgba(255,255,255,.6) !important;border-color:rgba(0,0,0,.06) !important}
+:root[data-theme="light"] .ex-stat{background:rgba(255,255,255,.7) !important;border-color:rgba(0,0,0,.06) !important}
+:root[data-theme="light"] .ex-stats.sub .ex-stat{background:transparent !important;border-color:rgba(0,0,0,.03) !important}
+:root[data-theme="light"] .ex-stats.sub .ex-stat .v{color:rgba(0,0,0,.55) !important}
+:root[data-theme="light"] .ex-chart{border-top-color:rgba(0,0,0,.06) !important}
+:root[data-theme="light"] .ex-track{color:rgba(0,0,0,.5) !important}
+:root[data-theme="light"] .ex-track .cur{color:#0a0a0a !important}
+:root[data-theme="light"] .ex-stat .l{color:rgba(0,0,0,.45) !important}
+:root[data-theme="light"] .head .back{background:rgba(255,255,255,.7);border-color:rgba(0,0,0,.08)}
+:root[data-theme="light"] .ex-name .pr-badge{background:rgba(212,160,75,.12);border-color:rgba(212,160,75,.35);color:#7a5a18}
 *{box-sizing:border-box;margin:0;padding:0;-webkit-tap-highlight-color:transparent}
 html,body{background:#070708;overscroll-behavior-y:contain;-webkit-text-size-adjust:100%;text-size-adjust:100%;touch-action:manipulation}
 button,a{touch-action:manipulation;-webkit-touch-callout:none;-webkit-user-select:none;user-select:none}

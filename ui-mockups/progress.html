@@ -33,6 +33,14 @@
 :root[data-theme="light"] html,:root[data-theme="light"] body{background:#e8e8ea}
 :root[data-theme="light"] .tab{background:rgba(255,255,255,.95);border-top-color:rgba(0,0,0,.08)}
 :root[data-theme="light"] .ex-select,:root[data-theme="light"] .ex-stat{background:#fafafa}
+/* ライトモード: 半透明黒系の bg を白系に置換 */
+:root[data-theme="light"] .part-vol{background:rgba(255,255,255,.6) !important;border-color:rgba(0,0,0,.06) !important}
+:root[data-theme="light"] .gain-row{background:rgba(255,255,255,.6) !important;border-color:rgba(0,0,0,.06) !important}
+:root[data-theme="light"] .pr-row{background:rgba(255,255,255,.6) !important;border-color:rgba(0,0,0,.06) !important}
+:root[data-theme="light"] .gain-row .nm,:root[data-theme="light"] .pr-row .info .nm{color:#0a0a0a}
+:root[data-theme="light"] .gain-row .meta,:root[data-theme="light"] .pr-row .info .meta{color:rgba(0,0,0,.5)}
+:root[data-theme="light"] .gains-empty{color:rgba(0,0,0,.4)}
+:root[data-theme="light"] .part-vol-total small{color:rgba(0,0,0,.45)}
 *{box-sizing:border-box;margin:0;padding:0;-webkit-tap-highlight-color:transparent}
 html,body{background:#000;overscroll-behavior-y:contain;-webkit-text-size-adjust:100%;text-size-adjust:100%;touch-action:manipulation}
 button,a,select{touch-action:manipulation;-webkit-touch-callout:none;-webkit-user-select:none;user-select:none}
