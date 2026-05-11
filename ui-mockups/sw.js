@@ -1,5 +1,5 @@
 // kinntore PWA service worker
-const VERSION = 'v68';
+const VERSION = 'v69';
 const CACHE = `kinntore-${VERSION}`;
 const PRECACHE = [
   './',

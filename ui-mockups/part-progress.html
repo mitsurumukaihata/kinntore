@@ -91,6 +91,13 @@ body{font-family:var(--f-ui),var(--f-jp);color:var(--photo-text);min-height:100v
 .ex-stats.sub .ex-stat{background:transparent;border-color:rgba(255,255,255,.02);padding:8px 6px}
 .ex-stats.sub .ex-stat .l{opacity:.6}
 .ex-stats.sub .ex-stat .v{font-size:12px;font-weight:400;color:var(--photo-mute)}
+/* ホバー / タッチ tooltip */
+.ex-chart-wrap{position:relative;touch-action:pan-y}
+.ex-chart-tip{position:absolute;background:rgba(10,10,10,.92);color:#fff;font-family:var(--f-mono);font-size:10px;padding:5px 9px;border-radius:6px;pointer-events:none;white-space:nowrap;transform:translate(-50%,-100%);z-index:5;letter-spacing:-.01em;opacity:0;transition:opacity .12s;border:1px solid rgba(255,255,255,.08)}
+.ex-chart-tip.on{opacity:1}
+.ex-chart-tip small{font-family:var(--f-display);font-size:8px;color:rgba(255,255,255,.6);letter-spacing:.12em;margin-left:4px;font-weight:400}
+:root[data-theme="light"] .ex-chart-tip{background:rgba(255,255,255,.96) !important;color:#0a0a0a !important;border-color:rgba(0,0,0,.08) !important;box-shadow:0 2px 8px rgba(0,0,0,.08)}
+:root[data-theme="light"] .ex-chart-tip small{color:rgba(0,0,0,.5) !important}
 .chart-tabs{display:flex;margin-top:10px;padding-top:8px;border-top:1px solid rgba(255,255,255,.04);gap:2px}
 .chart-tab{background:transparent;border:0;color:var(--photo-dim);font-family:var(--f-display);font-size:9px;letter-spacing:.2em;padding:5px 10px 6px;cursor:pointer;font-weight:400;border-bottom:1px solid transparent;transition:color .15s,border-color .15s}
 .chart-tab.on{color:var(--photo-text);border-bottom-color:var(--photo-red)}
@@ -292,7 +299,8 @@ function render() {
         }).join('')
       : '<span class="ex-track-empty">1回のみ記録</span>';
     // グラフ生成: VOLUME と WEIGHT の2種類
-    function buildChartSvg(values, mode, hidden) {
+    function buildChartSvg(values, mode, hidden, opts) {
+      opts = opts || {};
       if (values.length < 2) return '';
       const max = Math.max(...values), min = Math.min(...values);
       const range = Math.max(0.5, max - min);
@@ -324,7 +332,9 @@ function render() {
       const curFill = values[curIdx] === valMax ? '#D4A04B' : '#E63946';
       dots += `<circle cx="${pts[curIdx].x.toFixed(1)}" cy="${pts[curIdx].y.toFixed(1)}" r="2.5" fill="${curFill}"/>`;
       const gid = 'g-' + Math.random().toString(36).slice(2,8);
-      return `<svg class="ex-chart" data-mode="${mode}" viewBox="0 0 360 70" preserveAspectRatio="none"${hidden ? ' style="display:none"' : ''}>
+      const valuesAttr = JSON.stringify(values).replace(/"/g,'&quot;');
+      const daysAttr = JSON.stringify(opts.days || []).replace(/"/g,'&quot;');
+      return `<svg class="ex-chart" data-mode="${mode}" data-values="${valuesAttr}" data-days="${daysAttr}" viewBox="0 0 360 70" preserveAspectRatio="none"${hidden ? ' style="display:none"' : ''}>
         <defs><linearGradient id="${gid}" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#E63946" stop-opacity=".12"/><stop offset="1" stop-color="#E63946" stop-opacity="0"/></linearGradient></defs>
         <path d="${areaD}" fill="url(#${gid})"/>
         <path d="${pathD}" fill="none" stroke="#E63946" stroke-width="1.1" stroke-linejoin="round" stroke-linecap="round" opacity=".6"/>
@@ -334,14 +344,15 @@ function render() {
     // 日ごとのボリューム配列
     const volDays = Object.keys(volByDay).sort();
     const dailyVols = volDays.map(d => volByDay[d]);
+    // weights は days と対応 (既に sorted)
     let chartSvg = '';
     if (weights.length >= 2 || dailyVols.length >= 2) {
-      const volSvg = buildChartSvg(dailyVols, 'volume', false);
-      const wSvg = buildChartSvg(weights, 'weight', true);
+      const volSvg = buildChartSvg(dailyVols, 'volume', false, {days: volDays});
+      const wSvg = buildChartSvg(weights, 'weight', true, {days: days});
       chartSvg = `<div class="chart-tabs">
         <button class="chart-tab on" data-mode="volume">VOLUME</button>
         <button class="chart-tab" data-mode="weight">WEIGHT</button>
-      </div>${volSvg}${wSvg}`;
+      </div><div class="ex-chart-wrap">${volSvg}${wSvg}<div class="ex-chart-tip"></div></div>`;
     }
     return `<div class="ex-card">
       <div class="ex-name">
@@ -376,6 +387,95 @@ function render() {
       });
     });
   });
+  // チャートホバー/タッチ tooltip
+  document.querySelectorAll('.ex-chart-wrap').forEach(attachChartHover);
+}
+
+function attachChartHover(wrap) {
+  const tip = wrap.querySelector('.ex-chart-tip');
+  if (!tip) return;
+  const NS = 'http://www.w3.org/2000/svg';
+  function getActiveSvg() {
+    return Array.from(wrap.querySelectorAll('.ex-chart')).find(s => s.style.display !== 'none');
+  }
+  function ensureCursor(svg) {
+    let line = svg.querySelector('.ex-chart-cursor');
+    let marker = svg.querySelector('.ex-chart-marker');
+    if (!line) {
+      line = document.createElementNS(NS,'line');
+      line.setAttribute('class','ex-chart-cursor');
+      line.setAttribute('stroke','rgba(230,57,70,.45)');
+      line.setAttribute('stroke-width','0.8');
+      line.setAttribute('y1','0');
+      line.setAttribute('y2','70');
+      svg.appendChild(line);
+    }
+    if (!marker) {
+      marker = document.createElementNS(NS,'circle');
+      marker.setAttribute('class','ex-chart-marker');
+      marker.setAttribute('r','3');
+      marker.setAttribute('fill','#fff');
+      marker.setAttribute('stroke','#E63946');
+      marker.setAttribute('stroke-width','1.2');
+      svg.appendChild(marker);
+    }
+    return { line, marker };
+  }
+  function hideAll() {
+    tip.classList.remove('on');
+    wrap.querySelectorAll('.ex-chart-cursor,.ex-chart-marker').forEach(el => el.style.display = 'none');
+  }
+  function fmtDay(d) {
+    if (!d) return '';
+    const parts = d.split('-');
+    return parts.length >= 3 ? `${+parts[1]}/${+parts[2]}` : d;
+  }
+  function onMove(e) {
+    const svg = getActiveSvg();
+    if (!svg) return;
+    const r = svg.getBoundingClientRect();
+    const clientX = e.clientX != null ? e.clientX : (e.touches && e.touches[0]?.clientX);
+    if (clientX == null) return;
+    let xPct = (clientX - r.left) / r.width;
+    if (xPct < 0) xPct = 0; if (xPct > 1) xPct = 1;
+    let values, days;
+    try {
+      values = JSON.parse(svg.dataset.values || '[]');
+      days = JSON.parse(svg.dataset.days || '[]');
+    } catch (_) { return; }
+    if (values.length < 2) return;
+    const idx = Math.max(0, Math.min(values.length-1, Math.round(xPct * (values.length - 1))));
+    const v = values[idx];
+    const day = days[idx];
+    // chart coords (matches buildChartSvg)
+    const xCoord = (idx/(values.length-1))*340 + 10;
+    const max = Math.max(...values), min = Math.min(...values);
+    const range = Math.max(0.5, max - min);
+    const yCoord = 60 - ((v-min)/range)*50;
+    const { line, marker } = ensureCursor(svg);
+    line.setAttribute('x1', xCoord);
+    line.setAttribute('x2', xCoord);
+    marker.setAttribute('cx', xCoord);
+    marker.setAttribute('cy', yCoord);
+    line.style.display = '';
+    marker.style.display = '';
+    // tooltip text
+    const mode = svg.dataset.mode;
+    const unit = 'kg';
+    tip.innerHTML = `${v.toLocaleString()}${unit}<small>${fmtDay(day)}</small>`;
+    tip.classList.add('on');
+    // position
+    const wrapRect = wrap.getBoundingClientRect();
+    const tipX = (r.left - wrapRect.left) + xPct * r.width;
+    const tipY = (r.top - wrapRect.top) + (yCoord/70) * r.height - 8;
+    tip.style.left = `${tipX}px`;
+    tip.style.top = `${tipY}px`;
+  }
+  wrap.addEventListener('pointermove', onMove);
+  wrap.addEventListener('pointerdown', onMove);
+  wrap.addEventListener('pointerleave', hideAll);
+  wrap.addEventListener('pointerup', hideAll);
+  wrap.addEventListener('pointercancel', hideAll);
 }
 
 load();
