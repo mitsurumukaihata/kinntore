@@ -38,7 +38,7 @@ button,a{touch-action:manipulation;-webkit-touch-callout:none;-webkit-user-selec
 body{font-family:var(--f-ui),var(--f-jp);color:var(--photo-text);min-height:100vh;-webkit-font-smoothing:antialiased;letter-spacing:-0.01em}
 .app{max-width:100%;margin:0 auto;min-height:100vh;background:var(--photo-bg);padding-top:env(safe-area-inset-top);padding-bottom:calc(90px + env(safe-area-inset-bottom));position:relative}
 
-.head{padding:22px 20px 12px;display:flex;align-items:center;gap:14px}
+.head{padding:calc(22px + env(safe-area-inset-top)) 20px 12px;display:flex;align-items:center;gap:14px}
 .head .back{width:36px;height:36px;border-radius:50%;background:var(--photo-card);border:1px solid var(--photo-line);display:flex;align-items:center;justify-content:center;color:var(--photo-text);font-size:18px;text-decoration:none;flex-shrink:0}
 .head h1{font-family:var(--f-jp);font-size:24px;font-weight:900;letter-spacing:-.01em}
 .head h1 small{display:block;font-family:var(--f-display);font-size:10px;color:var(--photo-mute);letter-spacing:.18em;margin-top:2px;font-weight:400}
