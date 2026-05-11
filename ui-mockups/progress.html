@@ -56,7 +56,9 @@ body{font-family:var(--f-ui),var(--f-jp);color:var(--photo-text);min-height:100v
 
 /* 部位別ボリューム推移 - 6カードを縦並び */
 .parts-vols{display:flex;flex-direction:column;gap:10px}
-.part-vol{background:var(--photo-card);border:1px solid var(--photo-line);border-radius:12px;padding:14px 16px;position:relative;overflow:hidden}
+.part-vol{background:var(--photo-card);border:1px solid var(--photo-line);border-radius:12px;padding:14px 16px;position:relative;overflow:hidden;cursor:pointer;transition:border-color .15s,background .15s}
+.part-vol:active{transform:scale(.99)}
+.part-vol:hover{border-color:rgba(230,57,70,.2)}
 .part-vol-head{display:flex;justify-content:space-between;align-items:baseline;margin-bottom:10px}
 .part-vol-name{font-family:var(--f-jp);font-size:14px;font-weight:700;color:var(--photo-text)}
 .part-vol-name .delta{font-family:var(--f-mono);font-size:10px;font-weight:500;letter-spacing:-.01em;margin-left:8px;padding:2px 7px;border-radius:50px;background:rgba(255,255,255,.04);color:var(--photo-mute)}
@@ -70,14 +72,17 @@ body{font-family:var(--f-ui),var(--f-jp);color:var(--photo-text);min-height:100v
 /* 種目別重量伸び */
 .ex-prog-card{background:var(--photo-card);border:1px solid var(--photo-line);border-radius:12px;padding:16px}
 .ex-select{background:#0a0a0a;border:1px solid var(--photo-line);color:var(--photo-text);font-family:var(--f-jp);font-size:13px;font-weight:600;padding:10px 30px 10px 14px;border-radius:8px;width:100%;-webkit-appearance:none;appearance:none;background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='10' height='6' viewBox='0 0 10 6'%3E%3Cpath fill='%239a9a9a' d='M0 0l5 6 5-6z'/%3E%3C/svg%3E");background-repeat:no-repeat;background-position:right 12px center;background-size:8px;margin-bottom:14px}
-.ex-stats{display:grid;grid-template-columns:1fr 1fr 1fr;gap:8px;margin-bottom:14px}
-.ex-stat{background:#0a0a0a;border:1px solid var(--photo-line);border-radius:8px;padding:10px 8px;text-align:center}
+.ex-filter-label{font-family:var(--f-jp);font-size:11px;color:var(--photo-mute);background:rgba(230,57,70,.08);border:1px solid rgba(230,57,70,.18);padding:6px 12px;border-radius:50px;margin-bottom:10px;text-align:center;letter-spacing:.02em}
+.ex-stats{display:grid;grid-template-columns:1fr 1fr 1fr 1fr;gap:6px;margin-bottom:14px}
+.ex-stat{background:#0a0a0a;border:1px solid var(--photo-line);border-radius:8px;padding:10px 6px;text-align:center}
 .ex-stat .l{font-family:var(--f-display);font-size:9px;color:var(--photo-dim);letter-spacing:.18em;margin-bottom:4px}
-.ex-stat .v{font-family:var(--f-mono);font-size:18px;font-weight:600;color:var(--photo-text);letter-spacing:-.01em;line-height:1}
+.ex-stat .v{font-family:var(--f-mono);font-size:16px;font-weight:600;color:var(--photo-text);letter-spacing:-.01em;line-height:1}
 .ex-stat .v small{font-family:var(--f-display);font-size:9px;color:var(--photo-mute);letter-spacing:.1em;margin-left:1px;font-weight:400}
 .ex-stat.r .v{color:var(--photo-mute)}
 .ex-stat.r.up .v{color:var(--ok)}
 .ex-stat.g .v{color:var(--ok)}
+.ex-stat.best .v{color:var(--gold)}
+.ex-stat.best{border-color:rgba(212,160,75,.25)}
 .ex-chart{width:100%;height:140px;display:block}
 .ex-chart-empty{height:140px;display:flex;align-items:center;justify-content:center;color:var(--photo-dim);font-size:12px;font-family:var(--f-jp)}
 
@@ -134,9 +139,11 @@ body{font-family:var(--f-ui),var(--f-jp);color:var(--photo-text);min-height:100v
         <h2>種目の伸び<small>EXERCISE PROGRESSION</small></h2>
       </div>
       <div class="ex-prog-card">
+        <div class="ex-filter-label" id="exFilterLabel" style="display:none;cursor:pointer"></div>
         <select class="ex-select" id="exSelect"></select>
         <div class="ex-stats">
           <div class="ex-stat"><div class="l">FIRST</div><div class="v" id="exFirst">--<small>kg</small></div></div>
+          <div class="ex-stat best"><div class="l">BEST</div><div class="v" id="exBest">--<small>kg</small></div></div>
           <div class="ex-stat g"><div class="l">CURRENT</div><div class="v" id="exCurrent">--<small>kg</small></div></div>
           <div class="ex-stat r"><div class="l">DELTA</div><div class="v" id="exDelta">--<small></small></div></div>
         </div>
@@ -209,9 +216,17 @@ function render() {
   renderPartsVols();
   renderExSelect();
   renderPR();
+  // フィルタラベルのタップで全部位に戻る
+  const fl = $('exFilterLabel');
+  if (fl && !fl._bound) {
+    fl._bound = true;
+    fl.addEventListener('click', () => {
+      if (fl.dataset.active) renderExSelect();
+    });
+  }
 }
 
-// 累積ボリューム軌跡: 「積み上がってきた量」を見せる (ゼロ日は plateau)
+// 部位ボリューム: 7日ローリング合計で「流れ」を見せる (波OK / 下降を責めない)
 function renderPartsVols() {
   let total = 0;
   const cards = TAGS.map(tag => {
@@ -221,36 +236,38 @@ function renderPartsVols() {
       let v = 0; for (const s of d.sets) if (s.tag===tag) v += (+s.weight||0)*(+s.reps||0);
       return v;
     });
-    // 累積 (常に非減少: トレない日は前日値を維持)
-    const cum = [];
-    let acc = 0;
-    for (const v of dailyVols) { acc += v; cum.push(acc); }
-    const vol = acc;
+    const vol = dailyVols.reduce((a,b)=>a+b,0);
     total += vol;
-    // 「ここまでの積み上げ」バッジ
+    // 7日ローリング合計: 「直近1週間でどう積んでいるか」の流れ
+    const rolling = dailyVols.map((_, i) => {
+      let s = 0;
+      for (let j = Math.max(0, i-6); j <= i; j++) s += dailyVols[j];
+      return s;
+    });
+    // 期間内の積み上げバッジ
     let delta = '--', deltaCls = 'flat';
     if (vol > 0) {
       delta = '+' + vol.toLocaleString() + 'kg';
       deltaCls = 'up';
     }
-    // 累積カーブ (常に右肩上がり)
+    // ローリング曲線 (波あり・流れあり)
     let svg = '';
-    if (vol > 0 && cum.length > 1) {
-      const maxVal = cum[cum.length - 1] || 1;
-      const points = cum.map((v,i) => {
-        const x = (i/(cum.length-1))*340;
+    if (vol > 0 && rolling.length > 1) {
+      const maxVal = Math.max(1, ...rolling);
+      const points = rolling.map((v,i) => {
+        const x = (i/(rolling.length-1))*340;
         const y = 44 - (v/maxVal)*40;
         return `${x.toFixed(1)},${y.toFixed(1)}`;
       }).join(' ');
       svg = `<svg class="spark" viewBox="0 0 340 48" preserveAspectRatio="none">
-        <defs><linearGradient id="g${tag}" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#E63946" stop-opacity=".25"/><stop offset="1" stop-color="#E63946" stop-opacity="0"/></linearGradient></defs>
+        <defs><linearGradient id="g${tag}" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#E63946" stop-opacity=".22"/><stop offset="1" stop-color="#E63946" stop-opacity="0"/></linearGradient></defs>
         <polygon points="0,48 ${points} 340,48" fill="url(#g${tag})"/>
-        <polyline points="${points}" fill="none" stroke="#E63946" stroke-width="1.5" stroke-linejoin="round" stroke-linecap="round" opacity=".75"/>
+        <polyline points="${points}" fill="none" stroke="#E63946" stroke-width="1.5" stroke-linejoin="round" stroke-linecap="round" opacity=".7"/>
       </svg>`;
     } else {
       svg = '<div class="spark-empty">まだ記録なし</div>';
     }
-    return `<div class="part-vol">
+    return `<div class="part-vol" data-tag="${tag}">
       <div class="part-vol-head">
         <div class="part-vol-name">${TAG_LABEL[tag]} <span class="delta ${deltaCls}">${delta}</span></div>
         <div class="part-vol-total">${vol.toLocaleString()}<small>KG</small></div>
@@ -260,25 +277,40 @@ function renderPartsVols() {
   }).join('');
   $('partsVols').innerHTML = cards;
   $('totalVol').textContent = total.toLocaleString();
+  // 部位カードタップ → その部位の種目に exSelect をフィルタ
+  document.querySelectorAll('.part-vol').forEach(el => {
+    el.addEventListener('click', () => {
+      const tag = el.dataset.tag;
+      renderExSelect(tag);
+      const exCard = document.querySelector('.ex-prog-card');
+      if (exCard) exCard.scrollIntoView({ behavior: 'smooth', block: 'start' });
+    });
+  });
 }
 
-function renderExSelect() {
-  const exMap = {}; // name -> [{day, weight, reps, vol}, ...]
+function renderExSelect(filterTag) {
+  const exMap = {}; // name -> { sets: [...], tag }
   for (const d of allData) {
     for (const s of d.sets) {
-      if (!exMap[s.exercise_name]) exMap[s.exercise_name] = [];
-      exMap[s.exercise_name].push({ day: d.day, weight: +s.weight||0, reps: +s.reps||0, vol: (+s.weight||0)*(+s.reps||0) });
+      if (filterTag && s.tag !== filterTag) continue;
+      if (!exMap[s.exercise_name]) exMap[s.exercise_name] = { sets: [], tag: s.tag };
+      exMap[s.exercise_name].sets.push({ day: d.day, weight: +s.weight||0, reps: +s.reps||0, vol: (+s.weight||0)*(+s.reps||0) });
     }
   }
   const names = Object.keys(exMap).sort();
   if (names.length === 0) {
     $('exSelect').innerHTML = '<option>記録なし</option>';
-    $('exChart').style.display='none'; $('exEmpty').style.display=''; $('exEmpty').textContent='この期間の記録がありません';
+    $('exChart').style.display='none'; $('exEmpty').style.display='';
+    $('exEmpty').textContent = filterTag ? `${TAG_LABEL[filterTag]}の記録がありません` : 'この期間の記録がありません';
     return;
   }
+  const label = filterTag ? `${TAG_LABEL[filterTag]}の種目 (${names.length}) ・タップで全部位に戻る` : `全部位 (${names.length})`;
+  $('exFilterLabel').textContent = label;
+  $('exFilterLabel').style.display = '';
+  $('exFilterLabel').dataset.active = filterTag || '';
   $('exSelect').innerHTML = names.map(n => `<option>${n}</option>`).join('');
   function renderEx(name) {
-    const sets = exMap[name].sort((a,b)=>a.day.localeCompare(b.day));
+    const sets = (exMap[name].sets || []).sort((a,b)=>a.day.localeCompare(b.day));
     // 日ごとの最大重量を取る
     const byDay = {};
     for (const s of sets) {
@@ -289,14 +321,17 @@ function renderExSelect() {
     if (weights.length < 2) {
       $('exChart').style.display='none'; $('exEmpty').style.display='flex';
       $('exFirst').innerHTML = (weights[0]||'--')+'<small>kg</small>';
+      $('exBest').innerHTML = (weights[0]||'--')+'<small>kg</small>';
       $('exCurrent').innerHTML = (weights[0]||'--')+'<small>kg</small>';
       $('exDelta').innerHTML = '--<small></small>';
       return;
     }
     $('exChart').style.display='block'; $('exEmpty').style.display='none';
     const first = weights[0], cur = weights[weights.length-1];
+    const best = Math.max(...weights);
     const delta = cur - first;
     $('exFirst').innerHTML = first+'<small>kg</small>';
+    $('exBest').innerHTML = best+'<small>kg</small>';
     $('exCurrent').innerHTML = cur+'<small>kg</small>';
     $('exDelta').innerHTML = (delta>=0?'+':'')+delta.toFixed(1)+'<small>kg</small>';
     // 伸びてる時だけ緑、それ以外はミュート (赤強調しない)
