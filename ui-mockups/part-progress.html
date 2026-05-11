@@ -1,0 +1,252 @@
+<!DOCTYPE html>
+<html lang="ja" style="background:#070708"><head><meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,minimum-scale=1,user-scalable=no,viewport-fit=cover">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="apple-mobile-web-app-title" content="kinntore">
+<meta name="theme-color" content="#070708">
+<link rel="manifest" href="manifest.json">
+<link rel="apple-touch-icon" href="img/icon-192.png">
+<title>kinntore — 部位</title>
+<script>(function(){var t=localStorage.getItem('kinntore_theme');if(t==='light')document.documentElement.dataset.theme='light';var h=new Date().getHours();var p=h>=22||h<5?'night':h<10?'morning':h<17?'day':'evening';document.documentElement.dataset.period=p;})();</script>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Inter+Tight:wght@400;500;600;700;800;900&family=JetBrains+Mono:wght@400;500;600&family=Zen+Kaku+Gothic+New:wght@400;500;700;900&display=swap" rel="stylesheet">
+<style>
+:root{
+  --photo-bg:#0a0a0a;--photo-card:#1a1a1a;--photo-card-2:#232323;
+  --photo-line:rgba(255,255,255,0.08);--photo-line-strong:rgba(255,255,255,0.16);
+  --photo-text:#fff;--photo-mute:#9a9a9a;--photo-dim:#5e5e5e;
+  --photo-red:#E63946;--photo-red-deep:#B22838;--photo-red-soft:rgba(230,57,70,0.15);
+  --gold:#D4A04B;--ok:#4FB07A;
+  --f-ui:'Inter Tight',-apple-system,system-ui,sans-serif;
+  --f-jp:'Zen Kaku Gothic New',-apple-system,'Hiragino Kaku Gothic ProN',sans-serif;
+  --f-display:'Bebas Neue','Inter Tight',system-ui,sans-serif;
+  --f-mono:'JetBrains Mono',ui-monospace,monospace;
+}
+:root[data-theme="light"]{
+  --photo-bg:#f4f4f5;--photo-card:#fff;--photo-card-2:#fafafa;
+  --photo-line:rgba(0,0,0,0.08);--photo-line-strong:rgba(0,0,0,0.16);
+  --photo-text:#0a0a0a;--photo-mute:#5e5e5e;--photo-dim:#9a9a9a;
+}
+:root[data-theme="light"] html,:root[data-theme="light"] body{background:#e8e8ea}
+:root[data-theme="light"] .tab{background:rgba(255,255,255,.95);border-top-color:rgba(0,0,0,0.08)}
+*{box-sizing:border-box;margin:0;padding:0;-webkit-tap-highlight-color:transparent}
+html,body{background:#070708;overscroll-behavior-y:contain;-webkit-text-size-adjust:100%;text-size-adjust:100%;touch-action:manipulation}
+button,a{touch-action:manipulation;-webkit-touch-callout:none;-webkit-user-select:none;user-select:none}
+body{font-family:var(--f-ui),var(--f-jp);color:var(--photo-text);min-height:100vh;-webkit-font-smoothing:antialiased;letter-spacing:-0.01em}
+.app{max-width:420px;margin:0 auto;min-height:100vh;background:var(--photo-bg);padding-top:env(safe-area-inset-top);padding-bottom:calc(90px + env(safe-area-inset-bottom));position:relative}
+
+.head{padding:20px 16px 8px;display:flex;align-items:center;gap:12px}
+.head .back{width:34px;height:34px;border-radius:50%;background:rgba(26,26,26,.5);border:1px solid var(--photo-line);display:flex;align-items:center;justify-content:center;color:var(--photo-text);font-size:18px;text-decoration:none;flex-shrink:0}
+.head h1{font-family:var(--f-jp);font-size:24px;font-weight:900;letter-spacing:-.01em;flex:1}
+.head h1 small{display:block;font-family:var(--f-display);font-size:10px;color:var(--photo-mute);letter-spacing:.18em;margin-top:2px;font-weight:400}
+
+.summary{margin:6px 16px 20px;background:linear-gradient(135deg,rgba(26,10,12,.4),rgba(26,26,26,.2) 70%);border:1px solid rgba(230,57,70,.08);border-radius:14px;padding:18px 18px;display:flex;justify-content:space-between;align-items:baseline}
+.summary .l{font-family:var(--f-display);font-size:10px;color:var(--photo-mute);letter-spacing:.2em;margin-bottom:4px}
+.summary .v{font-family:var(--f-mono);font-size:24px;font-weight:600;color:var(--photo-text);letter-spacing:-.02em;line-height:1}
+.summary .v small{font-family:var(--f-display);font-size:10px;color:var(--photo-mute);letter-spacing:.18em;margin-left:3px;font-weight:400}
+.summary .s{text-align:right}
+.summary .s .v{font-size:16px}
+
+.section{padding:0 16px;margin-bottom:22px}
+.section-head{display:flex;justify-content:space-between;align-items:baseline;margin-bottom:10px;padding:0 2px}
+.section-head h2{font-family:var(--f-jp);font-size:15px;font-weight:900;letter-spacing:-.01em}
+.section-head h2 small{font-family:var(--f-display);font-size:9px;color:var(--photo-dim);letter-spacing:.18em;margin-left:8px;font-weight:400}
+
+.ex-list{display:flex;flex-direction:column;gap:10px}
+.ex-card{background:rgba(26,26,26,.35);border:1px solid rgba(255,255,255,.04);border-radius:12px;padding:14px 16px}
+.ex-name{font-family:var(--f-jp);font-size:14px;font-weight:700;color:var(--photo-text);margin-bottom:10px;display:flex;align-items:baseline;justify-content:space-between;gap:8px}
+.ex-name .pr-badge{font-family:var(--f-display);font-size:9px;letter-spacing:.18em;color:var(--gold);background:rgba(212,160,75,.08);border:1px solid rgba(212,160,75,.25);padding:2px 8px;border-radius:50px;font-weight:500}
+.ex-stats{display:grid;grid-template-columns:1fr 1fr 1fr;gap:6px;margin-bottom:10px}
+.ex-stat{background:rgba(10,10,10,.5);border:1px solid var(--photo-line);border-radius:8px;padding:8px 6px;text-align:center}
+.ex-stat .l{font-family:var(--f-display);font-size:9px;color:var(--photo-dim);letter-spacing:.18em;margin-bottom:3px}
+.ex-stat .v{font-family:var(--f-mono);font-size:15px;font-weight:600;color:var(--photo-text);letter-spacing:-.01em;line-height:1}
+.ex-stat .v small{font-family:var(--f-display);font-size:9px;color:var(--photo-mute);letter-spacing:.1em;margin-left:1px;font-weight:400}
+.ex-stat.best .v{color:var(--gold)}
+.ex-stat.delta.up .v{color:var(--ok)}
+.ex-stat.delta .v{color:var(--photo-mute)}
+.ex-track{font-family:var(--f-mono);font-size:12px;color:var(--photo-mute);letter-spacing:-.01em;padding-top:8px;border-top:1px solid rgba(255,255,255,.04);line-height:1.6;word-break:break-all}
+.ex-track .arrow{color:var(--photo-dim);margin:0 5px;font-size:10px}
+.ex-track .cur{color:var(--photo-text);font-weight:600}
+.ex-track .best{color:var(--gold);font-weight:600}
+.ex-track-empty{font-family:var(--f-jp);font-size:11px;color:var(--photo-dim);padding-top:8px;border-top:1px solid rgba(255,255,255,.04);text-align:center}
+
+.empty{text-align:center;color:var(--photo-dim);padding:32px 16px;font-family:var(--f-jp);font-size:13px}
+.loading{text-align:center;padding:40px 20px;color:var(--photo-mute);font-family:var(--f-display);font-size:11px;letter-spacing:.18em}
+
+.tab{position:fixed;bottom:0;left:50%;transform:translateX(-50%);width:100%;max-width:420px;background:rgba(10,10,10,.95);backdrop-filter:blur(12px);border-top:1px solid var(--photo-line);padding:10px 8px calc(28px + env(safe-area-inset-bottom));display:grid;grid-template-columns:repeat(5,1fr);gap:4px;z-index:30}
+.tab a{display:flex;flex-direction:column;align-items:center;gap:4px;font-size:10px;color:var(--photo-dim);text-decoration:none;letter-spacing:.04em;cursor:pointer;font-family:var(--f-jp);font-weight:700;padding:4px 0}
+.tab a.on{color:var(--photo-red)}
+.tab a .ic{font-size:18px;line-height:1;font-family:var(--f-ui)}
+</style>
+</head>
+<body style="background:#070708;margin:0">
+<div class="app">
+  <div class="head">
+    <a class="back" href="progress.html">‹</a>
+    <h1 id="partName">部位<small id="partEn">PART</small></h1>
+  </div>
+
+  <div class="summary" id="summary" style="display:none">
+    <div>
+      <div class="l">ここまで</div>
+      <div class="v"><span id="totalVol">0</span><small>kg</small></div>
+    </div>
+    <div class="s">
+      <div class="l">セット</div>
+      <div class="v"><span id="totalSets">0</span></div>
+    </div>
+  </div>
+
+  <div id="loading" class="loading">データ読込中…</div>
+
+  <div id="content" style="display:none">
+    <div class="section">
+      <div class="section-head">
+        <h2>種目の軌跡<small>EXERCISE TRACE</small></h2>
+      </div>
+      <div class="ex-list" id="exList"></div>
+    </div>
+  </div>
+</div>
+
+<div class="tab">
+  <a href="home.html"><span class="ic">⌂</span>ホーム</a>
+  <a href="record.html"><span class="ic">▤</span>記録</a>
+  <a href="pattern-i.html#chest"><span class="ic">☰</span>メニュー</a>
+  <a href="progress.html" class="on"><span class="ic">◢</span>進捗</a>
+  <a href="settings.html"><span class="ic">⚙</span>設定</a>
+</div>
+
+<script>
+const API = 'https://kinntore-api.33322666666mm.workers.dev';
+const TAG_LABEL = { chest:'胸', shoulder:'肩', back:'背中', arm:'腕', leg:'脚', calf:'ふくらはぎ', abs:'腹', hip:'お尻' };
+const TAG_EN = { chest:'CHEST', shoulder:'SHOULDERS', back:'BACK', arm:'ARMS', leg:'LEGS', calf:'CALVES', abs:'ABS', hip:'GLUTES' };
+const $ = id => document.getElementById(id);
+const fmt = d => d.getFullYear()+'-'+String(d.getMonth()+1).padStart(2,'0')+'-'+String(d.getDate()).padStart(2,'0');
+
+const params = new URLSearchParams(location.search);
+const part = params.get('part') || 'chest';
+const PERIOD_DAYS = 365; // 部位ページは1年分
+
+$('partName').firstChild.textContent = TAG_LABEL[part] || '部位';
+$('partEn').textContent = TAG_EN[part] || 'PART';
+
+async function fetchDay(d) {
+  try { const r = await fetch(API+'/api/sets?day='+d); if(!r.ok)return []; return (await r.json()).sets||[]; } catch{return []}
+}
+
+let allData = [];
+
+async function load() {
+  $('loading').style.display = '';
+  $('content').style.display = 'none';
+  const today = new Date(); today.setHours(0,0,0,0);
+  const days = []; for (let i=0;i<PERIOD_DAYS;i++){const d=new Date(today);d.setDate(d.getDate()-i);days.push(fmt(d))}
+  // 90日分の prefetch は流用、足りない分は逐次取得
+  let pre = null;
+  try {
+    const c = JSON.parse(sessionStorage.getItem('kinntore_prefetch_90d')||'null');
+    if (c && (Date.now() - c.ts) < 5*60*1000 && Array.isArray(c.data)) pre = c.data;
+  } catch {}
+  if (pre) {
+    const want = new Set(days);
+    allData = pre.filter(d => want.has(d.day));
+  }
+  // 不足日 (90日より前) は遅延取得
+  const have = new Set(allData.map(d => d.day));
+  const missing = days.filter(d => !have.has(d));
+  if (missing.length) {
+    const chunks=[]; for(let i=0;i<missing.length;i+=5) chunks.push(missing.slice(i,i+5));
+    for (const c of chunks) {
+      const r = await Promise.all(c.map(d => fetchDay(d).then(sets=>({day:d,sets}))));
+      allData.push(...r);
+    }
+  }
+  render();
+  $('loading').style.display = 'none';
+  $('summary').style.display = '';
+  $('content').style.display = '';
+}
+
+function render() {
+  // この部位だけ抽出
+  const ex = {}; // name → [{day, weight, reps, vol}, ...]
+  let totalVol = 0, totalSets = 0;
+  for (const d of allData) {
+    for (const s of d.sets) {
+      if (s.tag !== part) continue;
+      const w = +s.weight||0, r = +s.reps||0;
+      if (!ex[s.exercise_name]) ex[s.exercise_name] = [];
+      ex[s.exercise_name].push({ day: d.day, weight: w, reps: r, vol: w*r });
+      totalVol += w*r;
+      totalSets++;
+    }
+  }
+  $('totalVol').textContent = totalVol.toLocaleString();
+  $('totalSets').textContent = totalSets.toLocaleString();
+
+  const names = Object.keys(ex).sort();
+  if (!names.length) {
+    $('exList').innerHTML = `<div class="empty">${TAG_LABEL[part]}の記録はまだありません</div>`;
+    return;
+  }
+  // 種目ごとカード
+  const cards = names.map(name => {
+    const sets = ex[name].sort((a,b)=>a.day.localeCompare(b.day));
+    // 日ごと最大重量
+    const byDay = {};
+    for (const s of sets) {
+      if (!byDay[s.day] || byDay[s.day] < s.weight) byDay[s.day] = s.weight;
+    }
+    const days = Object.keys(byDay).sort();
+    const weights = days.map(d => byDay[d]);
+    const first = weights[0] || 0;
+    const cur = weights[weights.length-1] || 0;
+    const best = Math.max(...weights);
+    const delta = cur - first;
+    // 軌跡: 重量が変化した時点だけを抜き出す (連続重複は省く)
+    const trace = [];
+    let prev = null;
+    for (const w of weights) {
+      if (prev === null || w !== prev) { trace.push(w); prev = w; }
+    }
+    // 表示は最大8段階 (長くなりすぎないよう間引き)
+    let displayTrace = trace;
+    if (trace.length > 8) {
+      const step = (trace.length - 1) / 7;
+      displayTrace = [];
+      for (let i = 0; i < 7; i++) displayTrace.push(trace[Math.round(i * step)]);
+      displayTrace.push(trace[trace.length-1]);
+    }
+    // PR バッジ: 現在が BEST と同じなら PR
+    const isPR = cur === best && weights.length > 1;
+    const traceHtml = displayTrace.length > 1
+      ? displayTrace.map((w,i) => {
+          const isBest = w === best;
+          const isCur = i === displayTrace.length - 1;
+          const cls = isBest && isCur ? 'cur best' : isBest ? 'best' : isCur ? 'cur' : '';
+          return `<span class="${cls}">${w}</span>` + (i < displayTrace.length - 1 ? '<span class="arrow">→</span>' : '');
+        }).join('')
+      : '<span class="ex-track-empty">1回のみ記録</span>';
+    return `<div class="ex-card">
+      <div class="ex-name">
+        <span>${name}</span>
+        ${isPR ? '<span class="pr-badge">PR</span>' : ''}
+      </div>
+      <div class="ex-stats">
+        <div class="ex-stat best"><div class="l">BEST</div><div class="v">${best}<small>kg</small></div></div>
+        <div class="ex-stat"><div class="l">CURRENT</div><div class="v">${cur}<small>kg</small></div></div>
+        <div class="ex-stat delta ${delta>0?'up':''}"><div class="l">DELTA</div><div class="v">${delta>=0?'+':''}${delta.toFixed(1)}<small>kg</small></div></div>
+      </div>
+      <div class="ex-track">${traceHtml}</div>
+    </div>`;
+  }).join('');
+  $('exList').innerHTML = cards;
+}
+
+load();
+</script>
+</body></html>

@@ -86,9 +86,18 @@ body{font-family:var(--f-ui),var(--f-jp);color:var(--photo-text);min-height:100v
 .ex-chart{width:100%;height:140px;display:block}
 .ex-chart-empty{height:140px;display:flex;align-items:center;justify-content:center;color:var(--photo-dim);font-size:12px;font-family:var(--f-jp)}
 
+/* 最近伸びた */
+.gains-list{display:flex;flex-direction:column;gap:8px}
+.gain-row{background:rgba(26,26,26,.35);border:1px solid rgba(255,255,255,.04);border-radius:10px;padding:12px 14px;display:grid;grid-template-columns:1fr auto;gap:12px;align-items:center}
+.gain-row .nm{font-family:var(--f-jp);font-size:13px;font-weight:700;color:var(--photo-text);overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.gain-row .meta{font-family:var(--f-jp);font-size:10px;color:var(--photo-mute);margin-top:2px}
+.gain-row .delta{font-family:var(--f-mono);font-size:16px;color:var(--ok);font-weight:600;letter-spacing:-.01em}
+.gain-row .delta small{font-family:var(--f-display);font-size:9px;color:var(--photo-mute);letter-spacing:.18em;margin-left:2px;font-weight:400}
+.gains-empty{text-align:center;color:var(--photo-dim);padding:24px 16px;font-family:var(--f-jp);font-size:12px}
+
 /* PR一覧 */
 .pr-list{display:flex;flex-direction:column;gap:8px}
-.pr-row{background:var(--photo-card);border:1px solid var(--photo-line);border-radius:10px;padding:12px 14px;display:grid;grid-template-columns:32px 1fr auto;gap:12px;align-items:center}
+.pr-row{background:rgba(26,26,26,.35);border:1px solid rgba(255,255,255,.04);border-radius:10px;padding:12px 14px;display:grid;grid-template-columns:32px 1fr auto;gap:12px;align-items:center}
 .pr-row .medal{width:32px;height:32px;border-radius:50%;background:linear-gradient(135deg,var(--gold),var(--bronze));display:flex;align-items:center;justify-content:center;font-family:var(--f-display);font-size:12px;color:#3a2a00;font-weight:600}
 .pr-row.silver .medal{background:linear-gradient(135deg,var(--silver),#666);color:#222}
 .pr-row.bronze .medal{background:linear-gradient(135deg,var(--bronze),#3a1f00);color:var(--photo-text)}
@@ -133,30 +142,18 @@ body{font-family:var(--f-ui),var(--f-jp);color:var(--photo-text);min-height:100v
       <div class="parts-vols" id="partsVols"></div>
     </div>
 
-    <!-- 種目別重量伸び -->
+    <!-- 最近伸びた種目 -->
     <div class="section">
       <div class="section-head">
-        <h2>種目の伸び<small>EXERCISE PROGRESSION</small></h2>
+        <h2>最近伸びた<small>RECENT GAINS</small></h2>
       </div>
-      <div class="ex-prog-card">
-        <div class="ex-filter-label" id="exFilterLabel" style="display:none;cursor:pointer"></div>
-        <select class="ex-select" id="exSelect"></select>
-        <div class="ex-stats">
-          <div class="ex-stat"><div class="l">FIRST</div><div class="v" id="exFirst">--<small>kg</small></div></div>
-          <div class="ex-stat best"><div class="l">BEST</div><div class="v" id="exBest">--<small>kg</small></div></div>
-          <div class="ex-stat g"><div class="l">CURRENT</div><div class="v" id="exCurrent">--<small>kg</small></div></div>
-          <div class="ex-stat r"><div class="l">DELTA</div><div class="v" id="exDelta">--<small></small></div></div>
-        </div>
-        <svg class="ex-chart" id="exChart" viewBox="0 0 380 140" preserveAspectRatio="none"></svg>
-        <div class="ex-chart-empty" id="exEmpty" style="display:none">この種目の記録は1回しかありません</div>
-      </div>
+      <div class="gains-list" id="gainsList"></div>
     </div>
 
-    <!-- PR一覧 -->
+    <!-- 最近更新したPR -->
     <div class="section">
       <div class="section-head">
-        <h2>PR (自己ベスト)<small>PERSONAL RECORDS</small></h2>
-        <div class="h-meta"><b id="prCount">0</b>種目</div>
+        <h2>最近の PR<small>RECENT PR</small></h2>
       </div>
       <div class="pr-list" id="prList"></div>
     </div>
@@ -214,16 +211,8 @@ async function load() {
 
 function render() {
   renderPartsVols();
-  renderExSelect();
-  renderPR();
-  // フィルタラベルのタップで全部位に戻る
-  const fl = $('exFilterLabel');
-  if (fl && !fl._bound) {
-    fl._bound = true;
-    fl.addEventListener('click', () => {
-      if (fl.dataset.active) renderExSelect();
-    });
-  }
+  renderGains();
+  renderRecentPR();
 }
 
 // 部位ボリューム: 7日ローリング合計で「流れ」を見せる (波OK / 下降を責めない)
@@ -277,113 +266,86 @@ function renderPartsVols() {
   }).join('');
   $('partsVols').innerHTML = cards;
   $('totalVol').textContent = total.toLocaleString();
-  // 部位カードタップ → その部位の種目に exSelect をフィルタ
+  // 部位カードタップ → 部位ページへ遷移
   document.querySelectorAll('.part-vol').forEach(el => {
     el.addEventListener('click', () => {
       const tag = el.dataset.tag;
-      renderExSelect(tag);
-      const exCard = document.querySelector('.ex-prog-card');
-      if (exCard) exCard.scrollIntoView({ behavior: 'smooth', block: 'start' });
+      window.location.href = `part-progress.html?part=${tag}`;
     });
   });
 }
 
-function renderExSelect(filterTag) {
-  const exMap = {}; // name -> { sets: [...], tag }
-  for (const d of allData) {
+// 最近伸びた種目: 期間内で初回 → 現在 で重量が上がったものを抽出
+function renderGains() {
+  const exMap = {}; // name → { firstWeight, currentWeight, lastDay, tag }
+  for (const d of [...allData].sort((a,b)=>a.day.localeCompare(b.day))) {
     for (const s of d.sets) {
-      if (filterTag && s.tag !== filterTag) continue;
-      if (!exMap[s.exercise_name]) exMap[s.exercise_name] = { sets: [], tag: s.tag };
-      exMap[s.exercise_name].sets.push({ day: d.day, weight: +s.weight||0, reps: +s.reps||0, vol: (+s.weight||0)*(+s.reps||0) });
+      const w = +s.weight||0;
+      if (!w) continue;
+      const e = exMap[s.exercise_name];
+      if (!e) {
+        exMap[s.exercise_name] = { firstWeight: w, currentMax: w, lastDay: d.day, tag: s.tag };
+      } else {
+        // 当日の最大値を current として記録
+        if (d.day === e.lastDay) {
+          if (w > e.currentMax) e.currentMax = w;
+        } else {
+          e.lastDay = d.day;
+          e.currentMax = w;
+        }
+      }
     }
   }
-  const names = Object.keys(exMap).sort();
-  if (names.length === 0) {
-    $('exSelect').innerHTML = '<option>記録なし</option>';
-    $('exChart').style.display='none'; $('exEmpty').style.display='';
-    $('exEmpty').textContent = filterTag ? `${TAG_LABEL[filterTag]}の記録がありません` : 'この期間の記録がありません';
+  const gains = Object.entries(exMap)
+    .map(([name, e]) => ({ name, delta: e.currentMax - e.firstWeight, tag: e.tag, currentMax: e.currentMax }))
+    .filter(g => g.delta > 0)
+    .sort((a,b)=>b.delta - a.delta)
+    .slice(0, 5);
+  if (!gains.length) {
+    $('gainsList').innerHTML = '<div class="gains-empty">この期間で重量が伸びた種目はまだありません</div>';
     return;
   }
-  const label = filterTag ? `${TAG_LABEL[filterTag]}の種目 (${names.length}) ・タップで全部位に戻る` : `全部位 (${names.length})`;
-  $('exFilterLabel').textContent = label;
-  $('exFilterLabel').style.display = '';
-  $('exFilterLabel').dataset.active = filterTag || '';
-  $('exSelect').innerHTML = names.map(n => `<option>${n}</option>`).join('');
-  function renderEx(name) {
-    const sets = (exMap[name].sets || []).sort((a,b)=>a.day.localeCompare(b.day));
-    // 日ごとの最大重量を取る
-    const byDay = {};
-    for (const s of sets) {
-      if (!byDay[s.day] || byDay[s.day] < s.weight) byDay[s.day] = s.weight;
-    }
-    const days = Object.keys(byDay).sort();
-    const weights = days.map(d => byDay[d]);
-    if (weights.length < 2) {
-      $('exChart').style.display='none'; $('exEmpty').style.display='flex';
-      $('exFirst').innerHTML = (weights[0]||'--')+'<small>kg</small>';
-      $('exBest').innerHTML = (weights[0]||'--')+'<small>kg</small>';
-      $('exCurrent').innerHTML = (weights[0]||'--')+'<small>kg</small>';
-      $('exDelta').innerHTML = '--<small></small>';
-      return;
-    }
-    $('exChart').style.display='block'; $('exEmpty').style.display='none';
-    const first = weights[0], cur = weights[weights.length-1];
-    const best = Math.max(...weights);
-    const delta = cur - first;
-    $('exFirst').innerHTML = first+'<small>kg</small>';
-    $('exBest').innerHTML = best+'<small>kg</small>';
-    $('exCurrent').innerHTML = cur+'<small>kg</small>';
-    $('exDelta').innerHTML = (delta>=0?'+':'')+delta.toFixed(1)+'<small>kg</small>';
-    // 伸びてる時だけ緑、それ以外はミュート (赤強調しない)
-    const deltaCell = $('exDelta').closest('.ex-stat');
-    if (deltaCell) deltaCell.classList.toggle('up', delta > 0);
-    const max = Math.max(...weights), min = Math.min(...weights);
-    const range = Math.max(1, max-min);
-    const points = weights.map((w,i) => {
-      const x = (i/(weights.length-1))*360+10;
-      const y = 130 - ((w-min)/range)*100;
-      return `${x.toFixed(1)},${y.toFixed(1)}`;
-    }).join(' ');
-    const dots = weights.map((w,i) => {
-      const x = (i/(weights.length-1))*360+10;
-      const y = 130 - ((w-min)/range)*100;
-      return `<circle cx="${x.toFixed(1)}" cy="${y.toFixed(1)}" r="3" fill="#E63946"/>`;
-    }).join('');
-    $('exChart').innerHTML = `<defs><linearGradient id="exg" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#E63946" stop-opacity=".3"/><stop offset="1" stop-color="#E63946" stop-opacity="0"/></linearGradient></defs>
-      <polygon points="10,140 ${points} 370,140" fill="url(#exg)"/>
-      <polyline points="${points}" fill="none" stroke="#E63946" stroke-width="2" stroke-linejoin="round"/>
-      ${dots}`;
-  }
-  $('exSelect').onchange = () => renderEx($('exSelect').value);
-  renderEx(names[0]);
+  $('gainsList').innerHTML = gains.map(g => `<div class="gain-row">
+    <div>
+      <div class="nm">${g.name}</div>
+      <div class="meta">${TAG_LABEL[g.tag]||g.tag} ・ ${g.currentMax}kg</div>
+    </div>
+    <div class="delta">+${g.delta.toFixed(1)}<small>kg</small></div>
+  </div>`).join('');
 }
 
-function renderPR() {
-  // 種目ごとの最大重量+その日のreps+日付
+// 最近の PR: 期間内で PR (自己ベスト最大重量) が記録された日付を持つもの、新しい順で最大5件
+function renderRecentPR() {
   const exMap = {};
   for (const d of allData) {
     for (const s of d.sets) {
       const w = +s.weight||0, r = +s.reps||0;
+      if (!w) continue;
       if (!exMap[s.exercise_name] || w > exMap[s.exercise_name].weight) {
         exMap[s.exercise_name] = { weight: w, reps: r, day: d.day, tag: s.tag };
       }
     }
   }
-  const list = Object.entries(exMap).sort((a,b)=>b[1].weight-a[1].weight);
-  $('prCount').textContent = list.length;
-  if (list.length === 0) {
-    $('prList').innerHTML = '<div class="empty-msg"><span class="ic">🏆</span>まだPRがありません<br>セットを記録すると自動的に集計されます</div>';
+  // PR 日付の新しい順
+  const list = Object.entries(exMap)
+    .map(([name, pr]) => ({ name, ...pr }))
+    .sort((a,b)=>b.day.localeCompare(a.day))
+    .slice(0, 5);
+  if (!list.length) {
+    $('prList').innerHTML = '<div class="gains-empty">PR記録はまだありません</div>';
     return;
   }
-  $('prList').innerHTML = list.map(([name, pr], i) => {
-    const cls = i===0?'gold':(i===1?'silver':(i===2?'bronze':''));
-    const medal = i<3 ? '★' : (i+1);
+  $('prList').innerHTML = list.map(pr => {
     const d = new Date(pr.day);
-    return `<div class="pr-row ${cls}">
-      <div class="medal">${medal}</div>
+    const today = new Date(); today.setHours(0,0,0,0);
+    const dd = new Date(pr.day); dd.setHours(0,0,0,0);
+    const daysAgo = Math.floor((today - dd) / (24*3600*1000));
+    const dateLabel = daysAgo === 0 ? '今日' : daysAgo === 1 ? '昨日' : daysAgo < 7 ? `${daysAgo}日前` : `${d.getMonth()+1}/${d.getDate()}`;
+    return `<div class="pr-row">
+      <div class="medal" style="background:linear-gradient(135deg,#D4A04B,#9A7A30);color:#3a2a00">★</div>
       <div class="info">
-        <div class="nm">${name}</div>
-        <div class="meta">${TAG_LABEL[pr.tag]||pr.tag} · ${(d.getMonth()+1)}/${d.getDate()} · ${pr.reps}回</div>
+        <div class="nm">${pr.name}</div>
+        <div class="meta">${TAG_LABEL[pr.tag]||pr.tag} ・ ${dateLabel} ・ ${pr.reps}回</div>
       </div>
       <div class="v"><b>${pr.weight}</b><small>KG</small></div>
     </div>`;
