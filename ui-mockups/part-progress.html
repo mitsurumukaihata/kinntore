@@ -116,7 +116,7 @@ body{font-family:var(--f-ui),var(--f-jp);color:var(--photo-text);min-height:100v
 .tab a.on{color:var(--photo-red)}
 .tab a .ic{font-size:18px;line-height:1;font-family:var(--f-ui)}
 
-@media (orientation:landscape){.app{max-width:720px}.tab{max-width:720px}}
+@media (orientation:landscape){.app{max-width:100%}.tab{max-width:100%}}
 </style>
 </head>
 <body style="background:#070708;margin:0">
@@ -466,10 +466,10 @@ function attachChartHover(wrap) {
     const unit = 'kg';
     tip.innerHTML = `${v.toLocaleString()}${unit}<small>${fmtDay(day)}</small>`;
     tip.classList.add('on');
-    // position
+    // position: tooltip はグラフ上端の少し上に固定 (指/カーソルに被らない)
     const wrapRect = wrap.getBoundingClientRect();
     const tipX = (r.left - wrapRect.left) + xPct * r.width;
-    const tipY = (r.top - wrapRect.top) + (yCoord/70) * r.height - 8;
+    const tipY = (r.top - wrapRect.top) - 6;
     tip.style.left = `${tipX}px`;
     tip.style.top = `${tipY}px`;
   }
