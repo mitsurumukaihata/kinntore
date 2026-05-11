@@ -156,7 +156,9 @@ body{font-family:var(--f-ui),var(--f-jp);color:var(--photo-text);min-height:100v
   </div>
 
   <div class="filter" id="filterRow">
-    <span class="lbl">EXERCISE</span>
+    <span class="lbl">PART</span>
+    <select id="tagFilter"><option value="">— すべて —</option></select>
+    <span class="lbl" style="margin-left:4px">EXERCISE</span>
     <select id="exFilter"><option value="">— すべて —</option></select>
   </div>
 
@@ -246,21 +248,40 @@ async function loadAll() {
     }
     return { day: r.day, sets: r.sets, byTag, byEx, vol, exNames: Object.keys(byEx) };
   });
+  buildTagFilter();
   buildExFilter();
   renderList();
   renderCalendar();
 }
 
-function buildExFilter() {
+function buildTagFilter() {
   const seen = new Set();
-  for (const s of allSessions) for (const n of s.exNames) seen.add(n);
-  const opts = ['<option value="">— すべて —</option>'].concat([...seen].sort().map(n => `<option>${n}</option>`));
+  for (const s of allSessions) for (const t of Object.keys(s.byTag)) seen.add(t);
+  const ORDER = ['chest','shoulder','back','arm','leg','calf','abs','hip'];
+  const sorted = [...seen].sort((a,b)=>ORDER.indexOf(a)-ORDER.indexOf(b));
+  const opts = ['<option value="">— すべて —</option>'].concat(sorted.map(t => `<option value="${t}">${TAG_LABEL[t]||t}</option>`));
+  $('tagFilter').innerHTML = opts.join('');
+}
+function buildExFilter() {
+  const filterTag = $('tagFilter').value;
+  const seen = new Set();
+  for (const s of allSessions) for (const x of s.sets) {
+    if (filterTag && x.tag !== filterTag) continue;
+    seen.add(x.exercise_name);
+  }
+  const cur = $('exFilter').value;
+  const opts = ['<option value="">— すべて —</option>'].concat([...seen].sort().map(n => `<option${n===cur?' selected':''}>${n}</option>`));
   $('exFilter').innerHTML = opts.join('');
 }
 
 function renderList() {
+  const filterTag = $('tagFilter').value;
   const filterEx = $('exFilter').value;
-  const list = filterEx ? allSessions.filter(s => s.exNames.includes(filterEx)) : allSessions;
+  const list = allSessions.filter(s => {
+    if (filterTag && !s.byTag[filterTag]) return false;
+    if (filterEx && !s.exNames.includes(filterEx)) return false;
+    return true;
+  });
   if (list.length === 0) {
     $('sessions').innerHTML = '<div class="empty-msg"><span class="ic">📭</span>記録がありません</div>';
     return;
@@ -490,6 +511,7 @@ $('dayModal').addEventListener('click', e => { if (e.target.id==='dayModal') $('
 
 $('segList').onclick = () => { $('segList').classList.add('on');$('segCal').classList.remove('on'); $('listView').style.display=''; $('calView').style.display='none'; $('filterRow').style.display=''; };
 $('segCal').onclick = () => { $('segCal').classList.add('on');$('segList').classList.remove('on'); $('listView').style.display='none'; $('calView').style.display=''; $('filterRow').style.display='none'; };
+$('tagFilter').onchange = () => { buildExFilter(); renderList(); };
 $('exFilter').onchange = renderList;
 $('calPrev').onclick = () => { currentMonth.setMonth(currentMonth.getMonth()-1); renderCalendar(); };
 $('calNext').onclick = () => { currentMonth.setMonth(currentMonth.getMonth()+1); renderCalendar(); };
