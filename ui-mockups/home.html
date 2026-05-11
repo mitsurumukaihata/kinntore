@@ -6,6 +6,16 @@
 <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
 <meta name="apple-mobile-web-app-title" content="kinntore">
 <meta name="theme-color" content="#070708">
+<style>
+/* === CRITICAL: splash を即描画するための最小CSS (大きな style ブロックより前) === */
+html,body{background:#070708;margin:0;color:#fff}
+.splash{position:fixed;inset:0;background:#070708;z-index:200;display:flex;flex-direction:column;align-items:center;justify-content:center;overflow:hidden}
+.splash-brand{position:relative;z-index:2;text-align:center}
+.splash-core24{font-family:'Bebas Neue','Helvetica Neue',Impact,sans-serif;font-size:64px;letter-spacing:.18em;color:#fff;font-weight:400;line-height:1;padding-left:.18em}
+.splash-core24 .splash-24{color:#E63946}
+.splash-sub{margin-top:14px;font-family:'Bebas Neue','Helvetica Neue',Impact,sans-serif;font-size:10px;letter-spacing:.36em;color:rgba(255,255,255,.55);font-weight:400;padding-left:.36em}
+.splash-footer{position:absolute;bottom:6%;font-family:'Bebas Neue','Helvetica Neue',Impact,sans-serif;font-size:9px;letter-spacing:.32em;color:rgba(255,255,255,.28);font-weight:400;z-index:2;padding-left:.32em}
+</style>
 <link rel="manifest" href="manifest.json">
 <link rel="apple-touch-icon" href="img/icon-192.png">
 <script src="dialogue.js" defer></script>
@@ -95,27 +105,15 @@
 *{box-sizing:border-box;margin:0;padding:0;-webkit-tap-highlight-color:transparent}
 html,body{background:#000;overscroll-behavior-y:contain;-webkit-text-size-adjust:100%;text-size-adjust:100%;touch-action:manipulation}
 
-/* ===== CORE24 スプラッシュ (約 4.6s · ゆったり静か) ===== */
-.splash{position:fixed;inset:0;background:#070708;z-index:200;display:flex;flex-direction:column;align-items:center;justify-content:center;overflow:hidden;animation:splash-out 1.6s ease-in-out 3.0s forwards}
+/* ===== CORE24 スプラッシュ (約 4.6s · 起動瞬間から存在、静かに退出) ===== */
+.splash{animation:splash-out 1.6s ease-in-out 3.0s forwards}
 .splash.skip{display:none}
 .splash-glow{position:absolute;width:60vw;height:60vw;max-width:500px;max-height:500px;background:radial-gradient(circle,rgba(230,57,70,.06) 0%,transparent 65%);filter:blur(50px);opacity:0;animation:splash-glow 4.4s ease-in-out forwards;z-index:1;pointer-events:none}
-.splash-brand{position:relative;z-index:2;text-align:center;opacity:0;animation:splash-brand-in 1.6s cubic-bezier(.4,0,.2,1) .3s forwards}
-.splash-core24{font-family:'Bebas Neue','Inter Tight',system-ui,sans-serif;font-size:64px;letter-spacing:.18em;color:#fff;font-weight:400;line-height:1;padding-left:.18em}
-.splash-core24 .splash-24{color:#E63946}
-.splash-sub{margin-top:14px;font-family:'Bebas Neue','Inter Tight',system-ui,sans-serif;font-size:10px;letter-spacing:.36em;color:rgba(255,255,255,.55);font-weight:400;padding-left:.36em}
 .splash-whisper{position:absolute;bottom:18%;font-family:var(--f-jp),'Zen Kaku Gothic New',sans-serif;font-size:14px;color:rgba(255,255,255,.72);font-weight:400;letter-spacing:.04em;opacity:0;z-index:2;max-width:80%;text-align:center;line-height:1.5}
 .splash-whisper.show{animation:splash-whisper-in 1.8s cubic-bezier(.4,0,.2,1) .8s forwards}
-.splash-footer{position:absolute;bottom:6%;font-family:'Bebas Neue','Inter Tight',system-ui,sans-serif;font-size:9px;letter-spacing:.32em;color:rgba(255,255,255,.28);font-weight:400;opacity:0;animation:splash-footer-in 1.4s ease-in 1.0s forwards;z-index:2;padding-left:.32em}
-@keyframes splash-brand-in{
-  0%{opacity:0;transform:translateY(4px)}
-  100%{opacity:1;transform:translateY(0)}
-}
 @keyframes splash-whisper-in{
   0%{opacity:0;transform:translateY(3px)}
   100%{opacity:1;transform:translateY(0)}
-}
-@keyframes splash-footer-in{
-  to{opacity:1}
 }
 @keyframes splash-glow{
   0%{opacity:0}
