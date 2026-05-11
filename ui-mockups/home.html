@@ -790,52 +790,51 @@ async function renderHomeData() {
     // deepSilent は state 変化に関わらず強制ミュート (案X: msg空白 + hint最小)
     const shouldMute = deepSilent || (Math.random() < muteChance);
 
+    // daysSinceLast / dailyStreak は moodTag 用に外で計算
+    let daysSinceLast = 0;
+    if (lastSession) {
+      const lastDate = new Date(lastSession.day + 'T00:00:00');
+      daysSinceLast = Math.floor((today - lastDate) / (24 * 3600 * 1000));
+    }
+    const dayKeysSet = new Set(data.filter(d => d.sets.length > 0).map(d => d.day));
+    let ds = 0;
+    {
+      const cursor = new Date(today);
+      if (!dayKeysSet.has(todayKey)) cursor.setDate(cursor.getDate() - 1);
+      while (true) {
+        const k = cursor.getFullYear()+'-'+String(cursor.getMonth()+1).padStart(2,'0')+'-'+String(cursor.getDate()).padStart(2,'0');
+        if (dayKeysSet.has(k)) { ds++; cursor.setDate(cursor.getDate() - 1); }
+        else break;
+      }
+    }
+
+    // 「今日の空気」タグ: 状況に応じて文脈ラベル (常時更新)
+    {
+      let moodLabel;
+      if (isNewPB) moodLabel = '新記録';
+      else if (isHuge) moodLabel = '別格の日';
+      else if (achieved) moodLabel = '101% 達成';
+      else if (ds >= 3) moodLabel = ds + '日連続';
+      else if (daysSinceLast >= 3) moodLabel = daysSinceLast + '日ぶり';
+      else if (deepNight) moodLabel = '深夜';
+      else if (hour < 7) moodLabel = '早朝';
+      else if (hour < 10) moodLabel = '朝';
+      else if (hour >= 22) moodLabel = '夜';
+      else if (todayVol === 0 && lastVol === 0) moodLabel = 'はじまり';
+      else moodLabel = '静か';
+      const moodTagEl = document.querySelector('#onepct .onepct-tag');
+      if (moodTagEl) moodTagEl.textContent = moodLabel;
+    }
+
     // Dialogue engine (v1.1) で msg を選択。fallback は既存 pool
     let pickedMsg = '';
     let pickedCharacter = null;
     if (!shouldMute) {
-      // daysSinceLast 計算 (comeback 判定用)
-      let daysSinceLast = 0;
-      if (lastSession) {
-        const lastDate = new Date(lastSession.day + 'T00:00:00');
-        daysSinceLast = Math.floor((today - lastDate) / (24 * 3600 * 1000));
-      }
-      // dailyStreak 簡易再計算
-      const dayKeys = new Set(data.filter(d => d.sets.length > 0).map(d => d.day));
-      let ds = 0;
-      const cursor = new Date(today);
-      // 今日に記録なければ昨日から
-      if (!dayKeys.has(todayKey)) cursor.setDate(cursor.getDate() - 1);
-      while (true) {
-        const k = cursor.getFullYear()+'-'+String(cursor.getMonth()+1).padStart(2,'0')+'-'+String(cursor.getDate()).padStart(2,'0');
-        if (dayKeys.has(k)) { ds++; cursor.setDate(cursor.getDate() - 1); }
-        else break;
-      }
-
       const dialogueState = (window.mapToDialogueState ? window.mapToDialogueState({
         isNewPB, isHuge, achieved,
         lastVol, todayVol, daysSinceLast,
         dailyStreak: ds, isLateNight
       }) : null);
-
-      // 「今日の空気」タグ: 状況に応じて文脈ラベルを選択
-      const moodTags = [];
-      if (isNewPB) moodTags.push('新記録');
-      else if (isHuge) moodTags.push('別格の日');
-      else if (achieved) moodTags.push('101% 達成');
-      else if (ds >= 30) moodTags.push(ds + '日連続');
-      else if (ds >= 7) moodTags.push(ds + '日連続');
-      else if (ds >= 3) moodTags.push(ds + '日連続');
-      else if (daysSinceLast >= 7) moodTags.push(daysSinceLast + '日ぶり');
-      else if (daysSinceLast >= 3) moodTags.push(daysSinceLast + '日ぶり');
-      else if (deepNight) moodTags.push('深夜');
-      else if (hour < 7) moodTags.push('早朝');
-      else if (hour < 10) moodTags.push('朝');
-      else if (hour >= 22) moodTags.push('夜');
-      else if (todayVol === 0 && lastVol === 0) moodTags.push('はじまり');
-      else moodTags.push('静か');
-      const moodTagEl = document.querySelector('#onepct .onepct-tag');
-      if (moodTagEl) moodTagEl.textContent = moodTags[0];
 
       const recentMsgs = (stateLog.recent || []).filter(r => Date.now() - r.ts < 24*3600*1000).map(r => r.msg);
 
