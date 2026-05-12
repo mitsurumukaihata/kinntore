@@ -146,6 +146,22 @@ body{font-family:var(--f-ui),var(--f-jp);color:var(--photo-text);min-height:100v
 /* Phase 1 解体: ヒーローUI / streak を非表示で隔離。msg だけ静かな1行で残す */
 .legacy-hidden{display:none}
 .quiet-line{padding:6px 20px 14px;min-height:20px;font-family:var(--f-jp);font-size:12px;color:var(--photo-mute);letter-spacing:.01em;font-weight:400;line-height:1.5;opacity:.78}
+
+/* Phase 2-A: 前回のトレーニングを「カード」から「痕跡」へ。
+   赤アイコン削除 / 境界線消す / 大数字を弱める / 全体を寄り添う情報行に */
+.last{background:transparent;border:0;border-radius:0;padding:4px 20px 10px;margin:0 0 14px}
+.last .ttl{margin-bottom:4px}
+.last .ttl h3{font-size:11px;font-weight:500;color:var(--photo-mute);letter-spacing:.02em}
+.last .ttl small{font-family:var(--f-display);font-size:9px;color:var(--photo-dim);letter-spacing:.14em}
+.last .row{gap:0}
+.last .row .ic{display:none}
+.last .row .info{flex:1;min-width:0}
+.last .row .info .nm{font-family:var(--f-jp);font-size:13px;font-weight:500;color:var(--photo-text);letter-spacing:-.005em}
+.last .row .info .meta{font-size:10.5px;color:var(--photo-mute);margin-top:2px;font-weight:400}
+.last .row .info .meta b{color:var(--photo-text);font-weight:500}
+.last .row .v{text-align:right;align-self:flex-end}
+.last .row .v b{font-family:var(--f-mono);font-size:12px;color:var(--photo-mute);font-weight:400;letter-spacing:-.01em}
+.last .row .v small{font-size:8.5px;color:var(--photo-dim);letter-spacing:.14em;margin-top:1px;font-weight:400}
 .head .gr{flex:1}
 .head .gr .lead{font-family:var(--f-display);font-size:11px;letter-spacing:.18em;color:var(--photo-mute);margin-bottom:4px}
 .head .gr h1{font-family:var(--f-jp);font-size:24px;font-weight:900;letter-spacing:-.01em;line-height:1.1}
