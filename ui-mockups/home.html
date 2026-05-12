@@ -147,6 +147,44 @@ body{font-family:var(--f-ui),var(--f-jp);color:var(--photo-text);min-height:100v
 .legacy-hidden{display:none}
 .quiet-line{padding:6px 20px 14px;min-height:20px;font-family:var(--f-jp);font-size:12px;color:var(--photo-mute);letter-spacing:.01em;font-weight:400;line-height:1.5;opacity:.78}
 
+/* Phase 2-B: 部位カードを「攻略カード」から「静かに並ぶ場所」へ。
+   筋肉図鑑感 / 少年漫画感 / 赤筋肉 / 攻略カード感 を全部弱める。
+   今日触れる場所が静かに並んでいる、くらいに留める */
+.parts{padding:0 16px;display:grid;grid-template-columns:1fr 1fr;gap:8px}
+.parts .p{
+  aspect-ratio:1/1;          /* 縦長カード → 正方形タイルへ (図鑑感を減らす) */
+  border-radius:8px;          /* 角丸を下げてカードらしさを抑える */
+  background:transparent;     /* カードの "枠" を消す */
+  box-shadow:none !important; /* 赤グロー / 影 を完全に消す */
+  border:0;
+}
+.parts .p:hover{box-shadow:none !important}
+.parts .p:active{transform:none}
+/* 画像主張を弱める: 彩度・明度・透過を下げて "気配" 化 */
+.parts .p img{filter:grayscale(.55) saturate(.45) brightness(.70) contrast(.85);opacity:.62;transition:opacity .4s,filter .4s}
+.parts .p:active img{opacity:.78;filter:grayscale(.35) saturate(.6) brightness(.78)}
+/* .stat (○日前バッジ) — 黒バブルから文字だけへ */
+.parts .p .stat{position:absolute;top:6px;left:8px;z-index:3;font-family:var(--f-mono);font-size:10px;color:rgba(255,255,255,.55);background:transparent;backdrop-filter:none;padding:0;border-radius:0;font-weight:400;letter-spacing:-.005em;text-shadow:0 1px 2px rgba(0,0,0,.4)}
+:root[data-theme="light"] .parts .p .stat{color:rgba(0,0,0,.45);text-shadow:0 1px 2px rgba(255,255,255,.6)}
+/* DARK: 画像内の焼込みラベルはそのまま (filter で落とす)。矢印は元から非表示 */
+/* LIGHT: 重ねラベルを静かに */
+:root[data-theme="light"] .parts .p{background:transparent}
+:root[data-theme="light"] .parts .p::before{
+  content:attr(data-jp);position:absolute;left:10px;bottom:24px;
+  font-family:var(--f-jp);font-size:14px;font-weight:500;
+  color:rgba(0,0,0,.72);letter-spacing:-.005em;
+  z-index:3;pointer-events:none;text-shadow:none;
+}
+:root[data-theme="light"] .parts .p::after{
+  content:attr(data-en);position:absolute;left:10px;bottom:10px;
+  font-family:var(--f-display);font-size:9px;
+  color:rgba(0,0,0,.42);letter-spacing:.14em;font-weight:400;
+  z-index:3;pointer-events:none;text-shadow:none;
+}
+/* 赤い円形矢印ボタンを撤去 (ゲーム感の塊) */
+:root[data-theme="light"] .parts .p .arrow{display:none !important}
+.parts .p .arrow{display:none !important}
+
 /* Phase 2-A: 前回のトレーニングを「カード」から「痕跡」へ。
    赤アイコン削除 / 境界線消す / 大数字を弱める / 全体を寄り添う情報行に */
 .last{background:transparent;border:0;border-radius:0;padding:4px 20px 10px;margin:0 0 14px}
@@ -256,6 +294,9 @@ body{font-family:var(--f-ui),var(--f-jp);color:var(--photo-text);min-height:100v
 /* セクション見出し */
 .sec{padding:0 18px;margin:14px 0 10px;display:flex;justify-content:space-between;align-items:baseline}
 .sec h2{font-family:var(--f-jp);font-size:18px;font-weight:900;letter-spacing:-.01em}
+/* Phase 2-B: 静かな見出し (主役にしない) */
+.sec.sec-quiet{margin:18px 0 8px;padding:0 20px}
+.sec.sec-quiet h2{font-size:11px;font-weight:500;color:var(--photo-mute);letter-spacing:.04em}
 .sec h2 small{font-family:var(--f-display);font-size:10px;color:var(--photo-dim);letter-spacing:.18em;font-weight:400;margin-left:8px}
 .sec a{color:var(--photo-mute);text-decoration:none;font-size:11px;font-family:var(--f-jp);font-weight:600;cursor:pointer}
 
@@ -439,7 +480,9 @@ body{font-family:var(--f-ui),var(--f-jp);color:var(--photo-text);min-height:100v
     </div>
   </div>
 
-  <div class="sec"><h2>部位を選ぶ<small>BODY PART</small></h2></div>
+  <!-- Phase 2-B: "選ばせる" 見出しから、静かな置き場所へ。
+       小さなセクション名だけ残す -->
+  <div class="sec sec-quiet"><h2 id="partsLabel">部位</h2></div>
 
   <div class="parts">
     <a class="p" href="pattern-i.html#chest" data-jp="胸" data-en="CHEST">
