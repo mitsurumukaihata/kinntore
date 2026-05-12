@@ -418,9 +418,8 @@ body{font-family:var(--f-ui),var(--f-jp);color:var(--photo-text);min-height:100v
   <div class="sec"><h2>部位を選ぶ<small>BODY PART</small></h2></div>
 
   <div class="parts">
-    <a class="p next-up" href="pattern-i.html#chest" data-jp="胸" data-en="CHEST">
+    <a class="p" href="pattern-i.html#chest" data-jp="胸" data-en="CHEST">
       <div class="stat">3日前</div>
-      <span class="next-flag">NEXT</span>
       <img class="part-img" data-part="chest" src="img/part-chest.png" alt="胸">
       <span class="arrow">›</span>
     </a>
@@ -505,7 +504,7 @@ function buildChart(p, i, points, total, deltaPct, hasData) {
   if (!hasData || points.length === 0) {
     return `
       <div class="chart-card" data-tag="${p.tag}">
-        <div class="ttl"><h3><span>●</span>${p.label} ボリューム</h3><small>直近30日</small></div>
+        <div class="ttl"><h3><span>●</span>${p.label} ボリューム</h3><small>直近セッション</small></div>
         <div style="height:110px;display:flex;align-items:center;justify-content:center;color:var(--photo-dim);font-size:11px;font-family:var(--f-jp)">記録がありません</div>
         <div class="chart-foot"><b>0<small>kg</small></b><span class="delta">--</span></div>
       </div>`;
@@ -524,7 +523,7 @@ function buildChart(p, i, points, total, deltaPct, hasData) {
   else deltaLabel = (deltaPct >= 0 ? '+' : '') + deltaPct + '%';
   return `
     <div class="chart-card" data-tag="${p.tag}">
-      <div class="ttl"><h3><span>●</span>${p.label} ボリューム</h3><small>直近30日</small></div>
+      <div class="ttl"><h3><span>●</span>${p.label} ボリューム</h3><small>直近${points.length}セッション</small></div>
       <svg class="line-chart" viewBox="0 0 ${w} ${h}" preserveAspectRatio="none">
         <defs><linearGradient id="g${i}" x1="0" y1="0" x2="0" y2="1">
           <stop offset="0%" stop-color="#E63946" stop-opacity=".45"/>
@@ -537,10 +536,10 @@ function buildChart(p, i, points, total, deltaPct, hasData) {
         <polyline points="${polyline}" fill="none" stroke="#E63946" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"/>
         <circle cx="${lastX.toFixed(1)}" cy="${lastY.toFixed(1)}" r="4" fill="#fff" stroke="#E63946" stroke-width="2"/>
       </svg>
-      <div class="chart-axis"><span>30日前</span><span>20日前</span><span>10日前</span><span class="on">今日</span></div>
+      <div class="chart-axis"><span>過去</span><span></span><span></span><span class="on">最新</span></div>
       <div class="chart-foot">
         <b>${total.toLocaleString()}<small>kg</small></b>
-        <span class="delta ${neg?'neg':''}">${deltaLabel} <span style="opacity:.7">先月比</span></span>
+        <span class="delta ${neg?'neg':''}">${deltaLabel} <span style="opacity:.7">前回${points.length}セッション比</span></span>
       </div>
     </div>`;
 }
@@ -573,21 +572,22 @@ async function renderHomeData() {
   for (let i=0;i<30;i++){const d=new Date(today);d.setDate(d.getDate()-i);days30.push(d.getFullYear()+'-'+String(d.getMonth()+1).padStart(2,'0')+'-'+String(d.getDate()).padStart(2,'0'))}
   for (let i=30;i<60;i++){const d=new Date(today);d.setDate(d.getDate()-i);days30prev.push(d.getFullYear()+'-'+String(d.getMonth()+1).padStart(2,'0')+'-'+String(d.getDate()).padStart(2,'0'))}
   const html = _PART_DEFS.map((p, i) => {
-    // 直近30日の各日ボリューム (古い→新しい順)
-    const points = [...days30].reverse().map(d => {
-      const day = data.find(x => x.day === d);
-      if (!day) return 0;
-      return day.sets.filter(s => s.tag === p.tag).reduce((sum,s)=>sum+(+s.weight||0)*(+s.reps||0), 0);
-    });
-    const total = points.reduce((a,b)=>a+b, 0);
-    const prevTotal = days30prev.reduce((sum, d) => {
-      const day = data.find(x => x.day === d);
-      if (!day) return sum;
-      return sum + day.sets.filter(s => s.tag === p.tag).reduce((s,x)=>s+(+x.weight||0)*(+x.reps||0), 0);
-    }, 0);
+    // トレーニングした日のみで構成 (古い→新しい順、ゼロ日はスキップ)
+    const sessions = [];
+    const sortedAsc = [...data].sort((a,b) => a.day < b.day ? -1 : 1);
+    for (const d of sortedAsc) {
+      const v = d.sets.filter(s => s.tag === p.tag).reduce((sum,s)=>sum+(+s.weight||0)*(+s.reps||0), 0);
+      if (v > 0) sessions.push(v);
+    }
+    // 直近12セッションを描画、比較は同じ長さの前12セッション
+    const N = 12;
+    const recent = sessions.slice(-N);
+    const prev = sessions.slice(-N*2, -N);
+    const total = recent.reduce((a,b)=>a+b, 0);
+    const prevTotal = prev.reduce((a,b)=>a+b, 0);
     let deltaPct = null;
     if (prevTotal > 0) deltaPct = Math.round(((total - prevTotal) / prevTotal) * 100);
-    return buildChart(p, i, points, total, deltaPct, total > 0);
+    return buildChart(p, i, recent, total, deltaPct, recent.length > 0);
   }).join('');
   swipe.innerHTML = html;
   dots.innerHTML = _PART_DEFS.map((_,i) => `<div class="d ${i===0?'on':''}"></div>`).join('');
