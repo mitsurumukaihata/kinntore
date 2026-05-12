@@ -1,0 +1,80 @@
+/* ============================================================
+   CORE24 Atmosphere Tokens
+   ------------------------------------------------------------
+   空気のCSS管理 — CORE24 の武器。
+   ノイズ・フィルム感・呼吸・シャドウ柔らかさ・空気密度。
+   ============================================================ */
+
+:root {
+  /* ---------- DARK ---------- */
+  /* 重い空気・少し古いフィルム感・影を残す */
+
+  --air-density:       1;          /* 1 = 重い深夜 */
+  --air-noise:         0.05;       /* テクスチャ透明度 */
+  --air-shadow-soft:   28px;       /* シャドウ blur (柔らかい) */
+  --air-shadow-color:  rgba(0, 0, 0, 0.50);
+  --air-vignette:      0.55;       /* 周辺光減衰 */
+  --air-grain-scale:   160px;      /* ノイズパターンの粒度 */
+}
+
+:root[data-theme="light"] {
+  /* 乾いた空気・柔らかい紙の表情・少し眠い */
+
+  --air-density:       0.55;
+  --air-noise:         0.030;
+  --air-shadow-soft:   20px;
+  --air-shadow-color:  rgba(60, 40, 20, 0.10);
+  --air-vignette:      0.18;
+  --air-grain-scale:   180px;
+}
+
+/* ============================================================
+   Utility Classes
+   各ページで使う「空気ユーティリティ」。
+   ============================================================ */
+
+/* ノイズ層 (テクスチャ) — 親要素に position:relative 必須 */
+.atm-noise {
+  position: relative;
+}
+.atm-noise::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  opacity: var(--air-noise);
+  background-image: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='160' height='160'><filter id='n'><feTurbulence type='fractalNoise' baseFrequency='0.85' numOctaves='2' stitchTiles='stitch'/><feColorMatrix values='0 0 0 0 0  0 0 0 0 0  0 0 0 0 0  0 0 0 0.6 0'/></filter><rect width='100%' height='100%' filter='url(%23n)'/></svg>");
+  background-size: var(--air-grain-scale) var(--air-grain-scale);
+  mix-blend-mode: overlay;
+}
+
+/* 柔らかいシャドウ */
+.atm-shadow-soft {
+  box-shadow: 0 8px var(--air-shadow-soft) var(--air-shadow-color);
+}
+
+/* 周辺ヴィネット (画面四隅をわずかに沈める) */
+.atm-vignette {
+  position: relative;
+}
+.atm-vignette::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  background: radial-gradient(
+    ellipse at center,
+    transparent 55%,
+    rgba(0, 0, 0, calc(var(--air-vignette) * 0.6)) 100%
+  );
+}
+
+/* "空気の中に浮いている" カード — 境界線を最小化、明度差で分離 */
+.atm-card {
+  background: var(--bg-card);
+  border: 1px solid var(--line-air);
+  border-radius: 14px;
+  /* シャドウは "明度差を補強する" 程度に弱く */
+  box-shadow: 0 1px 0 var(--line-air),
+              0 8px var(--air-shadow-soft) var(--air-shadow-color);
+}

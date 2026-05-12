@@ -1,0 +1,82 @@
+/* ============================================================
+   CORE24 Motion Tokens
+   ------------------------------------------------------------
+   呼吸する程度。バウンド/パーティクル/点滅は禁止。
+   フェード中心・微細・遅い。
+   ============================================================ */
+
+:root {
+  /* 呼吸 (4-6秒で1サイクル) */
+  --motion-breath:       5400ms;
+
+  /* ゆっくり流れる (空気が動く) */
+  --motion-drift:        1200ms;
+
+  /* 空気が動く遷移 (UI 状態変化) */
+  --motion-fade-air:     480ms;
+
+  /* 最速でも 200ms 以上 (急かさない) */
+  --motion-instant:      220ms;
+
+  /* イージング — 空気が抜けるような曲線 */
+  --motion-ease-air:     cubic-bezier(0.4, 0.0, 0.2, 1);
+  --motion-ease-breath:  cubic-bezier(0.45, 0.0, 0.55, 1);
+}
+
+/* ============================================================
+   Keyframes
+   ============================================================ */
+
+/* 呼吸 — opacity だけを動かす (transform は使わない = 騒がない) */
+@keyframes atm-breath {
+  0%, 100% { opacity: 1; }
+  50%      { opacity: 0.92; }
+}
+
+/* 流れる — ノイズ層を緩やかに移動 */
+@keyframes atm-drift {
+  0%   { transform: translate3d(0, 0, 0); }
+  50%  { transform: translate3d(-4px, 2px, 0); }
+  100% { transform: translate3d(0, 0, 0); }
+}
+
+/* 静かな現れ */
+@keyframes atm-appear {
+  from { opacity: 0; transform: translateY(4px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+
+/* ============================================================
+   Utility Classes
+   ============================================================ */
+
+.atm-breath {
+  animation: atm-breath var(--motion-breath) var(--motion-ease-breath) infinite;
+}
+
+.atm-drift {
+  animation: atm-drift calc(var(--motion-drift) * 6) var(--motion-ease-air) infinite;
+}
+
+.atm-appear {
+  animation: atm-appear var(--motion-fade-air) var(--motion-ease-air) both;
+}
+
+.atm-fade {
+  transition: opacity var(--motion-fade-air) var(--motion-ease-air),
+              transform var(--motion-fade-air) var(--motion-ease-air),
+              background-color var(--motion-fade-air) var(--motion-ease-air),
+              border-color var(--motion-fade-air) var(--motion-ease-air);
+}
+
+/* アクセシビリティ — 動きを減らす設定を尊重 */
+@media (prefers-reduced-motion: reduce) {
+  .atm-breath,
+  .atm-drift,
+  .atm-appear {
+    animation: none !important;
+  }
+  .atm-fade {
+    transition: none !important;
+  }
+}

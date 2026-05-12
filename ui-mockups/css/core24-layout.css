@@ -1,0 +1,31 @@
+/* ============================================================
+   CORE24 Layout / Breathing Space Tokens
+   ------------------------------------------------------------
+   普通の margin ではなく「呼吸用余白」として扱う。
+   "余白を恐れない" が CORE24 の核。
+   ============================================================ */
+
+:root {
+  /* 呼吸用余白 (空気のスケール) */
+  --space-breath-xs:  6px;    /* 言葉と言葉の間 */
+  --space-breath-sm:  12px;   /* 行間・小コンポーネント間 */
+  --space-breath-md:  22px;   /* セクション内 */
+  --space-breath-lg:  40px;   /* セクション間 */
+  --space-breath-xl:  72px;   /* 章の区切り。怖がらない */
+
+  /* コンポーネント内の呼吸 (padding 用) */
+  --pad-card-y:  20px;
+  --pad-card-x:  20px;
+  --pad-page-x:  20px;
+
+  /* 角丸 (柔らかい記録帳の手触り) */
+  --radius-card:    14px;
+  --radius-chip:    50px;
+  --radius-modal:   18px;
+
+  /* タイポ — "ログ感" / 数字主張弱め */
+  --line-height-air:   1.7;   /* テキスト本文 */
+  --line-height-log:   1.35;  /* 数字・ログ行 */
+  --tracking-air:      0.02em;
+  --tracking-display:  0.16em;  /* 小さい英字キャプション用 */
+}

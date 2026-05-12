@@ -1,0 +1,335 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<title>CORE24 — Tokens Preview (世界観デバッグ空間)</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Inter+Tight:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500;600&family=Zen+Kaku+Gothic+New:wght@400;500;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="css/core24-tokens.css">
+<link rel="stylesheet" href="css/core24-atmosphere.css">
+<link rel="stylesheet" href="css/core24-motion.css">
+<link rel="stylesheet" href="css/core24-layout.css">
+<style>
+  *{box-sizing:border-box;margin:0;padding:0}
+  html,body{background:var(--bg-deep);color:var(--text-core);
+    font-family:'Zen Kaku Gothic New','Inter Tight',-apple-system,system-ui,sans-serif;
+    line-height:var(--line-height-air);letter-spacing:var(--tracking-air);
+    transition:background-color var(--motion-fade-air) var(--motion-ease-air),
+               color var(--motion-fade-air) var(--motion-ease-air);
+  }
+  body{padding:var(--space-breath-lg) var(--pad-page-x) var(--space-breath-xl);max-width:1080px;margin:0 auto}
+
+  /* ヘッダー — 命名は意味付き、装飾は最小 */
+  .head{display:flex;justify-content:space-between;align-items:flex-end;
+    padding-bottom:var(--space-breath-md);
+    border-bottom:1px solid var(--line-air);
+    margin-bottom:var(--space-breath-lg);
+  }
+  .head h1{font-family:'Zen Kaku Gothic New';font-weight:700;font-size:22px;letter-spacing:-0.01em}
+  .head h1 small{display:block;font-family:'Bebas Neue';font-size:11px;color:var(--text-fade);
+    letter-spacing:var(--tracking-display);font-weight:400;margin-top:4px}
+  .head .ctrls{display:flex;gap:var(--space-breath-sm)}
+  .head button{background:var(--bg-air);color:var(--text-core);
+    border:1px solid var(--line-air);
+    padding:9px 18px;border-radius:var(--radius-chip);cursor:pointer;
+    font-family:'Bebas Neue';font-size:11px;letter-spacing:var(--tracking-display);
+  }
+  .head button.on{background:var(--accent-rust-soft);border-color:var(--accent-rust);color:var(--accent-rust)}
+  .head button:hover{border-color:var(--line-air-strong)}
+
+  /* セクション */
+  section{margin-bottom:var(--space-breath-xl)}
+  section > h2{font-family:'Zen Kaku Gothic New';font-weight:700;font-size:14px;
+    color:var(--text-core);margin-bottom:var(--space-breath-md);
+    display:flex;align-items:baseline;gap:var(--space-breath-sm);
+  }
+  section > h2 small{font-family:'Bebas Neue';font-size:10px;color:var(--text-fade);
+    letter-spacing:var(--tracking-display);font-weight:400}
+  section > p.note{color:var(--text-fade);font-size:12px;
+    margin-bottom:var(--space-breath-md);max-width:60ch}
+
+  /* スウォッチ */
+  .swatches{display:grid;grid-template-columns:repeat(auto-fill,minmax(160px,1fr));gap:var(--space-breath-sm)}
+  .sw{padding:14px 14px 12px;border-radius:var(--radius-card);border:1px solid var(--line-air);
+    background:var(--bg-card);min-height:96px;display:flex;flex-direction:column;justify-content:space-between}
+  .sw .chip{height:36px;border-radius:6px;margin-bottom:10px;border:1px solid var(--line-air)}
+  .sw .name{font-family:'JetBrains Mono';font-size:11px;color:var(--text-core);letter-spacing:-0.01em}
+  .sw .val{font-family:'JetBrains Mono';font-size:10px;color:var(--text-fade)}
+
+  /* 余白サンプル */
+  .gap-demo{display:flex;flex-direction:column;gap:var(--space-breath-sm)}
+  .gap-row{display:flex;align-items:center;gap:14px;font-family:'JetBrains Mono';font-size:11px;color:var(--text-fade)}
+  .gap-bar{background:var(--accent-rust);height:2px;opacity:0.6}
+
+  /* カードサンプル — atm-card 使用 */
+  .card-demo{display:grid;grid-template-columns:repeat(auto-fit,minmax(240px,1fr));gap:var(--space-breath-md)}
+  .demo-card{padding:var(--pad-card-y) var(--pad-card-x)}
+  .demo-card .label{font-family:'Bebas Neue';font-size:10px;letter-spacing:var(--tracking-display);
+    color:var(--text-fade);margin-bottom:8px}
+  .demo-card .body{font-size:13px;color:var(--text-core);line-height:var(--line-height-air)}
+  .demo-card .num{font-family:'JetBrains Mono';font-size:28px;font-weight:500;
+    letter-spacing:-0.02em;color:var(--text-core)}
+  .demo-card .num small{font-family:'Bebas Neue';font-size:10px;color:var(--text-fade);
+    letter-spacing:var(--tracking-display);margin-left:6px;font-weight:400}
+  .demo-card .delta{font-size:11px;color:var(--text-fade);margin-top:6px}
+
+  /* 数字ログ感サンプル */
+  .log-demo{font-family:'JetBrains Mono';font-size:12px;line-height:var(--line-height-log);
+    color:var(--text-fade);padding:var(--space-breath-md);background:var(--bg-air);
+    border-radius:var(--radius-card);border:1px solid var(--line-air)}
+  .log-demo b{color:var(--text-core);font-weight:500}
+  .log-demo .r{color:var(--accent-rust)}
+
+  /* キャラ背景プレースホルダ */
+  .char-demo{position:relative;height:180px;border-radius:var(--radius-card);
+    border:1px solid var(--line-air);background:var(--bg-surface);overflow:hidden}
+  .char-silhouette{position:absolute;right:-20px;bottom:-10px;width:140px;height:180px;
+    background:var(--grey-200);clip-path:polygon(40% 0,60% 0,75% 25%,75% 100%,25% 100%,25% 25%);
+    opacity:0.6}
+  .char-demo .cap{position:absolute;top:14px;left:14px;font-size:11px;color:var(--text-fade);
+    font-family:'Zen Kaku Gothic New'}
+
+  /* 通知サンプル */
+  .notify-demo{display:flex;align-items:center;gap:var(--space-breath-sm);
+    padding:14px 18px;background:var(--bg-card);border:1px solid var(--line-air);
+    border-radius:var(--radius-card);max-width:380px}
+  .notify-demo .dot{width:6px;height:6px;border-radius:50%;background:var(--accent-rust)}
+  .notify-demo .t{font-size:12px;color:var(--text-fade);line-height:var(--line-height-log)}
+  .notify-demo .t b{color:var(--text-core);font-weight:500}
+
+  /* 小サイズ確認 — iframe で実機サイズに */
+  .small-frame{border:1px solid var(--line-air);border-radius:var(--radius-card);overflow:hidden;
+    background:var(--bg-surface);padding:var(--space-breath-md)}
+  .small-frame .inner{width:320px;background:var(--bg-deep);padding:var(--space-breath-md);
+    border-radius:10px;border:1px solid var(--line-air)}
+
+  /* 朝/夜シミュレーション層 — body 上に乗せる薄いフィルター */
+  body[data-air-time="morning"]::before{
+    content:'';position:fixed;inset:0;pointer-events:none;z-index:9999;
+    background:radial-gradient(ellipse at 70% 0%, rgba(255,235,200,0.06), transparent 60%);
+  }
+  body[data-air-time="night"]::before{
+    content:'';position:fixed;inset:0;pointer-events:none;z-index:9999;
+    background:radial-gradient(ellipse at 50% 50%, transparent 60%, rgba(0,0,0,0.20) 100%);
+  }
+
+  /* グリッド 2 col */
+  .row2{display:grid;grid-template-columns:1fr 1fr;gap:var(--space-breath-md)}
+  @media (max-width:640px){.row2{grid-template-columns:1fr}}
+</style>
+</head>
+<body data-air-time="static">
+
+<div class="head atm-noise">
+  <h1>CORE24 Tokens Preview<small>WORLD DEBUG SPACE</small></h1>
+  <div class="ctrls">
+    <button id="btn-dark" class="on">DARK</button>
+    <button id="btn-light">LIGHT</button>
+    <button id="btn-static" class="on">STATIC</button>
+    <button id="btn-morning">朝</button>
+    <button id="btn-night">夜</button>
+  </div>
+</div>
+
+<!-- 1. COLOR TOKENS -->
+<section>
+  <h2>① 色トークン <small>COLOR TOKENS</small></h2>
+  <p class="note">DARK / LIGHT は思想分離。LIGHT は爽やかスポーツUIにしない。命名は意味付き。</p>
+  <div class="swatches" id="swatches-bg"></div>
+  <div style="height:var(--space-breath-md)"></div>
+  <div class="swatches" id="swatches-text"></div>
+  <div style="height:var(--space-breath-md)"></div>
+  <div class="swatches" id="swatches-accent"></div>
+</section>
+
+<!-- 2. ATMOSPHERE -->
+<section>
+  <h2>② 空気レイヤー <small>ATMOSPHERE</small></h2>
+  <p class="note">CSS で空気を管理する。ノイズ・シャドウ・ヴィネット・密度。</p>
+  <div class="row2">
+    <div class="atm-card atm-noise" style="padding:var(--pad-card-y) var(--pad-card-x);min-height:140px;position:relative">
+      <div class="label" style="font-family:'Bebas Neue';font-size:10px;letter-spacing:var(--tracking-display);color:var(--text-fade)">ATM-NOISE + ATM-CARD</div>
+      <div style="margin-top:14px;font-size:13px;color:var(--text-core)">ノイズが薄く乗ったカード。フィルム感を演出。</div>
+      <div style="margin-top:8px;font-family:'JetBrains Mono';font-size:10px;color:var(--text-fade)">--air-noise / --air-grain-scale</div>
+    </div>
+    <div class="atm-vignette atm-card" style="padding:var(--pad-card-y) var(--pad-card-x);min-height:140px;position:relative">
+      <div class="label" style="font-family:'Bebas Neue';font-size:10px;letter-spacing:var(--tracking-display);color:var(--text-fade)">ATM-VIGNETTE</div>
+      <div style="margin-top:14px;font-size:13px;color:var(--text-core)">周辺をわずかに沈める。深夜感の補強。</div>
+      <div style="margin-top:8px;font-family:'JetBrains Mono';font-size:10px;color:var(--text-fade)">--air-vignette</div>
+    </div>
+  </div>
+</section>
+
+<!-- 3. MOTION -->
+<section>
+  <h2>③ モーション <small>MOTION</small></h2>
+  <p class="note">呼吸する程度。バウンド・パーティクル・点滅は禁止。</p>
+  <div class="row2">
+    <div class="atm-card atm-breath" style="padding:var(--pad-card-y) var(--pad-card-x);min-height:120px">
+      <div class="label" style="font-family:'Bebas Neue';font-size:10px;letter-spacing:var(--tracking-display);color:var(--text-fade)">ATM-BREATH</div>
+      <div style="margin-top:14px;font-size:13px;color:var(--text-core)">5.4 秒で 1 呼吸。opacity だけ動かす。</div>
+      <div style="margin-top:8px;font-family:'JetBrains Mono';font-size:10px;color:var(--text-fade)">--motion-breath: 5400ms</div>
+    </div>
+    <div class="atm-card" style="padding:var(--pad-card-y) var(--pad-card-x);min-height:120px">
+      <div class="label" style="font-family:'Bebas Neue';font-size:10px;letter-spacing:var(--tracking-display);color:var(--text-fade)">ATM-FADE</div>
+      <div style="margin-top:14px;font-size:13px;color:var(--text-core)">UI 状態変化用。480ms ease-air。</div>
+      <div style="margin-top:8px;font-family:'JetBrains Mono';font-size:10px;color:var(--text-fade)">--motion-fade-air</div>
+    </div>
+  </div>
+</section>
+
+<!-- 4. SPACING -->
+<section>
+  <h2>④ 呼吸用余白 <small>BREATHING SPACE</small></h2>
+  <p class="note">「余白を恐れない」が CORE24 の核。普通の margin ではなく呼吸として扱う。</p>
+  <div class="gap-demo">
+    <div class="gap-row"><span style="width:80px">xs · 6px</span><div class="gap-bar" style="width:var(--space-breath-xs)"></div></div>
+    <div class="gap-row"><span style="width:80px">sm · 12px</span><div class="gap-bar" style="width:var(--space-breath-sm)"></div></div>
+    <div class="gap-row"><span style="width:80px">md · 22px</span><div class="gap-bar" style="width:var(--space-breath-md)"></div></div>
+    <div class="gap-row"><span style="width:80px">lg · 40px</span><div class="gap-bar" style="width:var(--space-breath-lg)"></div></div>
+    <div class="gap-row"><span style="width:80px">xl · 72px</span><div class="gap-bar" style="width:var(--space-breath-xl)"></div></div>
+  </div>
+</section>
+
+<!-- 5. CARDS -->
+<section>
+  <h2>⑤ カード <small>CARDS</small></h2>
+  <p class="note">境界線最小・シャドウ最小・明度差のみで分離。空気の中に浮いている感じ。</p>
+  <div class="card-demo">
+    <div class="atm-card demo-card">
+      <div class="label">TODAY</div>
+      <div class="num">3,240<small>KG</small></div>
+      <div class="delta">前回 2,980 から積み上げ</div>
+    </div>
+    <div class="atm-card demo-card">
+      <div class="label">CHEST</div>
+      <div class="num">12<small>SETS</small></div>
+      <div class="delta">流れあるな</div>
+    </div>
+    <div class="atm-card demo-card">
+      <div class="label">STREAK</div>
+      <div class="num">7<small>DAYS</small></div>
+      <div class="delta">来てるな</div>
+    </div>
+  </div>
+</section>
+
+<!-- 6. LOG / NUMBERS -->
+<section>
+  <h2>⑥ 数字・ログ感 <small>NUMBERS · LOG</small></h2>
+  <p class="note">爆発演出・勝利演出禁止。記録感・ログ感だけ。</p>
+  <div class="log-demo">
+    <div>2026·05·12 · 22:14 — <b>ベンチプレス</b> · 67.5 <span class="r">×</span> 8</div>
+    <div>2026·05·12 · 22:18 — <b>ベンチプレス</b> · 70.0 <span class="r">×</span> 6</div>
+    <div>2026·05·12 · 22:22 — <b>ベンチプレス</b> · 70.0 <span class="r">×</span> 6</div>
+    <div>2026·05·12 · 22:30 — <b>ダンベルフライ</b> · 18.0 <span class="r">×</span> 10</div>
+    <div style="margin-top:var(--space-breath-sm);color:var(--text-ghost);font-size:11px">total · 2,940 kg</div>
+  </div>
+</section>
+
+<!-- 7. CHARACTER ZONE -->
+<section>
+  <h2>⑦ キャラクター配置 <small>CHARACTER</small></h2>
+  <p class="note">主役化禁止。空気として存在。右寄せ・一部だけ見せる・背景に溶ける。<br>(ステップC で配置調整。今は "住む場所" だけ用意)</p>
+  <div class="char-demo atm-noise">
+    <div class="cap">— 同じ場所に居る人 —</div>
+    <div class="char-silhouette"></div>
+  </div>
+</section>
+
+<!-- 8. NOTIFICATION -->
+<section>
+  <h2>⑧ 通知 <small>NOTIFICATION</small></h2>
+  <p class="note">圧をかけない。呼び戻そうとしない。戻れる場所として成立させる。</p>
+  <div class="notify-demo">
+    <div class="dot"></div>
+    <div class="t"><b>静かな存在</b> — 必要時のみ、控えめに</div>
+  </div>
+</section>
+
+<!-- 9. SMALL SIZE -->
+<section>
+  <h2>⑨ 縮小確認 <small>SMALL SIZE</small></h2>
+  <p class="note">空気は縮小で死ぬ。縮小後でも シルエット / 余白 / 呼吸感 / 赤 / ノイズ が残るか確認。</p>
+  <div class="small-frame">
+    <div class="inner atm-noise">
+      <div style="font-family:'Bebas Neue';font-size:11px;letter-spacing:var(--tracking-display);color:var(--text-fade)">CORE24</div>
+      <div style="margin-top:14px;font-family:'JetBrains Mono';font-size:22px;letter-spacing:-0.01em;color:var(--text-core)">3,240<span style="font-size:10px;color:var(--text-fade);margin-left:4px">KG</span></div>
+      <div style="margin-top:8px;font-size:11px;color:var(--text-fade)">来てるな</div>
+      <div style="height:1px;background:var(--line-air);margin:var(--space-breath-md) 0"></div>
+      <div style="font-size:10px;color:var(--text-ghost);font-family:'JetBrains Mono'">2026·05·12 · 22:30</div>
+    </div>
+  </div>
+</section>
+
+<!-- 10. ACCENT USAGE -->
+<section>
+  <h2>⑩ 赤の扱い <small>ACCENT — RUST</small></h2>
+  <p class="note">赤は少量。点ではなく "そこにある気配" として置く。</p>
+  <div class="row2">
+    <div class="atm-card" style="padding:var(--pad-card-y) var(--pad-card-x)">
+      <div style="display:flex;align-items:center;gap:8px;margin-bottom:10px">
+        <div style="width:6px;height:6px;border-radius:50%;background:var(--accent-rust)"></div>
+        <span style="font-family:'Bebas Neue';font-size:10px;color:var(--text-fade);letter-spacing:var(--tracking-display)">DOT</span>
+      </div>
+      <div style="font-size:13px;color:var(--text-core)">点として置く赤。気配だけ。</div>
+    </div>
+    <div class="atm-card" style="padding:var(--pad-card-y) var(--pad-card-x);background:var(--accent-rust-soft);border-color:var(--accent-rust)">
+      <div style="font-family:'Bebas Neue';font-size:10px;color:var(--accent-rust);letter-spacing:var(--tracking-display);margin-bottom:10px">SOFT FILL</div>
+      <div style="font-size:13px;color:var(--text-core)">背景溶け込み用。フィルにして主張を弱く。</div>
+    </div>
+  </div>
+</section>
+
+<div style="text-align:center;color:var(--text-ghost);font-family:'Bebas Neue';font-size:10px;letter-spacing:var(--tracking-display);margin-top:var(--space-breath-xl)">
+  CORE24 · ATELIER · TOKEN PREVIEW
+</div>
+
+<script>
+  // テーマ切替
+  const root = document.documentElement;
+  const btnDark = document.getElementById('btn-dark');
+  const btnLight = document.getElementById('btn-light');
+  btnDark.onclick = () => { root.removeAttribute('data-theme'); btnDark.classList.add('on'); btnLight.classList.remove('on'); };
+  btnLight.onclick = () => { root.setAttribute('data-theme','light'); btnLight.classList.add('on'); btnDark.classList.remove('on'); };
+
+  // 時間帯シミュレーション
+  const btnStatic = document.getElementById('btn-static');
+  const btnMorning = document.getElementById('btn-morning');
+  const btnNight = document.getElementById('btn-night');
+  function setTime(t, btn){
+    document.body.setAttribute('data-air-time', t);
+    [btnStatic,btnMorning,btnNight].forEach(b => b.classList.remove('on'));
+    btn.classList.add('on');
+  }
+  btnStatic.onclick = () => setTime('static', btnStatic);
+  btnMorning.onclick = () => setTime('morning', btnMorning);
+  btnNight.onclick = () => setTime('night', btnNight);
+
+  // スウォッチ生成
+  const BG = ['--bg-deep','--bg-surface','--bg-air','--bg-card','--bg-elevated','--grey-100','--grey-200','--grey-300'];
+  const TEXT = ['--text-core','--text-fade','--text-ghost','--line-air','--line-air-strong'];
+  const ACC = ['--accent-rust','--accent-rust-deep','--accent-rust-soft','--light-warm'];
+  function build(target, names){
+    const css = getComputedStyle(root);
+    const el = document.getElementById(target);
+    el.innerHTML = names.map(n => {
+      const v = css.getPropertyValue(n).trim();
+      return `<div class="sw"><div class="chip" style="background:var(${n})"></div>
+        <div><div class="name">${n}</div><div class="val">${v}</div></div></div>`;
+    }).join('');
+  }
+  function rebuild(){
+    build('swatches-bg', BG);
+    build('swatches-text', TEXT);
+    build('swatches-accent', ACC);
+  }
+  rebuild();
+  // テーマ切替時にスウォッチも更新
+  const obs = new MutationObserver(() => setTimeout(rebuild, 50));
+  obs.observe(root, { attributes:true, attributeFilter:['data-theme'] });
+</script>
+</body>
+</html>
