@@ -143,6 +143,9 @@ body{font-family:var(--f-ui),var(--f-jp);color:var(--photo-text);min-height:100v
 
 /* ヘッダー (グリーティング) */
 .head{padding:calc(22px + env(safe-area-inset-top)) 20px 8px;display:flex;justify-content:space-between;align-items:flex-start}
+/* Phase 1 解体: ヒーローUI / streak を非表示で隔離。msg だけ静かな1行で残す */
+.legacy-hidden{display:none}
+.quiet-line{padding:6px 20px 14px;min-height:20px;font-family:var(--f-jp);font-size:12px;color:var(--photo-mute);letter-spacing:.01em;font-weight:400;line-height:1.5;opacity:.78}
 .head .gr{flex:1}
 .head .gr .lead{font-family:var(--f-display);font-size:11px;letter-spacing:.18em;color:var(--photo-mute);margin-bottom:4px}
 .head .gr h1{font-family:var(--f-jp);font-size:24px;font-weight:900;letter-spacing:-.01em;line-height:1.1}
@@ -361,46 +364,51 @@ body{font-family:var(--f-ui),var(--f-jp);color:var(--photo-text);min-height:100v
   <div class="head">
     <div class="gr">
       <div class="lead" id="headDate">--</div>
-      <h1 id="headGreet">こんにちは、<em id="headName">あなた</em></h1>
     </div>
   </div>
 
-  <!-- 101%ルール: 昨日のボリューム×1.01を超えれば成長 -->
-  <div class="onepct" id="onepct">
-    <div class="onepct-bg"></div>
-    <img class="onepct-char" id="onepctChar" src="img/char-encourage.png" alt="">
-    <div class="onepct-content">
-      <div class="onepct-tag">101% RULE</div>
-      <div class="onepct-msg" id="onepctMsg">読込中…</div>
-      <div class="onepct-row">
-        <div class="onepct-current">
-          <div class="onepct-label">今日</div>
-          <div class="onepct-val" id="onepctToday">0<small>kg</small></div>
-        </div>
-        <div class="onepct-arrow" id="onepctArrow">›</div>
-        <div class="onepct-target">
-          <div class="onepct-label">目標 <b>101%</b></div>
-          <div class="onepct-val target" id="onepctTarget">--<small>kg</small></div>
-        </div>
-      </div>
-      <div class="onepct-bar"><div class="onepct-fill" id="onepctFill" style="width:0%"></div></div>
-      <div class="onepct-hint" id="onepctHint">--</div>
-    </div>
-  </div>
+  <!-- Phase 1: ヒーローUI から隔離した静かな一言 (応援ではなく観測) -->
+  <div class="quiet-line"><span id="quietMsg"></span></div>
 
-  <div class="streak" id="streakCard">
-    <div class="streak-grid">
-      <div class="streak-cell">
-        <div class="num" id="streakDaily">0<small>日連続</small></div>
-        <div class="streak-cell-label">DAILY</div>
-      </div>
-      <div class="streak-divider"></div>
-      <div class="streak-cell">
-        <div class="num" id="streakWeekly">0<small>週連続</small></div>
-        <div class="streak-cell-label" id="streakWeekTargetLabel">週3回達成</div>
+  <!-- Phase 1 解体中: 101%ルール / streak / 主役立ち絵 を非表示。
+       JS互換のため id だけ保持 (後で削除予定)。 -->
+  <div class="legacy-hidden" aria-hidden="true">
+    <div class="onepct" id="onepct">
+      <div class="onepct-bg"></div>
+      <img class="onepct-char" id="onepctChar" src="img/char-encourage.png" alt="">
+      <div class="onepct-content">
+        <div class="onepct-tag">101% RULE</div>
+        <div class="onepct-msg" id="onepctMsg">読込中…</div>
+        <div class="onepct-row">
+          <div class="onepct-current">
+            <div class="onepct-label">今日</div>
+            <div class="onepct-val" id="onepctToday">0<small>kg</small></div>
+          </div>
+          <div class="onepct-arrow" id="onepctArrow">›</div>
+          <div class="onepct-target">
+            <div class="onepct-label">目標 <b>101%</b></div>
+            <div class="onepct-val target" id="onepctTarget">--<small>kg</small></div>
+          </div>
+        </div>
+        <div class="onepct-bar"><div class="onepct-fill" id="onepctFill" style="width:0%"></div></div>
+        <div class="onepct-hint" id="onepctHint">--</div>
       </div>
     </div>
-    <div class="desc" id="streakMsg">記録を始めて連続記録を作ろう。</div>
+
+    <div class="streak" id="streakCard">
+      <div class="streak-grid">
+        <div class="streak-cell">
+          <div class="num" id="streakDaily">0<small>日連続</small></div>
+          <div class="streak-cell-label">DAILY</div>
+        </div>
+        <div class="streak-divider"></div>
+        <div class="streak-cell">
+          <div class="num" id="streakWeekly">0<small>週連続</small></div>
+          <div class="streak-cell-label" id="streakWeekTargetLabel">週3回達成</div>
+        </div>
+      </div>
+      <div class="desc" id="streakMsg">記録を始めて連続記録を作ろう。</div>
+    </div>
   </div>
 
   <div class="last" id="lastCard">
@@ -990,6 +998,14 @@ window.addEventListener('pageshow', () => {
     const start = new Date(y,0,1);
     const day = Math.floor((d - start) / 86400000) + 1;
     dateEl.textContent = `${y}.${m}.${dd} ${wk} · DAY ${day}`;
+  }
+  // Phase 1: onepctMsg → quietMsg ミラー (ヒーローUI隔離後の "静かな一言")
+  const _onMsg = document.getElementById('onepctMsg');
+  const _qMsg  = document.getElementById('quietMsg');
+  if (_onMsg && _qMsg) {
+    const sync = () => { _qMsg.textContent = (_onMsg.textContent || '').replace(/読込中…?/, '').trim(); };
+    sync();
+    new MutationObserver(sync).observe(_onMsg, { childList:true, characterData:true, subtree:true });
   }
 })();
 
