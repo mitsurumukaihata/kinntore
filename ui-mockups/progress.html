@@ -126,6 +126,98 @@ body{font-family:var(--f-ui),var(--f-jp);color:var(--photo-text);min-height:100v
 .tab a .ic{font-size:18px;line-height:1;font-family:var(--f-ui)}
 
 @media (orientation:landscape){.app{max-width:100%}.tab{max-width:100%}}
+
+/* ============================================================
+   CORE24 Phase 4: progress を「成長ゲーム」から「続いていた痕跡」へ
+   - analytics/dashboard/achievement → accumulation/residue/continuation
+   - 折れ線・達成率・streak・バッジ・色分け = 競争UI、すべて静かに
+   ============================================================ */
+
+/* 1. 期間タブ: 赤ピル → 文字下線 (record と同じ静か active) */
+.seg-period{background:transparent;border:0;border-bottom:1px solid var(--photo-line);border-radius:0;padding:0;margin:6px 18px 18px}
+.seg-period button{font-weight:500;font-size:11px;letter-spacing:.06em;padding:10px 0;color:var(--photo-dim);border-radius:0;transition:color .25s}
+.seg-period button.on{background:transparent;box-shadow:none;color:var(--photo-text);position:relative}
+.seg-period button.on::after{content:'';position:absolute;left:30%;right:30%;bottom:-1px;height:1px;background:var(--photo-mute)}
+
+/* 2. セクション見出し: 主役にしない (record と統一) */
+.section{padding:0 17px;margin-bottom:24px}
+.section-head{margin-bottom:8px;padding:0}
+.section-head h2{font-size:11px;font-weight:500;color:var(--photo-mute);letter-spacing:.02em}
+.section-head h2 small{font-size:9px;color:var(--photo-dim);letter-spacing:.14em;margin-left:6px}
+.section-head .h-meta{font-size:10px;color:var(--photo-mute)}
+.section-head .h-meta b{font-weight:500;font-size:11px;color:var(--photo-text);margin:0 2px}
+
+/* 3. 部位カード: 「カード」から「行」へ。痕跡として並ぶ */
+.parts-vols{gap:0}
+.part-vol{background:transparent;border:0;border-bottom:1px solid var(--photo-line);border-radius:0;padding:12px 2px;transition:opacity .25s}
+.part-vol:last-child{border-bottom:0}
+.part-vol:hover{border-color:var(--photo-line);opacity:.85}
+.part-vol:active{transform:none;opacity:.7}
+.part-vol-head{margin-bottom:8px;align-items:center}
+.part-vol-name{font-size:12px;font-weight:500}
+/* delta の "up" (緑) を撤去 — 続いた事実だけが残る */
+.part-vol-name .delta{background:transparent;padding:0;font-size:9px;color:var(--photo-dim);font-weight:400;letter-spacing:.02em}
+.part-vol-name .delta.up{background:transparent;color:var(--photo-dim)}
+.part-vol-name .delta.flat{background:transparent;color:var(--photo-dim)}
+.part-vol-total{font-size:11px;color:var(--photo-mute);font-weight:400}
+.part-vol-total small{font-size:8.5px;color:var(--photo-dim)}
+/* spark: currentColor 化したので、ここでカラーを指定 */
+.part-vol{color:var(--photo-mute)}
+.spark{height:36px;opacity:.85}
+
+/* 4. 「最近積んだ」: カード → 行、緑デルタ撤去 */
+.gains-list{gap:0}
+.gain-row{background:transparent !important;border:0 !important;border-bottom:1px solid var(--photo-line) !important;border-radius:0;padding:10px 2px;gap:8px}
+.gain-row:last-child{border-bottom:0 !important}
+.gain-row .nm{font-size:12px;font-weight:500}
+.gain-row .meta{font-size:10px;color:var(--photo-dim)}
+.gain-row .delta{font-size:12px;color:var(--photo-mute);font-weight:400}
+.gain-row .delta small{font-size:8.5px}
+
+/* 5. 「最近の重い記録」: メダル削除 / カード解体 */
+.pr-list{gap:0}
+.pr-row{background:transparent !important;border:0 !important;border-bottom:1px solid var(--photo-line) !important;border-radius:0;padding:10px 2px;grid-template-columns:14px 1fr auto;gap:10px}
+.pr-row:last-child{border-bottom:0 !important}
+.medal.medal-quiet{
+  width:auto;height:auto;border-radius:0;background:transparent !important;
+  color:var(--photo-dim) !important;font-family:var(--f-display);
+  font-size:14px;line-height:1;display:flex;align-items:center;justify-content:center;
+}
+/* 元のメダル style は medal-quiet で上書き済み。silver/bronze は出ない */
+.pr-row .info .nm{font-size:12px;font-weight:500}
+.pr-row .info .meta{font-size:9px;color:var(--photo-dim);letter-spacing:.04em}
+.pr-row .v b{font-size:13px;color:var(--photo-text);font-weight:500}
+.pr-row .v small{font-size:8.5px;color:var(--photo-dim);letter-spacing:.14em}
+
+/* 6. 部位ページの ex-stat best gold border を撤去 (バッジ感) */
+.ex-stat.best{border-color:var(--photo-line)}
+.ex-stat.best .v{color:var(--photo-text)}
+.ex-stat.r.up .v{color:var(--photo-text)}  /* 緑→通常色 */
+.ex-stat.g .v{color:var(--photo-text)}
+.ex-filter-label{background:transparent;border:1px solid var(--photo-line);color:var(--photo-mute);font-weight:400}
+
+/* 7. 生活ノイズ + 紙化 (home/record と同手法) */
+.app{position:relative;background:
+  radial-gradient(160% 70% at 50% -10%, rgba(40, 30, 35, 0.30), transparent 55%),
+  var(--photo-bg);
+}
+.app::before{
+  content:'';position:absolute;inset:0;pointer-events:none;z-index:0;opacity:.045;
+  background-image:url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='180' height='180'><filter id='n'><feTurbulence type='fractalNoise' baseFrequency='0.85' numOctaves='2' stitchTiles='stitch'/><feColorMatrix values='0 0 0 0 0  0 0 0 0 0  0 0 0 0 0  0 0 0 0.55 0'/></filter><rect width='100%' height='100%' filter='url(%23n)'/></svg>");
+  background-size:180px 180px;
+}
+.app > *{position:relative;z-index:1}
+:root[data-theme="light"] .app::before{opacity:.06}
+:root[data-theme="light"] .app{
+  background:
+    radial-gradient(160% 70% at 50% -10%, rgba(255, 248, 232, 0.32), transparent 55%),
+    #e8e6e0;
+}
+
+/* 8. タブ active 赤 → 静か */
+.tab a.on{color:var(--photo-text)}
+.tab a.on .ic{color:var(--photo-mute)}
+
 </style>
 </head>
 <body>
@@ -152,18 +244,18 @@ body{font-family:var(--f-ui),var(--f-jp);color:var(--photo-text);min-height:100v
       <div class="parts-vols" id="partsVols"></div>
     </div>
 
-    <!-- 最近伸びた種目 -->
+    <!-- "最近伸びた" → "最近積んだ" (成長ではなく continuation) -->
     <div class="section">
       <div class="section-head">
-        <h2>最近伸びた<small>RECENT GAINS</small></h2>
+        <h2>最近積んだ<small>CONTINUATION</small></h2>
       </div>
       <div class="gains-list" id="gainsList"></div>
     </div>
 
-    <!-- 最近更新したPR -->
+    <!-- "最近の PR" → "最近の重い記録" (誇りではなく痕跡) -->
     <div class="section">
       <div class="section-head">
-        <h2>最近の PR<small>RECENT PR</small></h2>
+        <h2>最近の重い記録<small>RESIDUE</small></h2>
       </div>
       <div class="pr-list" id="prList"></div>
     </div>
@@ -270,9 +362,9 @@ function renderPartsVols() {
       }
       const areaD = pathD + ` L ${pts[pts.length-1].x.toFixed(1)},48 L 0,48 Z`;
       svg = `<svg class="spark" viewBox="0 0 340 48" preserveAspectRatio="none">
-        <defs><linearGradient id="g${tag}" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#E63946" stop-opacity=".14"/><stop offset="1" stop-color="#E63946" stop-opacity="0"/></linearGradient></defs>
+        <defs><linearGradient id="g${tag}" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="currentColor" stop-opacity=".06"/><stop offset="1" stop-color="currentColor" stop-opacity="0"/></linearGradient></defs>
         <path d="${areaD}" fill="url(#g${tag})"/>
-        <path d="${pathD}" fill="none" stroke="#E63946" stroke-width="1.1" stroke-linejoin="round" stroke-linecap="round" opacity=".55"/>
+        <path d="${pathD}" fill="none" stroke="currentColor" stroke-width="1" stroke-linejoin="round" stroke-linecap="round" opacity=".45"/>
       </svg>`;
     } else if (sessions.length === 1) {
       svg = `<div class="spark-empty">1セッション (${sessions[0].toLocaleString()}kg)</div>`;
@@ -366,7 +458,7 @@ function renderRecentPR() {
     const daysAgo = Math.floor((today - dd) / (24*3600*1000));
     const dateLabel = daysAgo === 0 ? '今日' : daysAgo === 1 ? '昨日' : daysAgo < 7 ? `${daysAgo}日前` : `${d.getMonth()+1}/${d.getDate()}`;
     return `<div class="pr-row">
-      <div class="medal" style="background:linear-gradient(135deg,#D4A04B,#9A7A30);color:#3a2a00">★</div>
+      <div class="medal medal-quiet">·</div>
       <div class="info">
         <div class="nm">${pr.name}</div>
         <div class="meta">${TAG_LABEL[pr.tag]||pr.tag} ・ ${dateLabel} ・ ${pr.reps}回</div>
