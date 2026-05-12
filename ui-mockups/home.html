@@ -145,7 +145,45 @@ body{font-family:var(--f-ui),var(--f-jp);color:var(--photo-text);min-height:100v
 .head{padding:calc(22px + env(safe-area-inset-top)) 20px 8px;display:flex;justify-content:space-between;align-items:flex-start}
 /* Phase 1 解体: ヒーローUI / streak を非表示で隔離。msg だけ静かな1行で残す */
 .legacy-hidden{display:none}
-.quiet-line{padding:6px 20px 14px;min-height:20px;font-family:var(--f-jp);font-size:12px;color:var(--photo-mute);letter-spacing:.01em;font-weight:400;line-height:1.5;opacity:.78}
+.quiet-line{padding:6px 18px 14px;min-height:20px;font-family:var(--f-jp);font-size:12px;color:var(--photo-mute);letter-spacing:.005em;font-weight:400;line-height:1.5;opacity:.78}
+
+/* Phase 2-C: 「生活ノイズを 1% 戻す」 (高級アート化を防ぐ)。
+   美術館ではなく深夜の生活空間。"何も起きていないのに少し居たくなる"。
+   --- 1. 余白を完全均一にしない (sec/last/quiet で僅かに左端を変える) */
+.head{padding-left:20px}
+.quiet-line{padding-left:18px}
+.last{padding-left:22px}
+.sec.sec-quiet{padding-left:21px}
+.parts{padding-left:17px;padding-right:17px}
+
+/* --- 2. 紙感 / 使用感: 極薄 SVG ノイズを .app 背景に敷く (content より下)
+   "見えるか見えないか" の境界で。Apple 展示会場のフラットさを崩す */
+.app{position:relative}
+.app::before{
+  content:'';position:absolute;inset:0;pointer-events:none;z-index:0;
+  opacity:.045;
+  background-image:url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='180' height='180'><filter id='n'><feTurbulence type='fractalNoise' baseFrequency='0.85' numOctaves='2' stitchTiles='stitch'/><feColorMatrix values='0 0 0 0 0  0 0 0 0 0  0 0 0 0 0  0 0 0 0.55 0'/></filter><rect width='100%' height='100%' filter='url(%23n)'/></svg>");
+  background-size:180px 180px;
+}
+.app > *{position:relative;z-index:1}
+/* LIGHT は紙寄りに少し強め (ただし 6% 以下) */
+:root[data-theme="light"] .app::before{opacity:.06}
+
+/* --- 3. 空気のムラ: 完全フラットな .app 背景を僅かに不均一に */
+:root[data-theme="light"] .app{
+  background:
+    radial-gradient(160% 70% at 50% -10%, rgba(255, 248, 232, 0.32), transparent 55%),
+    #e8e6e0;  /* もとの #e8e8ea から少し暖かい紙寄りへ */
+}
+.app{
+  background:
+    radial-gradient(160% 70% at 50% -10%, rgba(40, 30, 35, 0.30), transparent 55%),
+    var(--photo-bg);
+}
+
+/* --- 4. 数字の "管理UI感" をさらに弱める: 等幅フォントの硬さを抜く */
+.last .row .info .meta b,
+.last .row .v b{font-variant-numeric:tabular-nums;font-feature-settings:'ss01' on}
 
 /* Phase 2-B: 部位カードを「攻略カード」から「静かに並ぶ場所」へ。
    筋肉図鑑感 / 少年漫画感 / 赤筋肉 / 攻略カード感 を全部弱める。
