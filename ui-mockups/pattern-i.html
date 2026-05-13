@@ -490,7 +490,8 @@ body{font-family:var(--f-ui),var(--f-jp);color:var(--photo-text);min-height:100v
 }
 /* CORE24 新画像 (Step C 着手済): 既に CORE24 仕様で生成されているので
    filter を弱める (背景化はするが消しすぎない) */
-.hero img[src$="hero-chest-light.png"]{
+.hero img[src$="hero-chest-light.png"],
+.hero img[src$="hero-shoulder-light.png"]{
   filter: saturate(.65) brightness(.88) contrast(.95);
   opacity: .82;
   /* 新画像はキャラが画面下寄りに来るよう object-position を下に */
