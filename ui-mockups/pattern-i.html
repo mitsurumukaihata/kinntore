@@ -44,7 +44,7 @@
   --gold:#D4A04B;
   --silver:#A8A8A8;
   --bronze:#8C5A2A;
-  --ok:#4FB07A;
+  --ok:#6E7A6E;
   --f-ui:'Inter Tight',-apple-system,system-ui,sans-serif;
   --f-jp:'Zen Kaku Gothic New',-apple-system,'Hiragino Kaku Gothic ProN',sans-serif;
   --f-display:'Bebas Neue','Inter Tight',system-ui,sans-serif;
@@ -215,7 +215,7 @@ body{font-family:var(--f-ui),var(--f-jp);color:var(--photo-text);min-height:100v
 .prog-r .pct{font-family:var(--f-display);font-weight:400;font-size:12px;align-self:flex-start;margin-top:7px;margin-left:1px}
 .week .d{cursor:pointer;transition:.15s}
 .week .d:active{transform:scale(.92)}
-.week .d.has-record{border-color:rgba(79,176,122,.5);background:rgba(79,176,122,.08)}
+.week .d.has-record{border-color:rgba(110, 122, 110,.5);background:rgba(110, 122, 110,.08)}
 .week .d.has-record::after{content:'';position:absolute;bottom:-2px;right:-2px;background:var(--ok);width:7px;height:7px;border-radius:50%}
 .prog-r::after{content:'%';font-family:var(--f-display);font-weight:400;font-size:14px;align-self:flex-start;margin-top:10px;margin-left:1px}
 
@@ -395,7 +395,7 @@ body{font-family:var(--f-ui),var(--f-jp);color:var(--photo-text);min-height:100v
 .rec-prog-status.done{color:var(--ok)}
 .rec-bar{height:5px;background:#0e0e0e;border-radius:3px;overflow:hidden;border:1px solid var(--photo-line)}
 .rec-bar-fill{height:100%;background:linear-gradient(90deg,var(--photo-red),#f97484);border-radius:3px;transition:width .35s cubic-bezier(.2,.8,.2,1);box-shadow:0 0 12px rgba(125, 37, 48,.5);width:0}
-.rec-bar-fill.complete{background:linear-gradient(90deg,var(--ok),#86efac);box-shadow:0 0 12px rgba(79,176,122,.5)}
+.rec-bar-fill.complete{background:linear-gradient(90deg,var(--ok),#9aa39a);box-shadow:0 0 12px rgba(110, 122, 110,.5)}
 
 .prev-hint{margin-bottom:12px;background:linear-gradient(135deg,rgba(125, 37, 48,0.06),rgba(125, 37, 48,0.02));border:1px solid rgba(125, 37, 48,0.18);border-radius:10px;padding:10px 12px;display:flex;align-items:center;gap:10px;font-family:var(--f-jp);font-size:11px;color:var(--photo-mute)}
 .prev-hint .ph-tag{font-family:var(--f-display);font-size:9px;letter-spacing:.18em;color:var(--photo-red);background:rgba(125, 37, 48,0.12);padding:3px 7px;border-radius:4px;font-weight:600;flex-shrink:0}
@@ -419,7 +419,7 @@ body{font-family:var(--f-ui),var(--f-jp);color:var(--photo-text);min-height:100v
 .rec-cta:hover:not(:disabled){background:var(--photo-red-deep)}
 .rec-cta:active:not(:disabled){transform:scale(.99)}
 .rec-cta:disabled{background:#1a1a1a;color:var(--photo-mute);cursor:default;box-shadow:none}
-.rec-cta.success{background:var(--ok);box-shadow:0 4px 18px rgba(79,176,122,.4);animation:rec-pop .35s}
+.rec-cta.success{background:var(--ok);box-shadow:0 4px 18px rgba(110, 122, 110,.4);animation:rec-pop .35s}
 @keyframes rec-pop{0%{transform:scale(1)}50%{transform:scale(1.04)}100%{transform:scale(1)}}
 
 .rec-history{margin-top:18px}
@@ -594,6 +594,31 @@ body{font-family:var(--f-ui),var(--f-jp);color:var(--photo-text);min-height:100v
 /* 8. タブ active 赤 → 静か (他ページと統一) */
 .tab a.on{color:var(--photo-text)}
 .tab a.on .ic{color:var(--photo-mute)}
+
+/* 8.5 unlock-overlay 派手演出を抑制 (温度調整④実績/報酬感の除去)
+   "UNLOCK" 演出は CORE24 から最も遠い表現。発光・パーティクル・
+   pulse を全部撤去、控えめな "節目" 通知へ */
+.unlock-overlay{backdrop-filter:blur(6px);background:rgba(0,0,0,.70) !important}
+.unlock-tag{
+  color:var(--photo-mute) !important;text-shadow:none !important;
+  font-weight:400;letter-spacing:.18em;font-size:10px;
+  animation:none !important;
+}
+.unlock-medal{
+  box-shadow:none !important;animation:none !important;
+  background:transparent !important;border:1px solid var(--photo-line);
+}
+.unlock-medal svg{opacity:.5}
+.unlock-overlay.multi .unlock-card{
+  background:transparent !important;
+  border:0 !important;border-bottom:1px solid var(--photo-line);
+  border-radius:0;padding:10px 4px;
+}
+.unlock-particles{display:none !important}  /* パーティクル放射 完全撤去 */
+.unlock-name{font-weight:500}
+.unlock-desc{color:var(--photo-mute);font-weight:400}
+.unlock-hint{color:var(--photo-dim) !important;letter-spacing:.18em;animation:none !important}
+.unlock-card{animation:none !important}
 
 /* 9. 生活ノイズ + 紙化 (home/record/progress と同手法) */
 .app{
