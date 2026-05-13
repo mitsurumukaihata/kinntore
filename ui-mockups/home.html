@@ -211,14 +211,18 @@ body{font-family:var(--f-ui),var(--f-jp);color:var(--photo-text);min-height:100v
 .parts .p img[src*="part-chest.png"],
 .parts .p img[src*="part-chest-light.png"],
 .parts .p img[src*="part-shoulder.png"],
-.parts .p img[src*="part-shoulder-light.png"]{
+.parts .p img[src*="part-shoulder-light.png"],
+.parts .p img[src*="part-back.png"],
+.parts .p img[src*="part-back-light.png"]{
   filter: brightness(.95) contrast(1.02);
   opacity: .88;
 }
 .parts .p:active img[src*="part-chest.png"],
 .parts .p:active img[src*="part-chest-light.png"],
 .parts .p:active img[src*="part-shoulder.png"],
-.parts .p:active img[src*="part-shoulder-light.png"]{
+.parts .p:active img[src*="part-shoulder-light.png"],
+.parts .p:active img[src*="part-back.png"],
+.parts .p:active img[src*="part-back-light.png"]{
   filter: brightness(.85) contrast(1.0);
   opacity: .78;
 }
@@ -1110,7 +1114,7 @@ window.addEventListener('pageshow', () => {
   const isLight = theme === 'light';
   if (isLight) document.documentElement.setAttribute('data-theme', 'light');
   // ダッシュボードタイル: 新画像 (B&W漫画) は両モードで CSS ラベル使用
-  const PART_IMG_V = 'p1';  // 新画像差し替え時に bump
+  const PART_IMG_V = 'p2';  // 新画像差し替え時に bump
   document.querySelectorAll('.part-img').forEach(img => {
     const part = img.dataset.part;
     if (part) img.src = (isLight ? `img/part-${part}-light.png` : `img/part-${part}.png`) + '?v=' + PART_IMG_V;
