@@ -210,16 +210,18 @@ body{font-family:var(--f-ui),var(--f-jp);color:var(--photo-text);min-height:100v
   background-size:180px 180px;
 }
 .app > *{position:relative;z-index:1}
-:root[data-theme="light"] .app::before{opacity:.06;
-  -webkit-mask-image: radial-gradient(120% 80% at 30% 60%, rgba(0,0,0,1) 30%, rgba(0,0,0,0.45) 85%);
-  mask-image: radial-gradient(120% 80% at 30% 60%, rgba(0,0,0,1) 30%, rgba(0,0,0,0.45) 85%);
+:root[data-theme="light"] .app::before{opacity:.04;
+  -webkit-mask-image: radial-gradient(130% 90% at 35% 55%, rgba(0,0,0,1) 40%, rgba(0,0,0,0.75) 90%);
+  mask-image: radial-gradient(130% 90% at 35% 55%, rgba(0,0,0,1) 40%, rgba(0,0,0,0.75) 90%);
 }
 :root[data-theme="light"] .app{
   background:
-    radial-gradient(160% 70% at 50% -10%, rgba(255, 248, 232, 0.32), transparent 55%),
-    radial-gradient(120% 60% at 12% 110%, rgba(160, 130, 95, 0.08), transparent 50%),
-    radial-gradient(80% 50% at 95% 5%, rgba(140, 115, 80, 0.04), transparent 60%),
-    #e8e6e0;
+    /* 上から差し込む白い光 (冬晴れ / 朝10時の窓光) */
+    radial-gradient(180% 80% at 50% -15%, rgba(255, 252, 246, 0.38), transparent 60%),
+    /* 左下に薄ーいニュートラルな影 (机の隅、青みも入れて夏冬中庸) */
+    radial-gradient(110% 55% at 10% 110%, rgba(120, 125, 130, 0.035), transparent 55%),
+    /* 少し明るくした紙色 (#e8e6e0 → #ECEAE3、Apple白には行かない) */
+    #ECEAE3;
 }
 
 /* 8. タブ active 赤 → 静か */
