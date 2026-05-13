@@ -494,8 +494,11 @@ body{font-family:var(--f-ui),var(--f-jp);color:var(--photo-text);min-height:100v
 .hero img[src*="hero-shoulder-light.png"]{
   filter: saturate(.65) brightness(.88) contrast(.95);
   opacity: .82;
-  /* 新画像はキャラが画面下寄りに来るよう object-position を下に */
-  object-position: center 70%;
+  /* 画像のアスペクト比的に object-position だけでは上の天井がカットできない。
+     transform で 1.4倍に拡大、画像の下 (キャラ本体) を anchor にして
+     天井部分を上にはみ出させてカット */
+  transform: scale(1.4);
+  transform-origin: center 78%;
 }
 /* 下部グラデを強めて背景に溶ける */
 .hero .grad{background:linear-gradient(180deg,
