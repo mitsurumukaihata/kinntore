@@ -493,6 +493,8 @@ body{font-family:var(--f-ui),var(--f-jp);color:var(--photo-text);min-height:100v
 .hero img[src$="hero-chest-light.png"]{
   filter: saturate(.65) brightness(.88) contrast(.95);
   opacity: .82;
+  /* 新画像はキャラが画面下寄りに来るよう object-position を下に */
+  object-position: center 70%;
 }
 /* 下部グラデを強めて背景に溶ける */
 .hero .grad{background:linear-gradient(180deg,
