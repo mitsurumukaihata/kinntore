@@ -28,9 +28,9 @@
   --text-ghost:  #4F4D48;   /* 余白に近い。ラベル */
 
   /* アクセント (赤は少量) */
-  --accent-rust:       #A61E2D;  /* 鈍い赤。錆びた赤 */
-  --accent-rust-deep:  #7D1622;  /* さらに沈んだ赤 */
-  --accent-rust-soft:  rgba(166, 30, 45, 0.14);  /* 背景溶け込み用 */
+  --accent-rust:       #7D2530;  /* 鈍い赤。錆びた赤 */
+  --accent-rust-deep:  #5F1E27;  /* さらに沈んだ赤 */
+  --accent-rust-soft:  rgba(125, 37, 48, 0.16);  /* 背景溶け込み用 */
 
   /* 光 (深夜の白光灯の残り光) */
   --light-warm:  #D6C1A5;
@@ -65,9 +65,9 @@
   --text-ghost:  #B8B3AA;
 
   /* アクセント (赤は DARK と同色。LIGHT の地と相性良い) */
-  --accent-rust:       #A61E2D;
-  --accent-rust-deep:  #7D1622;
-  --accent-rust-soft:  rgba(166, 30, 45, 0.10);
+  --accent-rust:       #7D2530;
+  --accent-rust-deep:  #5F1E27;
+  --accent-rust-soft:  rgba(125, 37, 48, 0.12);
 
   /* 光 (昼の窓光) */
   --light-warm:  #C9B89A;

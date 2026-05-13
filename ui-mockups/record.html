@@ -18,7 +18,7 @@
   --photo-bg:#0a0a0a;--photo-card:#1a1a1a;--photo-card-2:#232323;
   --photo-line:rgba(255,255,255,0.08);--photo-line-strong:rgba(255,255,255,0.16);
   --photo-text:#fff;--photo-mute:#9a9a9a;--photo-dim:#5e5e5e;
-  --photo-red:#E63946;--photo-red-deep:#B22838;--photo-red-soft:rgba(230,57,70,0.15);
+  --photo-red:#7D2530;--photo-red-deep:#5F1E27;--photo-red-soft:rgba(125, 37, 48,0.15);
   --ok:#4FB07A;
   --f-ui:'Inter Tight',-apple-system,system-ui,sans-serif;
   --f-jp:'Zen Kaku Gothic New',-apple-system,'Hiragino Kaku Gothic ProN',sans-serif;
@@ -46,7 +46,7 @@ body{font-family:var(--f-ui),var(--f-jp);color:var(--photo-text);min-height:100v
 /* セグメント (リスト/カレンダー切替) */
 .seg{margin:6px 16px 14px;background:var(--photo-card);border:1px solid var(--photo-line);border-radius:50px;padding:4px;display:grid;grid-template-columns:1fr 1fr;gap:0}
 .seg button{background:transparent;border:0;color:var(--photo-mute);font-family:var(--f-jp);font-size:12px;font-weight:700;padding:9px 0;border-radius:50px;cursor:pointer;letter-spacing:.04em;transition:.15s}
-.seg button.on{background:var(--photo-red);color:var(--photo-text);box-shadow:0 2px 8px rgba(230,57,70,.3)}
+.seg button.on{background:var(--photo-red);color:var(--photo-text);box-shadow:0 2px 8px rgba(125, 37, 48,.3)}
 
 /* 種目フィルター */
 .filter{padding:0 16px 12px;display:flex;gap:8px;align-items:center;overflow-x:auto;scrollbar-width:none}
@@ -59,7 +59,7 @@ body{font-family:var(--f-ui),var(--f-jp);color:var(--photo-text);min-height:100v
 .session{background:var(--photo-card);border:1px solid var(--photo-line);border-radius:12px;padding:14px 16px;cursor:pointer;transition:.15s;position:relative;overflow:hidden}
 .session:active{transform:scale(.99)}
 .session:hover{border-color:var(--photo-line-strong)}
-.session.today{border-color:var(--photo-red);background:linear-gradient(135deg,rgba(230,57,70,.08),var(--photo-card) 60%)}
+.session.today{border-color:var(--photo-red);background:linear-gradient(135deg,rgba(125, 37, 48,.08),var(--photo-card) 60%)}
 .session.today::before{content:'TODAY';position:absolute;top:10px;right:10px;background:var(--photo-red);color:var(--photo-text);font-family:var(--f-display);font-size:9px;letter-spacing:.18em;padding:3px 7px;border-radius:3px}
 .session-head{display:flex;justify-content:space-between;align-items:baseline;margin-bottom:8px}
 .session-date{font-family:var(--f-mono);font-size:13px;color:var(--photo-text);font-weight:600;letter-spacing:-.01em}
@@ -67,7 +67,7 @@ body{font-family:var(--f-ui),var(--f-jp);color:var(--photo-text);min-height:100v
 .session-vol{font-family:var(--f-mono);font-size:14px;color:var(--photo-red);font-weight:600;letter-spacing:-.01em}
 .session-vol small{font-family:var(--f-display);font-size:9px;color:var(--photo-mute);letter-spacing:.18em;margin-left:2px;font-weight:400}
 .session-tags{display:flex;flex-wrap:wrap;gap:5px;margin-bottom:7px}
-.session-tag{font-family:var(--f-jp);font-size:10px;font-weight:700;color:var(--photo-red);background:var(--photo-red-soft);border:1px solid rgba(230,57,70,.3);padding:2px 8px;border-radius:50px}
+.session-tag{font-family:var(--f-jp);font-size:10px;font-weight:700;color:var(--photo-red);background:var(--photo-red-soft);border:1px solid rgba(125, 37, 48,.3);padding:2px 8px;border-radius:50px}
 .session-meta{font-family:var(--f-jp);font-size:11px;color:var(--photo-mute);font-weight:500}
 .session-meta b{color:var(--photo-text);font-family:var(--f-mono);font-size:12px;font-weight:600;letter-spacing:-.01em;margin:0 2px}
 
@@ -85,7 +85,7 @@ body{font-family:var(--f-ui),var(--f-jp);color:var(--photo-text);min-height:100v
 .cal-grid .day:active{transform:scale(.92)}
 .cal-grid .day.empty{visibility:hidden}
 .cal-grid .day b{font-family:var(--f-mono);font-size:13px;color:var(--photo-mute);font-weight:500;letter-spacing:-.01em}
-.cal-grid .day.has-record{background:var(--photo-red-soft);border-color:rgba(230,57,70,.4)}
+.cal-grid .day.has-record{background:var(--photo-red-soft);border-color:rgba(125, 37, 48,.4)}
 .cal-grid .day.has-record b{color:var(--photo-text)}
 .cal-grid .day.has-record::after{content:'';position:absolute;bottom:4px;left:50%;transform:translateX(-50%);width:5px;height:5px;border-radius:50%;background:var(--photo-red)}
 .cal-grid .day.today{box-shadow:0 0 0 2px var(--photo-red)}

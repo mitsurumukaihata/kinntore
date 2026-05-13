@@ -12,7 +12,7 @@ html,body{background:#070708;margin:0;color:#fff}
 .splash{position:fixed;inset:0;background:#070708;z-index:200;display:flex;flex-direction:column;align-items:center;justify-content:center;overflow:hidden}
 .splash-brand{position:relative;z-index:2;text-align:center;opacity:0;animation:splash-brand-rise .9s cubic-bezier(.25,.1,.25,1) .15s forwards}
 .splash-core24{font-family:'Bebas Neue','Helvetica Neue',Impact,sans-serif;font-size:64px;letter-spacing:.18em;color:#fff;font-weight:400;line-height:1;padding-left:.18em}
-.splash-core24 .splash-24{color:#E63946}
+.splash-core24 .splash-24{color:#7D2530}
 .splash-sub{margin-top:14px;font-family:'Bebas Neue','Helvetica Neue',Impact,sans-serif;font-size:10px;letter-spacing:.36em;color:rgba(255,255,255,.55);font-weight:400;padding-left:.36em}
 .splash-footer{position:absolute;bottom:6%;font-family:'Bebas Neue','Helvetica Neue',Impact,sans-serif;font-size:9px;letter-spacing:.32em;color:rgba(255,255,255,.28);font-weight:400;z-index:2;padding-left:.32em;opacity:0;animation:splash-footer-rise 1.2s ease-out .6s forwards}
 @keyframes splash-brand-rise{from{opacity:0}to{opacity:1}}
@@ -39,7 +39,7 @@ html,body{background:#070708;margin:0;color:#fff}
   --photo-bg:#0a0a0a;--photo-card:#1a1a1a;--photo-card-2:#232323;
   --photo-line:rgba(255,255,255,0.08);--photo-line-strong:rgba(255,255,255,0.16);
   --photo-text:#ffffff;--photo-mute:#9a9a9a;--photo-dim:#5e5e5e;
-  --photo-red:#E63946;--photo-red-deep:#B22838;--photo-red-soft:rgba(230,57,70,0.15);
+  --photo-red:#7D2530;--photo-red-deep:#5F1E27;--photo-red-soft:rgba(125, 37, 48,0.15);
   --gold:#D4A04B;--silver:#A8A8A8;--bronze:#8C5A2A;--ok:#4FB07A;
   --f-ui:'Inter Tight',-apple-system,system-ui,sans-serif;
   --f-jp:'Zen Kaku Gothic New',-apple-system,'Hiragino Kaku Gothic ProN',sans-serif;
@@ -49,27 +49,27 @@ html,body{background:#070708;margin:0;color:#fff}
 /* ===== 時間帯による空気演出 (subtle、感情の空気) ===== */
 /* morning 5-10: 少し白っぽく、空気が静かに動き出す */
 :root[data-period="morning"]{
-  --photo-red:#E85565;
-  --photo-red-soft:rgba(232,85,101,0.12);
+  --photo-red:#8C2F3D;
+  --photo-red-soft:rgba(140, 47, 61,0.12);
 }
 :root[data-period="morning"] body{background:radial-gradient(120% 80% at 50% -20%, rgba(255,240,235,0.05) 0%, transparent 60%), #0a0a0a}
-:root[data-period="morning"] .onepct{box-shadow:0 8px 32px rgba(232,85,101,.08)}
+:root[data-period="morning"] .onepct{box-shadow:0 8px 32px rgba(140, 47, 61,.08)}
 
 /* evening 17-22: 赤を少し弱め、間を広げる */
 :root[data-period="evening"]{
-  --photo-red:#D43D4D;
-  --photo-red-soft:rgba(212,61,77,0.10);
+  --photo-red:#7A2530;
+  --photo-red-soft:rgba(122, 37, 48,0.10);
 }
 :root[data-period="evening"] body{background:radial-gradient(120% 80% at 50% -20%, rgba(40,30,40,0.4) 0%, transparent 60%), #0a0a0a}
-:root[data-period="evening"] .onepct{box-shadow:0 8px 32px rgba(212,61,77,.07);border-color:rgba(212,61,77,.28)}
+:root[data-period="evening"] .onepct{box-shadow:0 8px 32px rgba(122, 37, 48,.07);border-color:rgba(122, 37, 48,.28)}
 
 /* night 22-5: 最も静か。赤を最小限に */
 :root[data-period="night"]{
-  --photo-red:#B83340;
-  --photo-red-soft:rgba(184,51,64,0.08);
+  --photo-red:#5F1E27;
+  --photo-red-soft:rgba(95, 30, 39,0.08);
 }
 :root[data-period="night"] body{background:radial-gradient(120% 80% at 50% -20%, rgba(20,20,30,0.5) 0%, transparent 60%), #060608}
-:root[data-period="night"] .onepct{box-shadow:0 8px 24px rgba(184,51,64,.06);border-color:rgba(184,51,64,.22)}
+:root[data-period="night"] .onepct{box-shadow:0 8px 24px rgba(95, 30, 39,.06);border-color:rgba(95, 30, 39,.22)}
 :root[data-period="night"] .onepct-bg{opacity:.5}
 
 /* ===== ライトモード ===== */
@@ -91,8 +91,8 @@ html,body{background:#070708;margin:0;color:#fff}
 :root[data-theme="light"] .modal-card,:root[data-theme="light"] .ws-card{background:#fff}
 :root[data-theme="light"] .modal-head,:root[data-theme="light"] .ws-head{background:#fff}
 /* ライトモード: 暗グラデのカードを明るいピンク系グラデに置換 */
-:root[data-theme="light"] .streak{background:linear-gradient(135deg,#ffe9eb,#fff 70%) !important;border-color:rgba(230,57,70,.25) !important}
-:root[data-theme="light"] .streak::before{background:radial-gradient(circle,rgba(230,57,70,.12) 0%,transparent 70%) !important}
+:root[data-theme="light"] .streak{background:linear-gradient(135deg,#ffe9eb,#fff 70%) !important;border-color:rgba(125, 37, 48,.25) !important}
+:root[data-theme="light"] .streak::before{background:radial-gradient(circle,rgba(125, 37, 48,.12) 0%,transparent 70%) !important}
 /* 部位タイル: ダーク版は画像にラベル焼込済 / ライト版はCSSで重ねる */
 /* デフォルト (ダーク時) は CSS ラベル/矢印を非表示 */
 .parts .p::before,.parts .p::after,.parts .p .arrow{display:none}
@@ -105,14 +105,14 @@ html,body{background:#070708;margin:0;color:#fff}
 :root[data-theme="light"] .parts .p::after{content:attr(data-en);display:block;position:absolute;left:14px;bottom:24px;font-family:var(--f-display);font-size:11px;color:rgba(0,0,0,.7);letter-spacing:.18em;font-weight:600;z-index:3;pointer-events:none;
   text-shadow:0 0 6px #fff,0 0 3px #fff,-1px 0 0 #fff,1px 0 0 #fff;
 }
-:root[data-theme="light"] .parts .p .arrow{display:flex;position:absolute;right:12px;bottom:12px;width:30px;height:30px;border-radius:50%;background:var(--photo-red);align-items:center;justify-content:center;color:#fff;font-family:var(--f-ui);font-size:15px;font-weight:700;z-index:3;box-shadow:0 2px 8px rgba(230,57,70,.4);pointer-events:none}
+:root[data-theme="light"] .parts .p .arrow{display:flex;position:absolute;right:12px;bottom:12px;width:30px;height:30px;border-radius:50%;background:var(--photo-red);align-items:center;justify-content:center;color:#fff;font-family:var(--f-ui);font-size:15px;font-weight:700;z-index:3;box-shadow:0 2px 8px rgba(125, 37, 48,.4);pointer-events:none}
 *{box-sizing:border-box;margin:0;padding:0;-webkit-tap-highlight-color:transparent}
 html,body{background:#000;overscroll-behavior-y:contain;-webkit-text-size-adjust:100%;text-size-adjust:100%;touch-action:manipulation}
 
 /* ===== CORE24 スプラッシュ (約 4.6s · 起動瞬間から存在、静かに退出) ===== */
 .splash{animation:splash-out 1.6s ease-in-out 3.0s forwards}
 .splash.skip{display:none}
-.splash-glow{position:absolute;width:60vw;height:60vw;max-width:500px;max-height:500px;background:radial-gradient(circle,rgba(230,57,70,.06) 0%,transparent 65%);filter:blur(50px);opacity:0;animation:splash-glow 4.4s ease-in-out forwards;z-index:1;pointer-events:none}
+.splash-glow{position:absolute;width:60vw;height:60vw;max-width:500px;max-height:500px;background:radial-gradient(circle,rgba(125, 37, 48,.06) 0%,transparent 65%);filter:blur(50px);opacity:0;animation:splash-glow 4.4s ease-in-out forwards;z-index:1;pointer-events:none}
 .splash-whisper{position:absolute;bottom:18%;font-family:var(--f-jp),'Zen Kaku Gothic New',sans-serif;font-size:14px;color:rgba(255,255,255,.72);font-weight:400;letter-spacing:.04em;opacity:0;z-index:2;max-width:80%;text-align:center;line-height:1.5}
 .splash-whisper.show{animation:splash-whisper-in 1.8s cubic-bezier(.4,0,.2,1) .8s forwards}
 @keyframes splash-whisper-in{
@@ -245,8 +245,8 @@ body{font-family:var(--f-ui),var(--f-jp);color:var(--photo-text);min-height:100v
 .head .av{width:42px;height:42px;border-radius:50%;background:linear-gradient(135deg,#2a2a2a,#0a0a0a);display:flex;align-items:center;justify-content:center;border:1px solid var(--photo-line);font-family:var(--f-jp);font-weight:700;color:var(--photo-text);font-size:16px}
 
 /* ===== 101% ルール カード (ダッシュボードのトップ) ===== */
-.onepct{position:relative;margin:14px 16px 22px;background:linear-gradient(135deg,rgba(31,10,14,.6) 0%,rgba(15,10,12,.4) 100%);border:1px solid rgba(230,57,70,.14);border-radius:14px;padding:22px 20px 20px;overflow:hidden;box-shadow:none;min-height:248px}
-:root[data-theme="light"] .onepct{background:linear-gradient(135deg,#fff5f6,#fff 100%) !important;border-color:rgba(230,57,70,.3) !important}
+.onepct{position:relative;margin:14px 16px 22px;background:linear-gradient(135deg,rgba(31,10,14,.6) 0%,rgba(15,10,12,.4) 100%);border:1px solid rgba(125, 37, 48,.14);border-radius:14px;padding:22px 20px 20px;overflow:hidden;box-shadow:none;min-height:248px}
+:root[data-theme="light"] .onepct{background:linear-gradient(135deg,#fff5f6,#fff 100%) !important;border-color:rgba(125, 37, 48,.3) !important}
 .onepct.achieved{background:linear-gradient(135deg,#0a1f10 0%,#0f0a0c 100%);border-color:rgba(79,176,122,.5);box-shadow:0 8px 32px rgba(79,176,122,.18)}
 :root[data-theme="light"] .onepct.achieved{background:linear-gradient(135deg,#e8fff0,#fff 100%) !important;border-color:rgba(79,176,122,.45) !important}
 /* state: king (新記録/超大幅) — 金色グロー */
@@ -263,7 +263,7 @@ body{font-family:var(--f-ui),var(--f-jp);color:var(--photo-text);min-height:100v
 :root[data-theme="light"] .onepct.state-down{background:linear-gradient(135deg,#eef2f8,#fff 100%) !important;border-color:rgba(100,120,160,.4) !important}
 .onepct.state-down .onepct-tag{color:#7a96c2}
 .onepct.state-down .onepct-fill{background:linear-gradient(90deg,#5a7099,#8aa0c8);box-shadow:0 0 10px rgba(100,120,160,.4)}
-.onepct-bg{position:absolute;right:-40px;top:-40px;width:180px;height:180px;background:radial-gradient(circle,rgba(230,57,70,.22) 0%,transparent 70%);filter:blur(20px);pointer-events:none}
+.onepct-bg{position:absolute;right:-40px;top:-40px;width:180px;height:180px;background:radial-gradient(circle,rgba(125, 37, 48,.22) 0%,transparent 70%);filter:blur(20px);pointer-events:none}
 .onepct.achieved .onepct-bg{background:radial-gradient(circle,rgba(79,176,122,.25) 0%,transparent 70%)}
 /* キャラクター画像 (右側に配置、コンテンツとオーバーラップ) */
 .onepct-char{position:absolute;right:-18px;bottom:-12px;height:108%;width:auto;max-height:280px;z-index:1;pointer-events:none;opacity:0;--char-dx:0px;--char-dy:0px;--char-ds:1;transform:translate(var(--char-dx), calc(8px + var(--char-dy))) scale(calc(.96 * var(--char-ds)));transition:opacity .5s,transform .5s,filter .5s;filter:drop-shadow(0 6px 20px rgba(0,0,0,.4))}
@@ -274,7 +274,7 @@ body{font-family:var(--f-ui),var(--f-jp);color:var(--photo-text);min-height:100v
   .onepct-content{max-width:62%}
   .onepct-char{height:100%;max-height:240px}
 }
-.onepct-tag{font-family:var(--f-display);font-size:11px;letter-spacing:.32em;color:var(--photo-red);font-weight:400;margin-bottom:10px;text-shadow:0 0 10px rgba(230,57,70,.4)}
+.onepct-tag{font-family:var(--f-display);font-size:11px;letter-spacing:.32em;color:var(--photo-red);font-weight:400;margin-bottom:10px;text-shadow:0 0 10px rgba(125, 37, 48,.4)}
 .onepct.achieved .onepct-tag{color:var(--ok);text-shadow:0 0 10px rgba(79,176,122,.4)}
 .onepct-msg{font-family:var(--f-jp);font-size:14px;font-weight:700;color:var(--photo-text);margin-bottom:18px;letter-spacing:-.01em;line-height:1.5}
 .onepct-row{display:grid;grid-template-columns:1fr auto 1fr;gap:8px;align-items:end;margin-bottom:16px;position:relative;z-index:1}
@@ -292,7 +292,7 @@ body{font-family:var(--f-ui),var(--f-jp);color:var(--photo-text);min-height:100v
 .onepct.achieved .onepct-arrow{color:var(--ok);transform:scale(1.3)}
 .onepct-bar{height:6px;background:rgba(0,0,0,.3);border-radius:3px;overflow:hidden;position:relative;z-index:1}
 :root[data-theme="light"] .onepct-bar{background:rgba(0,0,0,.08)}
-.onepct-fill{height:100%;background:linear-gradient(90deg,var(--photo-red),#f97484);border-radius:3px;transition:width .6s cubic-bezier(.2,.8,.2,1);box-shadow:0 0 12px rgba(230,57,70,.5)}
+.onepct-fill{height:100%;background:linear-gradient(90deg,var(--photo-red),#f97484);border-radius:3px;transition:width .6s cubic-bezier(.2,.8,.2,1);box-shadow:0 0 12px rgba(125, 37, 48,.5)}
 .onepct.achieved .onepct-fill{background:linear-gradient(90deg,var(--ok),#86efac);box-shadow:0 0 12px rgba(79,176,122,.5)}
 .onepct-hint{font-family:var(--f-jp);font-size:11px;color:var(--photo-mute);margin-top:12px;letter-spacing:-.01em;position:relative;z-index:1;line-height:1.6}
 .onepct-hint b{color:var(--photo-text);font-weight:700}
@@ -303,8 +303,8 @@ body{font-family:var(--f-ui),var(--f-jp);color:var(--photo-text);min-height:100v
 .onepct.silent .onepct-tag{opacity:.6}
 
 /* 連続記録ストリップ (デイリー + 週間ハイブリッド) */
-.streak{margin:8px 16px 16px;background:linear-gradient(135deg,rgba(26,10,12,.5),rgba(26,26,26,.3) 70%);border:1px solid rgba(230,57,70,.08);border-radius:12px;padding:14px 16px;position:relative;overflow:hidden}
-.streak::before{content:'';position:absolute;right:-30px;top:-20px;width:140px;height:140px;background:radial-gradient(circle,rgba(230,57,70,.18) 0%,transparent 70%);pointer-events:none}
+.streak{margin:8px 16px 16px;background:linear-gradient(135deg,rgba(26,10,12,.5),rgba(26,26,26,.3) 70%);border:1px solid rgba(125, 37, 48,.08);border-radius:12px;padding:14px 16px;position:relative;overflow:hidden}
+.streak::before{content:'';position:absolute;right:-30px;top:-20px;width:140px;height:140px;background:radial-gradient(circle,rgba(125, 37, 48,.18) 0%,transparent 70%);pointer-events:none}
 .streak-grid{display:grid;grid-template-columns:1fr 1px 1fr;gap:14px;align-items:center;margin-bottom:8px;position:relative;z-index:1}
 .streak-cell{text-align:center;min-width:0}
 .streak-divider{background:rgba(255,255,255,.08);align-self:stretch}
@@ -344,7 +344,7 @@ body{font-family:var(--f-ui),var(--f-jp);color:var(--photo-text);min-height:100v
 .parts .p:active{transform:scale(.98)}
 .parts .p:hover{box-shadow:0 0 0 2px var(--photo-red-soft)}
 .parts .p img{width:100%;height:100%;object-fit:cover;object-position:center;display:block}
-.parts .p.next-up{box-shadow:0 0 0 2px var(--photo-red),0 0 18px rgba(230,57,70,.35)}
+.parts .p.next-up{box-shadow:0 0 0 2px var(--photo-red),0 0 18px rgba(125, 37, 48,.35)}
 .parts .p .next-flag{display:none}
 .parts .p.next-up .next-flag{display:inline-block;position:absolute;top:10px;right:10px;background:var(--photo-red);color:#fff;font-family:var(--f-display);font-size:9px;letter-spacing:.18em;padding:3px 6px;border-radius:3px;z-index:4;font-weight:400}
 .parts .p .stat{position:absolute;top:10px;left:10px;z-index:3;font-family:var(--f-mono);font-size:11px;color:var(--photo-text);background:rgba(0,0,0,.55);backdrop-filter:blur(6px);padding:3px 7px;border-radius:50px;font-weight:500;letter-spacing:-.01em}
@@ -631,15 +631,15 @@ function buildChart(p, i, points, total, deltaPct, hasData) {
       <div class="ttl"><h3><span>●</span>${p.label} ボリューム</h3><small>直近${points.length}セッション</small></div>
       <svg class="line-chart" viewBox="0 0 ${w} ${h}" preserveAspectRatio="none">
         <defs><linearGradient id="g${i}" x1="0" y1="0" x2="0" y2="1">
-          <stop offset="0%" stop-color="#E63946" stop-opacity=".45"/>
-          <stop offset="100%" stop-color="#E63946" stop-opacity="0"/>
+          <stop offset="0%" stop-color="#7D2530" stop-opacity=".45"/>
+          <stop offset="100%" stop-color="#7D2530" stop-opacity="0"/>
         </linearGradient></defs>
         <line x1="0" y1="${h-4}" x2="${w}" y2="${h-4}" stroke="rgba(255,255,255,0.06)" stroke-width="1"/>
         <line x1="0" y1="${h*0.6}" x2="${w}" y2="${h*0.6}" stroke="rgba(255,255,255,0.04)" stroke-width="1" stroke-dasharray="2 4"/>
         <line x1="0" y1="${h*0.3}" x2="${w}" y2="${h*0.3}" stroke="rgba(255,255,255,0.04)" stroke-width="1" stroke-dasharray="2 4"/>
         <path d="${path}" fill="url(#g${i})"/>
-        <polyline points="${polyline}" fill="none" stroke="#E63946" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"/>
-        <circle cx="${lastX.toFixed(1)}" cy="${lastY.toFixed(1)}" r="4" fill="#fff" stroke="#E63946" stroke-width="2"/>
+        <polyline points="${polyline}" fill="none" stroke="#7D2530" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"/>
+        <circle cx="${lastX.toFixed(1)}" cy="${lastY.toFixed(1)}" r="4" fill="#fff" stroke="#7D2530" stroke-width="2"/>
       </svg>
       <div class="chart-axis"><span>過去</span><span></span><span></span><span class="on">最新</span></div>
       <div class="chart-foot">

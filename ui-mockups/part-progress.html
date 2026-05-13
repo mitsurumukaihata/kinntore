@@ -18,7 +18,7 @@
   --photo-bg:#0a0a0a;--photo-card:#1a1a1a;--photo-card-2:#232323;
   --photo-line:rgba(255,255,255,0.08);--photo-line-strong:rgba(255,255,255,0.16);
   --photo-text:#fff;--photo-mute:#9a9a9a;--photo-dim:#5e5e5e;
-  --photo-red:#E63946;--photo-red-deep:#B22838;--photo-red-soft:rgba(230,57,70,0.15);
+  --photo-red:#7D2530;--photo-red-deep:#5F1E27;--photo-red-soft:rgba(125, 37, 48,0.15);
   --gold:#D4A04B;--ok:#4FB07A;
   --f-ui:'Inter Tight',-apple-system,system-ui,sans-serif;
   --f-jp:'Zen Kaku Gothic New',-apple-system,'Hiragino Kaku Gothic ProN',sans-serif;
@@ -33,7 +33,7 @@
 :root[data-theme="light"] html,:root[data-theme="light"] body{background:#e8e8ea}
 :root[data-theme="light"] .tab{background:rgba(255,255,255,.95);border-top-color:rgba(0,0,0,0.08)}
 /* ライトモード: 半透明黒系の bg を白系に置換 */
-:root[data-theme="light"] .summary{background:linear-gradient(135deg,rgba(255,236,238,.6),rgba(255,255,255,.4) 70%) !important;border-color:rgba(230,57,70,.18) !important}
+:root[data-theme="light"] .summary{background:linear-gradient(135deg,rgba(255,236,238,.6),rgba(255,255,255,.4) 70%) !important;border-color:rgba(125, 37, 48,.18) !important}
 :root[data-theme="light"] .ex-card{background:rgba(255,255,255,.6) !important;border-color:rgba(0,0,0,.06) !important}
 :root[data-theme="light"] .ex-stat{background:rgba(255,255,255,.7) !important;border-color:rgba(0,0,0,.06) !important}
 :root[data-theme="light"] .ex-stats.sub .ex-stat{background:transparent !important;border-color:rgba(0,0,0,.03) !important}
@@ -59,10 +59,10 @@ body{font-family:var(--f-ui),var(--f-jp);color:var(--photo-text);min-height:100v
 
 .seg-period{margin:6px 16px 14px;background:rgba(26,26,26,.4);border:1px solid rgba(255,255,255,.04);border-radius:50px;padding:4px;display:grid;grid-template-columns:1fr 1fr 1fr;gap:0}
 .seg-period button{background:transparent;border:0;color:var(--photo-mute);font-family:var(--f-jp);font-size:12px;font-weight:700;padding:9px 0;border-radius:50px;cursor:pointer;letter-spacing:.04em;transition:.15s}
-.seg-period button.on{background:var(--photo-red);color:var(--photo-text);box-shadow:0 2px 8px rgba(230,57,70,.3)}
+.seg-period button.on{background:var(--photo-red);color:var(--photo-text);box-shadow:0 2px 8px rgba(125, 37, 48,.3)}
 :root[data-theme="light"] .seg-period{background:rgba(255,255,255,.6) !important;border-color:rgba(0,0,0,.06) !important}
 
-.summary{margin:6px 16px 20px;background:linear-gradient(135deg,rgba(26,10,12,.4),rgba(26,26,26,.2) 70%);border:1px solid rgba(230,57,70,.08);border-radius:14px;padding:18px 18px;display:flex;justify-content:space-between;align-items:baseline}
+.summary{margin:6px 16px 20px;background:linear-gradient(135deg,rgba(26,10,12,.4),rgba(26,26,26,.2) 70%);border:1px solid rgba(125, 37, 48,.08);border-radius:14px;padding:18px 18px;display:flex;justify-content:space-between;align-items:baseline}
 .summary .l{font-family:var(--f-display);font-size:10px;color:var(--photo-mute);letter-spacing:.2em;margin-bottom:4px}
 .summary .v{font-family:var(--f-mono);font-size:24px;font-weight:600;color:var(--photo-text);letter-spacing:-.02em;line-height:1}
 .summary .v small{font-family:var(--f-display);font-size:10px;color:var(--photo-mute);letter-spacing:.18em;margin-left:3px;font-weight:400}
@@ -331,15 +331,15 @@ function render() {
       if (bestIdx !== curIdx) {
         dots += `<circle cx="${pts[bestIdx].x.toFixed(1)}" cy="${pts[bestIdx].y.toFixed(1)}" r="2.2" fill="#D4A04B"/>`;
       }
-      const curFill = values[curIdx] === valMax ? '#D4A04B' : '#E63946';
+      const curFill = values[curIdx] === valMax ? '#D4A04B' : '#7D2530';
       dots += `<circle cx="${pts[curIdx].x.toFixed(1)}" cy="${pts[curIdx].y.toFixed(1)}" r="2.5" fill="${curFill}"/>`;
       const gid = 'g-' + Math.random().toString(36).slice(2,8);
       const valuesAttr = JSON.stringify(values).replace(/"/g,'&quot;');
       const daysAttr = JSON.stringify(opts.days || []).replace(/"/g,'&quot;');
       return `<svg class="ex-chart" data-mode="${mode}" data-values="${valuesAttr}" data-days="${daysAttr}" viewBox="0 0 360 70" preserveAspectRatio="none"${hidden ? ' style="display:none"' : ''}>
-        <defs><linearGradient id="${gid}" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#E63946" stop-opacity=".12"/><stop offset="1" stop-color="#E63946" stop-opacity="0"/></linearGradient></defs>
+        <defs><linearGradient id="${gid}" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#7D2530" stop-opacity=".12"/><stop offset="1" stop-color="#7D2530" stop-opacity="0"/></linearGradient></defs>
         <path d="${areaD}" fill="url(#${gid})"/>
-        <path d="${pathD}" fill="none" stroke="#E63946" stroke-width="1.1" stroke-linejoin="round" stroke-linecap="round" opacity=".6"/>
+        <path d="${pathD}" fill="none" stroke="#7D2530" stroke-width="1.1" stroke-linejoin="round" stroke-linecap="round" opacity=".6"/>
         ${dots}
       </svg>`;
     }
@@ -406,7 +406,7 @@ function attachChartHover(wrap) {
     if (!line) {
       line = document.createElementNS(NS,'line');
       line.setAttribute('class','ex-chart-cursor');
-      line.setAttribute('stroke','rgba(230,57,70,.45)');
+      line.setAttribute('stroke','rgba(125, 37, 48,.45)');
       line.setAttribute('stroke-width','0.8');
       line.setAttribute('y1','0');
       line.setAttribute('y2','70');
@@ -417,7 +417,7 @@ function attachChartHover(wrap) {
       marker.setAttribute('class','ex-chart-marker');
       marker.setAttribute('r','3');
       marker.setAttribute('fill','#fff');
-      marker.setAttribute('stroke','#E63946');
+      marker.setAttribute('stroke','#7D2530');
       marker.setAttribute('stroke-width','1.2');
       svg.appendChild(marker);
     }
