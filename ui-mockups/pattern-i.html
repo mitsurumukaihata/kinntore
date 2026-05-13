@@ -2164,7 +2164,7 @@ Store.loadDay().then(() => {
 if ('serviceWorker' in navigator) {
   window.addEventListener('load', async () => {
     try {
-      const reg = await navigator.serviceWorker.register('sw.js');
+      const reg = await navigator.serviceWorker.register('sw.js', {updateViaCache:'none'});
       // 毎ロードで SW 更新チェック (PWA 内部ナビ時もキャッシュを新しく)
       reg.update();
       // 新 SW が controlling になったら自動リロード (初回ロード除外)
