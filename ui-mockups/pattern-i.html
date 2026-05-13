@@ -482,8 +482,11 @@ body{font-family:var(--f-ui),var(--f-jp);color:var(--photo-text);min-height:100v
 /* 1. ヒーロー: キャラ画像を背景化 ("そこに居る人") */
 .hero{height:300px;background:var(--photo-bg)}
 .hero img{
-  filter: saturate(.4) brightness(.55) contrast(.9);
-  opacity: .55;
+  /* 過渡CSS (CORE24 step C 進行中): 新画像が届くまでさらに沈ませる
+     仕様: saturate(.30) brightness(.45) contrast(.85) opacity(.50)
+     新画像差し替え時は弱める or 撤去 */
+  filter: saturate(.30) brightness(.45) contrast(.85);
+  opacity: .50;
   transition: opacity .5s, filter .5s;
 }
 /* 下部グラデを強めて背景に溶ける */
