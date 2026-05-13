@@ -482,12 +482,16 @@ body{font-family:var(--f-ui),var(--f-jp);color:var(--photo-text);min-height:100v
 /* 1. ヒーロー: キャラ画像を背景化 ("そこに居る人") */
 .hero{height:300px;background:var(--photo-bg)}
 .hero img{
-  /* 過渡CSS (CORE24 step C 進行中): 新画像が届くまでさらに沈ませる
-     仕様: saturate(.30) brightness(.45) contrast(.85) opacity(.50)
-     新画像差し替え時は弱める or 撤去 */
+  /* 過渡CSS (CORE24 step C 進行中): 旧画像 (派手な筋肉ガッツ系) を強く沈ませる */
   filter: saturate(.30) brightness(.45) contrast(.85);
   opacity: .50;
   transition: opacity .5s, filter .5s;
+}
+/* CORE24 新画像 (Step C 着手済): 既に CORE24 仕様で生成されているので
+   filter を弱める (背景化はするが消しすぎない) */
+.hero img[src$="hero-chest-light.png"]{
+  filter: saturate(.65) brightness(.88) contrast(.95);
+  opacity: .82;
 }
 /* 下部グラデを強めて背景に溶ける */
 .hero .grad{background:linear-gradient(180deg,
