@@ -17,9 +17,19 @@
   var t=(location.hash||'').replace('#','');
   if(!ORDER[t]) t='chest';
   var isLight=localStorage.getItem('kinntore_theme')==='light';
-  var src='img/hero-'+t+(isLight?'-light':'')+'.png';
-  // <link rel="preload"> でブラウザに早期取得させる
+  var IMG_V='c3';  // 同じ cache buster (render と合わせる)
+  var src='img/hero-'+t+(isLight?'-light':'')+'.png?v='+IMG_V;
+  // 初期表示用 <link rel="preload"> (現在の部位のみ高優先度)
   var l=document.createElement('link');l.rel='preload';l.as='image';l.href=src;document.head.appendChild(l);
+  // 残り 7 部位もスワイプ用にプリロード (低優先度 / async)
+  // setTimeout で初期描画優先、その後バックグラウンドで全部キャッシュ
+  setTimeout(function(){
+    Object.keys(ORDER).forEach(function(tag){
+      if(tag===t)return;
+      var pre=new Image();
+      pre.src='img/hero-'+tag+(isLight?'-light':'')+'.png?v='+IMG_V;
+    });
+  },200);
   // グローバル変数に保存して後続スクリプトから即利用
   window.__kinntoreInitialHeroSrc=src;
   window.__kinntoreInitialTag=t;
