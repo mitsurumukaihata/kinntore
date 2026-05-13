@@ -167,7 +167,10 @@ body{font-family:var(--f-ui),var(--f-jp);color:var(--photo-text);min-height:100v
 }
 .app > *{position:relative;z-index:1}
 /* LIGHT は紙寄りに少し強め (ただし 6% 以下) */
-:root[data-theme="light"] .app::before{opacity:.06}
+:root[data-theme="light"] .app::before{opacity:.06;
+  -webkit-mask-image: radial-gradient(120% 80% at 30% 60%, rgba(0,0,0,1) 30%, rgba(0,0,0,0.45) 85%);
+  mask-image: radial-gradient(120% 80% at 30% 60%, rgba(0,0,0,1) 30%, rgba(0,0,0,0.45) 85%);
+}
 
 /* --- 3. 空気のムラ: 完全フラットな .app 背景を僅かに不均一に */
 :root[data-theme="light"] .app{

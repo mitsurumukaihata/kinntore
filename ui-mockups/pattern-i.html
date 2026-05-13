@@ -596,9 +596,12 @@ body{font-family:var(--f-ui),var(--f-jp);color:var(--photo-text);min-height:100v
 .tab a.on .ic{color:var(--photo-mute)}
 
 /* 9. 生活ノイズ + 紙化 (home/record/progress と同手法) */
-.app{position:relative;background:
-  radial-gradient(160% 70% at 50% -10%, rgba(40, 30, 35, 0.30), transparent 55%),
-  var(--photo-bg);
+.app{
+  position:relative;
+  background:
+    radial-gradient(160% 70% at 50% -10%, rgba(40, 30, 35, 0.30), transparent 55%),
+    radial-gradient(100% 60% at 8% 105%, rgba(0, 0, 0, 0.25), transparent 55%),
+    var(--photo-bg);
 }
 .app::before{
   content:'';position:absolute;inset:0;pointer-events:none;z-index:0;opacity:.045;
@@ -607,10 +610,15 @@ body{font-family:var(--f-ui),var(--f-jp);color:var(--photo-text);min-height:100v
 }
 .app > *{position:relative;z-index:1}
 .tagbar{z-index:40 !important}  /* ノイズより上に */
-:root[data-theme="light"] .app::before{opacity:.06}
+:root[data-theme="light"] .app::before{opacity:.06;
+  -webkit-mask-image: radial-gradient(120% 80% at 30% 60%, rgba(0,0,0,1) 30%, rgba(0,0,0,0.45) 85%);
+  mask-image: radial-gradient(120% 80% at 30% 60%, rgba(0,0,0,1) 30%, rgba(0,0,0,0.45) 85%);
+}
 :root[data-theme="light"] .app{
   background:
     radial-gradient(160% 70% at 50% -10%, rgba(255, 248, 232, 0.32), transparent 55%),
+    radial-gradient(120% 60% at 12% 110%, rgba(160, 130, 95, 0.08), transparent 50%),
+    radial-gradient(80% 50% at 95% 5%, rgba(140, 115, 80, 0.04), transparent 60%),
     #e8e6e0;
 }
 
