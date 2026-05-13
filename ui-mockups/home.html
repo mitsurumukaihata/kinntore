@@ -93,9 +93,9 @@ html,body{background:#070708;margin:0;color:#fff}
 /* ライトモード: 暗グラデのカードを明るいピンク系グラデに置換 */
 :root[data-theme="light"] .streak{background:linear-gradient(135deg,#ffe9eb,#fff 70%) !important;border-color:rgba(125, 37, 48,.25) !important}
 :root[data-theme="light"] .streak::before{background:radial-gradient(circle,rgba(125, 37, 48,.12) 0%,transparent 70%) !important}
-/* 部位タイル: ダーク版は画像にラベル焼込済 / ライト版はCSSで重ねる */
-/* デフォルト (ダーク時) は CSS ラベル/矢印を非表示 */
-.parts .p::before,.parts .p::after,.parts .p .arrow{display:none}
+/* 部位タイル: 新画像 (B&W漫画) は文字焼込なし → CSS で重ねる
+   旧 display:none は撤去 (Phase 2-B 後の現在は両モードで CSS ラベル使用) */
+.parts .p .arrow{display:none}
 /* ライトモード時のみ CSS でラベル+矢印を表示 */
 :root[data-theme="light"] .parts .p{background:#fafafa}
 :root[data-theme="light"] .parts .p::before{content:attr(data-jp);display:block;position:absolute;left:14px;bottom:44px;font-family:var(--f-jp);font-size:24px;font-weight:900;color:#0a0a0a;letter-spacing:-.02em;z-index:3;pointer-events:none;
@@ -205,6 +205,41 @@ body{font-family:var(--f-ui),var(--f-jp);color:var(--photo-text);min-height:100v
    過渡CSS (Step C 進行中): 新画像が届くまでさらに沈ませる */
 .parts .p img{filter:grayscale(.70) saturate(.30) brightness(.55) contrast(.85);opacity:.50;transition:opacity .4s,filter .4s}
 .parts .p:active img{opacity:.68;filter:grayscale(.50) saturate(.4) brightness(.65)}
+
+/* CORE24 新タイル画像 (Step C): B&W 漫画スタイル。filter を軽くして
+   コントラスト維持。両モード共通の中立スタイル */
+.parts .p img[src*="part-chest.png"],
+.parts .p img[src*="part-chest-light.png"],
+.parts .p img[src*="part-shoulder.png"],
+.parts .p img[src*="part-shoulder-light.png"]{
+  filter: brightness(.95) contrast(1.02);
+  opacity: .88;
+}
+.parts .p:active img[src*="part-chest.png"],
+.parts .p:active img[src*="part-chest-light.png"],
+.parts .p:active img[src*="part-shoulder.png"],
+.parts .p:active img[src*="part-shoulder-light.png"]{
+  filter: brightness(.85) contrast(1.0);
+  opacity: .78;
+}
+
+/* DARK モードでも CSS ラベルを表示 (新タイル画像は文字焼込なし) */
+.parts .p::before{
+  content:attr(data-jp); display:block; position:absolute;
+  left:12px; bottom:36px;
+  font-family:var(--f-jp); font-size:18px; font-weight:800;
+  color:#fff; letter-spacing:-.01em;
+  z-index:3; pointer-events:none;
+  text-shadow: 0 1px 4px rgba(0,0,0,.85), 0 0 8px rgba(0,0,0,.5);
+}
+.parts .p::after{
+  content:attr(data-en); display:block; position:absolute;
+  left:12px; bottom:18px;
+  font-family:var(--f-display); font-size:9px; font-weight:400;
+  color:rgba(255,255,255,.7); letter-spacing:.14em;
+  z-index:3; pointer-events:none;
+  text-shadow: 0 1px 3px rgba(0,0,0,.8);
+}
 /* .stat (○日前バッジ) — 黒バブルから文字だけへ */
 .parts .p .stat{position:absolute;top:6px;left:8px;z-index:3;font-family:var(--f-mono);font-size:10px;color:rgba(255,255,255,.55);background:transparent;backdrop-filter:none;padding:0;border-radius:0;font-weight:400;letter-spacing:-.005em;text-shadow:0 1px 2px rgba(0,0,0,.4)}
 :root[data-theme="light"] .parts .p .stat{color:rgba(0,0,0,.45);text-shadow:0 1px 2px rgba(255,255,255,.6)}
@@ -1074,10 +1109,11 @@ window.addEventListener('pageshow', () => {
   const theme = localStorage.getItem('kinntore_theme') || 'dark';
   const isLight = theme === 'light';
   if (isLight) document.documentElement.setAttribute('data-theme', 'light');
-  // ダッシュボードタイル: ダーク=黒背景版 (ラベル焼込済) / ライト=白背景版 (ラベルはCSSで重ねる)
+  // ダッシュボードタイル: 新画像 (B&W漫画) は両モードで CSS ラベル使用
+  const PART_IMG_V = 'p1';  // 新画像差し替え時に bump
   document.querySelectorAll('.part-img').forEach(img => {
     const part = img.dataset.part;
-    if (part) img.src = isLight ? `img/part-${part}-light.png` : `img/part-${part}.png`;
+    if (part) img.src = (isLight ? `img/part-${part}-light.png` : `img/part-${part}.png`) + '?v=' + PART_IMG_V;
   });
   // 表示名 (設定画面で保存した値、未設定は「あなた」)
   const name = (localStorage.getItem('kinntore_user_name') || '').trim();
