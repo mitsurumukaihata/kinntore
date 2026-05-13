@@ -114,6 +114,98 @@ body{font-family:var(--f-ui),var(--f-jp);color:var(--photo-text);min-height:100v
 .tab a .ic{font-size:18px;line-height:1;font-family:var(--f-ui)}
 
 @media (orientation:landscape){.app{max-width:100%}.tab{max-width:100%}}
+
+/* ============================================================
+   CORE24 Phase 6 (温度調整): settings 解体
+   - カード → 行 (他ページ統一)
+   - ロゴ赤ボーダーを「残してるブランド主張」から痕跡へ
+   - 赤の機能性は維持 (DANGER ZONE は残留温度として残す)
+   - 入力フォームは触らない (機能性最優先)
+   ============================================================ */
+
+/* 1. カード → 行 (他ページと統一) */
+.section{margin:14px 18px 0}
+.section-title{font-size:9px;letter-spacing:.14em;margin:0 2px 6px;color:var(--photo-dim)}
+.card{background:transparent;border:0;border-radius:0;border-top:1px solid var(--photo-line);border-bottom:1px solid var(--photo-line);overflow:visible}
+.row{padding:12px 2px;min-height:48px;gap:12px;border-bottom:1px solid var(--photo-line)}
+.row:last-child{border-bottom:0}
+.row .l .nm{font-size:12px;font-weight:500}
+.row .l .desc{font-size:10.5px;color:var(--photo-dim)}
+
+/* 2. セグメント切替 (テーマ等) — 赤ピル → 文字下線 (record/progress と統一) */
+.seg{background:transparent;border:0;border-radius:0;padding:0;gap:2px}
+.seg button{font-size:10.5px;font-weight:500;color:var(--photo-dim);padding:6px 10px;border-radius:0;letter-spacing:.04em;position:relative}
+.seg button.on{background:transparent;color:var(--photo-text)}
+.seg button.on::after{content:'';position:absolute;left:25%;right:25%;bottom:-1px;height:1px;background:var(--photo-mute)}
+
+/* 3. 入力フォーム類: 角丸ピル → 控えめな四角 (機能性は維持) */
+.row select,.row input[type=text],.row input[type=number]{
+  background:transparent;border:1px solid var(--photo-line);
+  font-weight:400;font-size:12px;border-radius:4px;
+  padding:6px 24px 6px 10px;
+}
+.row input[type=text],.row input[type=number]{padding:6px 10px}
+
+/* 4. ボタン: 角丸ピル → 控えめ */
+.btn{background:transparent;border:1px solid var(--photo-line);font-weight:500;font-size:11px;padding:7px 14px;border-radius:4px;letter-spacing:.02em}
+.btn:active{transform:none;opacity:.7}
+.btn.full{border-radius:6px;padding:12px 0;font-size:12px;font-weight:500}
+/* DANGER は赤を残留温度として残す (温度調整済の faded red が機能) */
+.btn.danger{background:transparent;color:var(--warn);border-color:rgba(125,37,48,.35)}
+.btn.danger:active{background:rgba(125,37,48,.08)}
+
+/* 5. 部位目標カード: カード → 静かな行群 */
+.goals{padding:10px 4px;gap:4px}
+.goal-cell{background:transparent;border:0;border-bottom:1px solid var(--photo-line);border-radius:0;padding:8px 6px}
+.goal-cell:last-child{border-bottom:0}
+.goal-cell .lbl{font-size:10px;font-weight:500;color:var(--photo-mute);margin-bottom:4px}
+.goal-cell button{width:22px;height:22px;background:transparent;border:1px solid var(--photo-line);color:var(--photo-mute);font-size:11px}
+.goal-cell button:active{background:rgba(125,37,48,.05);border-color:rgba(125,37,48,.3);color:var(--photo-text)}
+.goal-cell .v{font-size:14px;font-weight:500;color:var(--photo-text)}
+
+/* 6. DANGER ZONE: 大袈裟さを抑える (赤再定義済の faded red はそのまま) */
+.danger-zone{margin-top:18px}
+
+/* 7. ABOUT セクション: ロゴ主張から痕跡へ (CORE24 が「アプリ」ではなく「場所」になる箇所) */
+.about{padding:18px 2px 12px;text-align:left}
+.about .logo{
+  width:28px;height:28px;border-radius:6px;
+  background:transparent;border:1px solid var(--photo-line);
+  font-size:13px;color:var(--photo-mute);
+  margin-bottom:8px;display:inline-flex;font-weight:400;
+}
+.about .nm{font-size:13px;letter-spacing:.06em;color:var(--photo-mute);font-weight:400}
+.about .ver{font-size:10px;color:var(--photo-dim);margin-top:2px;font-family:var(--f-mono)}
+.about .links{justify-content:flex-start;gap:4px;margin-top:10px}
+.about .links a{
+  font-size:10px;color:var(--photo-dim);
+  background:transparent;border:0;padding:4px 0;margin-right:14px;
+  border-radius:0;letter-spacing:.02em;
+}
+.about .links a:active{color:var(--photo-text);border-color:transparent}
+
+/* 8. タブ active: 他ページ統一 */
+.tab a.on{color:var(--photo-text)}
+.tab a.on .ic{color:var(--photo-mute)}
+
+/* 9. 生活ノイズ + 紙化 (他ページ統一) */
+.app{position:relative;background:
+  radial-gradient(160% 70% at 50% -10%, rgba(40, 30, 35, 0.30), transparent 55%),
+  var(--photo-bg);
+}
+.app::before{
+  content:'';position:absolute;inset:0;pointer-events:none;z-index:0;opacity:.045;
+  background-image:url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='180' height='180'><filter id='n'><feTurbulence type='fractalNoise' baseFrequency='0.85' numOctaves='2' stitchTiles='stitch'/><feColorMatrix values='0 0 0 0 0  0 0 0 0 0  0 0 0 0 0  0 0 0 0.55 0'/></filter><rect width='100%' height='100%' filter='url(%23n)'/></svg>");
+  background-size:180px 180px;
+}
+.app > *{position:relative;z-index:1}
+:root[data-theme="light"] .app::before{opacity:.06}
+:root[data-theme="light"] .app{
+  background:
+    radial-gradient(160% 70% at 50% -10%, rgba(255, 248, 232, 0.32), transparent 55%),
+    #e8e6e0;
+}
+
 </style>
 </head>
 <body>
