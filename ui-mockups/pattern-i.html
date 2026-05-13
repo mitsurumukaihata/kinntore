@@ -17,7 +17,7 @@
   var t=(location.hash||'').replace('#','');
   if(!ORDER[t]) t='chest';
   var isLight=localStorage.getItem('kinntore_theme')==='light';
-  var IMG_V='c3';  // 同じ cache buster (render と合わせる)
+  var IMG_V='c4';  // 同じ cache buster (render と合わせる)
   var src='img/hero-'+t+(isLight?'-light':'')+'.png?v='+IMG_V;
   // 初期表示用 <link rel="preload"> (現在の部位のみ高優先度)
   var l=document.createElement('link');l.rel='preload';l.as='image';l.href=src;document.head.appendChild(l);
@@ -504,7 +504,8 @@ body{font-family:var(--f-ui),var(--f-jp);color:var(--photo-text);min-height:100v
    overflow:hidden で確実にカット (アスペクト比に依存しない) */
 .hero img[src*="hero-chest-light.png"],
 .hero img[src*="hero-shoulder-light.png"],
-.hero img[src*="hero-abs-light.png"]{
+.hero img[src*="hero-abs-light.png"],
+.hero img[src*="hero-leg-light.png"]{
   filter: saturate(.65) brightness(.88) contrast(.95);
   opacity: .82;
 }
@@ -986,7 +987,7 @@ function triggerHeroEnter(imgOnly) {
   });
 }
 // CORE24: 画像キャッシュバスター (新画像差し替え時に bump)
-const _IMG_V = 'c3';
+const _IMG_V = 'c4';
 function render(tag, opts) {
   opts = opts || {};
   currentTag = tag;
