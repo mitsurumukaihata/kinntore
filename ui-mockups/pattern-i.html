@@ -489,16 +489,18 @@ body{font-family:var(--f-ui),var(--f-jp);color:var(--photo-text);min-height:100v
   transition: opacity .5s, filter .5s;
 }
 /* CORE24 新画像 (Step C 着手済): 既に CORE24 仕様で生成されているので
-   filter を弱める (背景化はするが消しすぎない) */
+   filter を弱める (背景化はするが消しすぎない)。
+   さらに、画像要素自体を box より大きくして上にシフト → 天井部分を
+   overflow:hidden で確実にカット (アスペクト比に依存しない) */
 .hero img[src*="hero-chest-light.png"],
 .hero img[src*="hero-shoulder-light.png"]{
   filter: saturate(.65) brightness(.88) contrast(.95);
   opacity: .82;
-  /* 画像のアスペクト比的に object-position だけでは上の天井がカットできない。
-     transform で 1.4倍に拡大、画像の下 (キャラ本体) を anchor にして
-     天井部分を上にはみ出させてカット */
-  transform: scale(1.4);
-  transform-origin: center 78%;
+  /* 画像要素を box の 140% に拡大、top: -28% で上にシフト
+     → 画像の上 20% (天井部分) を box 外に出して切り捨て */
+  height: 140%;
+  top: -28%;
+  transform: none;
 }
 /* 下部グラデを強めて背景に溶ける */
 .hero .grad{background:linear-gradient(180deg,
