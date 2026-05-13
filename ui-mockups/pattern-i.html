@@ -2155,8 +2155,20 @@ Store.loadDay().then(() => {
 
 // PWA: Service Worker 登録
 if ('serviceWorker' in navigator) {
-  window.addEventListener('load', () => {
-    navigator.serviceWorker.register('sw.js').catch(()=>{});
+  window.addEventListener('load', async () => {
+    try {
+      const reg = await navigator.serviceWorker.register('sw.js');
+      // 毎ロードで SW 更新チェック (PWA 内部ナビ時もキャッシュを新しく)
+      reg.update();
+      // 新 SW が controlling になったら自動リロード (初回ロード除外)
+      const wasControlled = !!navigator.serviceWorker.controller;
+      navigator.serviceWorker.addEventListener('controllerchange', () => {
+        if (wasControlled && !window.__swReloading) {
+          window.__swReloading = true;
+          window.location.reload();
+        }
+      });
+    } catch(_) {}
   });
 }
 // iOS: ダブルタップ拡大抑止 (+/- 連打対策)

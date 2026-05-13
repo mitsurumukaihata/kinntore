@@ -488,7 +488,23 @@ document.querySelectorAll('.seg-period button').forEach(b => {
   };
 });
 
-if ('serviceWorker' in navigator) window.addEventListener('load', () => navigator.serviceWorker.register('sw.js').catch(()=>{}));
+if ('serviceWorker' in navigator) {
+  window.addEventListener('load', async () => {
+    try {
+      const reg = await navigator.serviceWorker.register('sw.js');
+      // 毎ロードで SW 更新チェック (PWA 内部ナビ時もキャッシュを新しく)
+      reg.update();
+      // 新 SW が controlling になったら自動リロード (初回ロード除外)
+      const wasControlled = !!navigator.serviceWorker.controller;
+      navigator.serviceWorker.addEventListener('controllerchange', () => {
+        if (wasControlled && !window.__swReloading) {
+          window.__swReloading = true;
+          window.location.reload();
+        }
+      });
+    } catch(_) {}
+  });
+}
 document.addEventListener('dblclick', e => e.preventDefault(), {passive:false});
 let _lt=0; document.addEventListener('touchend', e => { const n=Date.now(); if(n-_lt<300)e.preventDefault(); _lt=n; }, {passive:false});
 document.addEventListener('gesturestart', e => e.preventDefault(), {passive:false});
