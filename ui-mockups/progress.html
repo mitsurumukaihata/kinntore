@@ -34,9 +34,8 @@
 :root[data-theme="light"] .tab{background:rgba(255,255,255,.95);border-top-color:rgba(0,0,0,.08)}
 :root[data-theme="light"] .ex-select,:root[data-theme="light"] .ex-stat{background:#fafafa}
 /* ライトモード: 半透明黒系の bg を白系に置換 */
-:root[data-theme="light"] .part-vol{background:rgba(255,255,255,.6) !important;border-color:rgba(0,0,0,.06) !important}
-:root[data-theme="light"] .gain-row{background:rgba(255,255,255,.6) !important;border-color:rgba(0,0,0,.06) !important}
-:root[data-theme="light"] .pr-row{background:rgba(255,255,255,.6) !important;border-color:rgba(0,0,0,.06) !important}
+/* CORE24: レガシー LIGHT カード bg (.part-vol/.gain-row/.pr-row) は
+   Phase 4 で行化したため透明維持。これらルールは無効化 */
 :root[data-theme="light"] .gain-row .nm,:root[data-theme="light"] .pr-row .info .nm{color:#0a0a0a}
 :root[data-theme="light"] .gain-row .meta,:root[data-theme="light"] .pr-row .info .meta{color:rgba(0,0,0,.5)}
 :root[data-theme="light"] .gains-empty{color:rgba(0,0,0,.4)}

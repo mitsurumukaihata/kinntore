@@ -190,17 +190,19 @@ body{font-family:var(--f-ui),var(--f-jp);color:var(--photo-text);min-height:100v
 
 /* Phase 2-B: 部位カードを「攻略カード」から「静かに並ぶ場所」へ。
    筋肉図鑑感 / 少年漫画感 / 赤筋肉 / 攻略カード感 を全部弱める。
-   今日触れる場所が静かに並んでいる、くらいに留める */
-.parts{padding:0 16px;display:grid;grid-template-columns:1fr 1fr;gap:8px}
+   今日触れる場所が静かに並んでいる、くらいに留める
+   ※ オリジナルより前なので !important で勝つ */
+.parts{padding:0 16px !important;display:grid !important;grid-template-columns:1fr 1fr !important;gap:8px !important}
 .parts .p{
-  aspect-ratio:1/1;          /* 縦長カード → 正方形タイルへ (図鑑感を減らす) */
-  border-radius:8px;          /* 角丸を下げてカードらしさを抑える */
-  background:transparent;     /* カードの "枠" を消す */
-  box-shadow:none !important; /* 赤グロー / 影 を完全に消す */
-  border:0;
+  aspect-ratio:1/1 !important;
+  border-radius:8px !important;
+  background:transparent !important;
+  box-shadow:none !important;
+  border:0 !important;
+  color:var(--photo-text) !important;  /* ← 青リンク色対策 */
 }
 .parts .p:hover{box-shadow:none !important}
-.parts .p:active{transform:none}
+.parts .p:active{transform:none !important}
 /* 画像主張を弱める: 彩度・明度・透過を下げて "気配" 化
    過渡CSS (Step C 進行中): 新画像が届くまでさらに沈ませる */
 .parts .p img{filter:grayscale(.70) saturate(.30) brightness(.55) contrast(.85);opacity:.50;transition:opacity .4s,filter .4s}
@@ -271,20 +273,21 @@ body{font-family:var(--f-ui),var(--f-jp);color:var(--photo-text);min-height:100v
 .parts .p .arrow{display:none !important}
 
 /* Phase 2-A: 前回のトレーニングを「カード」から「痕跡」へ。
-   赤アイコン削除 / 境界線消す / 大数字を弱める / 全体を寄り添う情報行に */
-.last{background:transparent;border:0;border-radius:0;padding:4px 20px 10px;margin:0 0 14px}
-.last .ttl{margin-bottom:4px}
-.last .ttl h3{font-size:11px;font-weight:500;color:var(--photo-mute);letter-spacing:.02em}
-.last .ttl small{font-family:var(--f-display);font-size:9px;color:var(--photo-dim);letter-spacing:.14em}
-.last .row{gap:0}
-.last .row .ic{display:none}
+   赤アイコン削除 / 境界線消す / 大数字を弱める / 全体を寄り添う情報行に
+   ※ オリジナル定義より前なので !important で勝つ */
+.last{background:transparent !important;border:0 !important;border-radius:0 !important;padding:4px 20px 10px !important;margin:0 0 14px !important}
+.last .ttl{margin-bottom:4px !important}
+.last .ttl h3{font-size:11px !important;font-weight:500 !important;color:var(--photo-mute) !important;letter-spacing:.02em}
+.last .ttl small{font-family:var(--f-display);font-size:9px !important;color:var(--photo-dim) !important;letter-spacing:.14em}
+.last .row{gap:0 !important}
+.last .row .ic{display:none !important}
 .last .row .info{flex:1;min-width:0}
-.last .row .info .nm{font-family:var(--f-jp);font-size:13px;font-weight:500;color:var(--photo-text);letter-spacing:-.005em}
-.last .row .info .meta{font-size:10.5px;color:var(--photo-mute);margin-top:2px;font-weight:400}
-.last .row .info .meta b{color:var(--photo-text);font-weight:500}
+.last .row .info .nm{font-family:var(--f-jp);font-size:13px !important;font-weight:500 !important;color:var(--photo-text);letter-spacing:-.005em}
+.last .row .info .meta{font-size:10.5px !important;color:var(--photo-mute) !important;margin-top:2px;font-weight:400 !important}
+.last .row .info .meta b{color:var(--photo-text) !important;font-weight:500 !important}
 .last .row .v{text-align:right;align-self:flex-end}
-.last .row .v b{font-family:var(--f-mono);font-size:12px;color:var(--photo-mute);font-weight:400;letter-spacing:-.01em}
-.last .row .v small{font-size:8.5px;color:var(--photo-dim);letter-spacing:.14em;margin-top:1px;font-weight:400}
+.last .row .v b{font-family:var(--f-mono);font-size:12px !important;color:var(--photo-mute) !important;font-weight:400 !important;letter-spacing:-.01em}
+.last .row .v small{font-size:8.5px !important;color:var(--photo-dim) !important;letter-spacing:.14em;margin-top:1px;font-weight:400}
 .head .gr{flex:1}
 .head .gr .lead{font-family:var(--f-display);font-size:11px;letter-spacing:.18em;color:var(--photo-mute);margin-bottom:4px}
 .head .gr h1{font-family:var(--f-jp);font-size:24px;font-weight:900;letter-spacing:-.01em;line-height:1.1}
