@@ -601,7 +601,7 @@ body{font-family:var(--f-ui),var(--f-jp);color:var(--photo-text);min-height:100v
   font-size:8px;letter-spacing:.06em;
 }
 
-/* 7. WEEK プログラム進捗カード: 赤発光 → 痕跡 */
+/* 7. WEEK プログラム進捗カード (WEEKLY GOAL): 赤発光 → 痕跡 */
 .program{
   background:transparent !important;
   border:0 !important;border-top:1px solid var(--photo-line);
@@ -612,10 +612,120 @@ body{font-family:var(--f-ui),var(--f-jp);color:var(--photo-text);min-height:100v
 .prog-tag{font-size:9px;color:var(--photo-mute);letter-spacing:.12em;font-weight:400}
 .program h3{font-size:14px;font-weight:500;letter-spacing:-.005em}
 .program h3 small{font-size:11px;font-weight:400;color:var(--photo-dim);margin-top:3px}
-.prog-bar{background:rgba(255,255,255,.04)}
-.prog-fill{background:var(--photo-mute);box-shadow:none}
+.prog-bar{background:rgba(255,255,255,.04);height:2px}
+.prog-fill{background:var(--photo-mute) !important;box-shadow:none !important}
 .prog-meta{font-size:9px;color:var(--photo-dim);letter-spacing:.04em}
 .prog-meta b{color:var(--photo-text);font-size:11px;font-weight:500}
+/* prog-r (大きい %数字): 赤グラデ箱 → 静かなテキスト */
+.prog-r{
+  background:transparent !important;
+  border:0;width:auto;align-self:center;
+  font-family:var(--f-mono);font-size:18px !important;
+  font-weight:400;color:var(--photo-mute) !important;letter-spacing:-.01em;
+}
+.prog-r .pct,.prog-r::after{font-size:10px !important;color:var(--photo-dim);margin-top:6px !important}
+
+/* 7.5 WEEK 日付カレンダー: 丸赤 → 静かな四角の痕跡 */
+.week{margin:6px 18px 14px;gap:4px}
+.week .d{
+  aspect-ratio:1;
+  background:transparent !important;
+  border:1px solid var(--photo-line) !important;
+  border-radius:6px !important;  /* 丸 → 角丸四角 */
+}
+.week .d small{font-size:8.5px;color:var(--photo-dim);letter-spacing:.04em}
+.week .d b{font-size:11px;font-weight:400;color:var(--photo-mute)}
+/* on (今日強調) → 控えめ */
+.week .d.on{background:transparent !important;border-color:var(--photo-line-strong) !important}
+.week .d.on small,.week .d.on b{color:var(--photo-text)}
+/* today 赤2px枠 → 細い下線 */
+.week .d.today{box-shadow:none !important;position:relative}
+.week .d.today::before{
+  content:'';position:absolute;left:30%;right:30%;bottom:3px;
+  height:1px;background:var(--photo-mute);
+}
+/* has-record / done のドット → 控えめなドット */
+.week .d.has-record{background:transparent !important;border-color:var(--photo-line) !important}
+.week .d.has-record::after,
+.week .d.done::after{
+  background:var(--photo-mute) !important;
+  width:3px !important;height:3px !important;
+  bottom:4px !important;right:50% !important;
+  transform:translateX(50%);opacity:.7;
+}
+
+/* 7.6 ボリューム推移チャート: カード枠 → 行 */
+.chart-block{
+  background:transparent !important;
+  border:0 !important;border-top:1px solid var(--photo-line);
+  border-bottom:1px solid var(--photo-line);
+  border-radius:0;padding:12px 4px;margin:14px 18px;
+  color:var(--photo-mute);  /* SVG currentColor 用 */
+}
+.chart-block .ttl{margin-bottom:8px}
+.chart-block .ttl h3{font-size:11px;font-weight:500;color:var(--photo-mute);letter-spacing:.02em}
+.chart-block .ttl small{font-size:9px;color:var(--photo-dim);letter-spacing:.04em}
+.chart-block .ttl small b{color:var(--photo-text);font-weight:500}
+.line-chart{height:72px}
+.chart-axis{font-size:8.5px;color:var(--photo-dim);margin-top:4px}
+.chart-axis span.on{color:var(--photo-text)}  /* 赤 → 通常色 */
+.chart-foot{
+  margin-top:8px;font-size:13px;font-weight:400;
+  color:var(--photo-text);letter-spacing:-.005em;
+}
+.chart-foot small{
+  font-family:var(--f-jp);font-size:10px;color:var(--photo-mute) !important;
+  font-weight:400;margin-left:8px;
+}
+
+/* 7.7 実績バッジ: 金/銀/銅 グラデ + glow を撤廃。痕跡だけ */
+.medals{
+  background:transparent !important;
+  border:0 !important;border-top:1px solid var(--photo-line);
+  border-radius:0;padding:12px 4px;margin:14px 18px;
+}
+.medals .ttl{margin-bottom:10px}
+.medals .ttl h3{font-size:11px;font-weight:500;color:var(--photo-mute);letter-spacing:.02em}
+.medals .ttl small{font-size:9px;color:var(--photo-dim)}
+.medals .m .badge{
+  background:transparent !important;
+  border:1px solid var(--photo-line) !important;
+  box-shadow:none !important;
+  width:42px;height:42px;
+}
+.medals .m.gold .badge,.medals .m.silver .badge,.medals .m.bronze .badge{
+  background:transparent !important;border-color:var(--photo-line) !important;
+  box-shadow:none !important;
+}
+.medals .m .badge svg{width:18px;height:18px;opacity:.5}
+.medals .m.locked .badge{opacity:.35}
+.medals .m .lab{font-size:9px;color:var(--photo-dim);margin-top:5px}
+.medals .m .lab b{color:var(--photo-mute);font-size:10px;font-weight:500}
+
+/* 7.8 人体図ブロック: カード枠 → 行 / 赤い筋肉タグ → 静か */
+.body-block{
+  background:transparent !important;
+  border:0 !important;border-top:1px solid var(--photo-line);
+  border-radius:0;padding:12px 4px;margin:14px 18px;
+}
+.body-block .ttl{margin-bottom:10px}
+.body-block .ttl h3{font-size:11px;font-weight:500;color:var(--photo-mute);letter-spacing:.02em}
+.body-block .ttl small{
+  font-family:var(--f-mono);font-size:11px;
+  color:var(--photo-text) !important;letter-spacing:-.005em;
+}
+.mus{
+  background:transparent !important;
+  border:1px solid var(--photo-line) !important;
+  color:var(--photo-dim) !important;font-weight:400;font-size:10px;
+}
+.mus.on{
+  background:transparent !important;
+  border-color:var(--photo-line-strong) !important;
+  color:var(--photo-mute) !important;
+}
+.body-cta{font-size:10px;color:var(--photo-dim)}
+.body-cta b{font-size:12px;color:var(--photo-text);font-weight:500}
 
 /* 8. タブ active 赤 → 静か (他ページと統一) */
 .tab a.on{color:var(--photo-text)}
@@ -1332,19 +1442,19 @@ async function renderVolChart(tag) {
   const linePath = points.map((p,i)=>(i===0?'M':'L')+' '+p.x+','+p.y).join(' ');
   const areaPath = `M ${points[0].x},${H-PAD_Y_BOT} L ${points.map(p=>p.x+','+p.y).join(' L ')} L ${points[points.length-1].x},${H-PAD_Y_BOT} Z`;
   const dots = points.map((p, i) => {
-    if (i === points.length - 1) return `<circle cx="${p.x}" cy="${p.y}" r="4" fill="#fff" stroke="#7D2530" stroke-width="2"/>`;
-    return `<circle cx="${p.x}" cy="${p.y}" r="3" fill="#7D2530"/>`;
+    if (i === points.length - 1) return `<circle cx="${p.x}" cy="${p.y}" r="3.5" fill="currentColor"/>`;
+    return `<circle cx="${p.x}" cy="${p.y}" r="2" fill="currentColor" opacity=".55"/>`;
   }).join('');
   svg.innerHTML = `
     <defs><linearGradient id="grad-line" x1="0" y1="0" x2="0" y2="1">
-      <stop offset="0%" stop-color="#7D2530" stop-opacity=".5"/>
-      <stop offset="100%" stop-color="#7D2530" stop-opacity="0"/>
+      <stop offset="0%" stop-color="currentColor" stop-opacity=".08"/>
+      <stop offset="100%" stop-color="currentColor" stop-opacity="0"/>
     </linearGradient></defs>
-    <line x1="0" y1="${H-PAD_Y_BOT}" x2="${W}" y2="${H-PAD_Y_BOT}" stroke="rgba(255,255,255,0.06)" stroke-width="1"/>
-    <line x1="0" y1="56" x2="${W}" y2="56" stroke="rgba(255,255,255,0.04)" stroke-width="1" stroke-dasharray="2 4"/>
-    <line x1="0" y1="26" x2="${W}" y2="26" stroke="rgba(255,255,255,0.04)" stroke-width="1" stroke-dasharray="2 4"/>
+    <line x1="0" y1="${H-PAD_Y_BOT}" x2="${W}" y2="${H-PAD_Y_BOT}" stroke="currentColor" stroke-opacity=".12" stroke-width="1"/>
+    <line x1="0" y1="56" x2="${W}" y2="56" stroke="currentColor" stroke-opacity=".06" stroke-width="1" stroke-dasharray="2 4"/>
+    <line x1="0" y1="26" x2="${W}" y2="26" stroke="currentColor" stroke-opacity=".06" stroke-width="1" stroke-dasharray="2 4"/>
     <path d="${areaPath}" fill="url(#grad-line)"/>
-    <path d="${linePath}" fill="none" stroke="#7D2530" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"/>
+    <path d="${linePath}" fill="none" stroke="currentColor" stroke-width="1.2" stroke-linecap="round" stroke-linejoin="round" opacity=".7"/>
     ${dots}`;
   axis.innerHTML = sessions.map((s,i) => {
     const d = new Date(s[0]);
