@@ -206,84 +206,6 @@ body{font-family:var(--f-ui),var(--f-jp);color:var(--photo-text);min-height:100v
 .parts .p img{filter:grayscale(.70) saturate(.30) brightness(.55) contrast(.85);opacity:.50;transition:opacity .4s,filter .4s}
 .parts .p:active img{opacity:.68;filter:grayscale(.50) saturate(.4) brightness(.65)}
 
-/* ============================================================
-   CORE24 ホーム: 今週の統計 / ボリュームグラフ / 実績 を解体
-   - カード → 行 (上下境界線だけ)
-   - 赤強調 → mute
-   - SVG は currentColor (chart-card に color:mute 継承)
-   ============================================================ */
-/* 見出し: 18px 900 → 11px mute (sec-quiet と同等) */
-.sec{margin:14px 0 6px;padding:0 20px}
-.sec h2{font-size:11px;font-weight:500;color:var(--photo-mute);letter-spacing:.04em}
-.sec h2 small{font-size:9px;color:var(--photo-dim);letter-spacing:.14em;margin-left:6px}
-.sec a{font-size:10px;color:var(--photo-dim)}
-
-/* 今週の統計 (.stats2): カード3列 → 行 */
-.stats2{
-  margin:0 20px 14px;gap:0;padding:8px 0;
-  border-top:1px solid var(--photo-line);border-bottom:1px solid var(--photo-line);
-}
-.stats2 .s{
-  background:transparent !important;border:0 !important;
-  border-right:1px solid var(--photo-line);border-radius:0;
-  padding:6px 8px;text-align:center;
-}
-.stats2 .s:last-child{border-right:0}
-.stats2 .s .l{font-size:8.5px;color:var(--photo-dim);letter-spacing:.12em}
-.stats2 .s .v{font-size:14px;font-weight:400;color:var(--photo-text) !important;margin-top:3px}
-.stats2 .s .v small{font-size:9px;color:var(--photo-dim);margin-left:2px}
-
-/* ボリュームグラフ (.chart-card): カード → 痕跡行 */
-.charts-swipe{padding:4px 18px 0}
-.chart-card{
-  flex:0 0 calc(100% - 4px);
-  background:transparent !important;border:0 !important;
-  border-radius:0;padding:8px 0;
-  color:var(--photo-mute);  /* SVG currentColor 継承用 */
-}
-.chart-card .ttl{margin-bottom:6px}
-.chart-card .ttl h3{font-size:11px;font-weight:500;color:var(--photo-mute);letter-spacing:.02em}
-.chart-card .ttl h3 span{color:var(--photo-mute);margin-right:6px}  /* 赤● → mute */
-.chart-card .ttl small{font-size:9px;color:var(--photo-dim)}
-.line-chart{height:70px}
-.chart-axis{font-size:8.5px;color:var(--photo-dim);margin-top:4px}
-.chart-axis span.on{color:var(--photo-text)}  /* 赤 → 通常色 */
-.chart-foot{margin-top:6px}
-.chart-foot b{font-size:13px;font-weight:400;color:var(--photo-text);letter-spacing:-.005em}
-.chart-foot b small{font-size:9px;color:var(--photo-dim);margin-left:3px}
-.chart-foot .delta{font-size:10px;color:var(--photo-mute) !important;font-weight:400}
-.chart-foot .delta.neg{color:var(--photo-mute) !important}
-
-/* ページネーションドット: 赤 → mute */
-.dots{margin:6px 0 14px}
-.dots .d{background:var(--photo-line)}
-.dots .d.on{background:var(--photo-mute) !important;width:14px;border-radius:3px}
-
-/* 実績 (.medals): カード + 金/銀/銅グラデ → 行 + 透明統一 */
-.medals{
-  background:transparent !important;border:0 !important;
-  border-top:1px solid var(--photo-line);
-  border-radius:0;padding:10px 0;margin:6px 20px 14px;
-}
-.medals .ttl{margin-bottom:8px}
-.medals .ttl h3{font-size:11px;font-weight:500;color:var(--photo-mute);letter-spacing:.02em}
-.medals .ttl small{font-size:9px;color:var(--photo-dim)}
-.medals .row{gap:8px}
-.medals .m .badge{
-  background:transparent !important;
-  border:1px solid var(--photo-line) !important;
-  box-shadow:none !important;
-  width:38px;height:38px;
-}
-.medals .m.gold .badge,.medals .m.silver .badge,.medals .m.bronze .badge{
-  background:transparent !important;border-color:var(--photo-line) !important;
-  box-shadow:none !important;
-}
-.medals .m .badge svg{width:16px;height:16px;opacity:.5}
-.medals .m.locked .badge{opacity:.35}
-.medals .m .lab{font-size:9px;color:var(--photo-dim);margin-top:4px}
-.medals .m .lab b{color:var(--photo-mute);font-size:10px;font-weight:500}
-
 /* CORE24 新タイル画像 (Step C): B&W 漫画スタイル。filter を軽くして
    コントラスト維持。両モード共通の中立スタイル */
 .parts .p img[src*="part-chest.png"],
@@ -535,6 +457,87 @@ body{font-family:var(--f-ui),var(--f-jp);color:var(--photo-text);min-height:100v
 .tab a{display:flex;flex-direction:column;align-items:center;gap:4px;font-size:10px;color:var(--photo-dim);text-decoration:none;letter-spacing:.04em;cursor:pointer;font-family:var(--f-jp);font-weight:700;padding:4px 0}
 .tab a.on{color:var(--photo-red)}
 .tab a .ic{font-size:18px;line-height:1;font-family:var(--f-ui)}
+
+/* ============================================================
+   CORE24 ホーム: 今週の統計 / ボリュームグラフ / 実績 を解体
+   ※ オリジナル定義より後ろに置く必要があるためファイル末尾に配置
+   - カード → 行 (上下境界線だけ)
+   - 赤強調 → mute
+   - SVG は currentColor (chart-card に color:mute 継承)
+   ============================================================ */
+/* 見出し: 18px 900 → 11px mute (sec-quiet と同等)。 .sec.sec-quiet は除外 */
+.sec:not(.sec-quiet){margin:14px 0 6px;padding:0 20px}
+.sec:not(.sec-quiet) h2{font-size:11px !important;font-weight:500 !important;color:var(--photo-mute) !important;letter-spacing:.04em}
+.sec:not(.sec-quiet) h2 small{font-size:9px !important;color:var(--photo-dim);letter-spacing:.14em;margin-left:6px;font-weight:400}
+.sec a{font-size:10px;color:var(--photo-dim)}
+
+/* 今週の統計 (.stats2): カード3列 → 行 */
+.stats2{
+  margin:0 20px 14px;gap:0;padding:8px 0;
+  border-top:1px solid var(--photo-line);border-bottom:1px solid var(--photo-line);
+  display:grid;grid-template-columns:1fr 1fr 1fr;
+}
+.stats2 .s{
+  background:transparent !important;border:0 !important;
+  border-right:1px solid var(--photo-line) !important;border-radius:0 !important;
+  padding:6px 8px !important;text-align:center;
+}
+.stats2 .s:last-child{border-right:0 !important}
+.stats2 .s .l{font-size:8.5px !important;color:var(--photo-dim);letter-spacing:.12em}
+.stats2 .s .v{font-size:14px !important;font-weight:400 !important;color:var(--photo-text) !important;margin-top:3px !important}
+.stats2 .s .v small{font-size:9px !important;color:var(--photo-dim);margin-left:2px}
+.stats2 .s.r .v{color:var(--photo-text) !important}  /* 赤 → 通常色 */
+
+/* ボリュームグラフ (.chart-card): カード → 痕跡行 */
+.charts-swipe{padding:4px 18px 0}
+.chart-card{
+  flex:0 0 calc(100% - 4px);
+  background:transparent !important;border:0 !important;
+  border-radius:0 !important;padding:8px 0 !important;
+  color:var(--photo-mute);  /* SVG currentColor 継承用 */
+}
+.chart-card .ttl{margin-bottom:6px !important}
+.chart-card .ttl h3{font-size:11px !important;font-weight:500 !important;color:var(--photo-mute) !important;letter-spacing:.02em}
+.chart-card .ttl h3 span{color:var(--photo-mute) !important;margin-right:6px}
+.chart-card .ttl small{font-size:9px !important;color:var(--photo-dim) !important}
+.line-chart{height:70px !important}
+.chart-axis{font-size:8.5px !important;color:var(--photo-dim) !important;margin-top:4px}
+.chart-axis span.on{color:var(--photo-text) !important}
+.chart-foot{margin-top:6px !important}
+.chart-foot b{font-size:13px !important;font-weight:400 !important;color:var(--photo-text) !important;letter-spacing:-.005em}
+.chart-foot b small{font-size:9px !important;color:var(--photo-dim) !important;margin-left:3px;font-weight:400}
+.chart-foot .delta{font-size:10px !important;color:var(--photo-mute) !important;font-weight:400 !important}
+.chart-foot .delta.neg{color:var(--photo-mute) !important}
+
+/* ページネーションドット: 赤 → mute */
+.dots{margin:6px 0 14px}
+.dots .d{background:var(--photo-line) !important}
+.dots .d.on{background:var(--photo-mute) !important;width:14px !important;border-radius:3px}
+
+/* 実績 (.medals): カード + 金/銀/銅グラデ → 行 + 透明統一 */
+.medals{
+  background:transparent !important;border:0 !important;
+  border-top:1px solid var(--photo-line) !important;
+  border-radius:0 !important;padding:10px 0 !important;margin:6px 20px 14px !important;
+}
+.medals .ttl{margin-bottom:8px !important}
+.medals .ttl h3{font-size:11px !important;font-weight:500 !important;color:var(--photo-mute) !important;letter-spacing:.02em}
+.medals .ttl small{font-size:9px !important;color:var(--photo-dim) !important}
+.medals .row{gap:8px}
+.medals .m .badge{
+  background:transparent !important;
+  border:1px solid var(--photo-line) !important;
+  box-shadow:none !important;
+  width:38px !important;height:38px !important;
+}
+.medals .m.gold .badge,.medals .m.silver .badge,.medals .m.bronze .badge{
+  background:transparent !important;border-color:var(--photo-line) !important;
+  box-shadow:none !important;
+}
+.medals .m .badge svg{width:16px !important;height:16px !important;opacity:.5}
+.medals .m.locked .badge{opacity:.35}
+.medals .m .lab{font-size:9px !important;color:var(--photo-dim) !important;margin-top:4px}
+.medals .m .lab b{color:var(--photo-mute) !important;font-size:10px !important;font-weight:500 !important}
 </style>
 </head>
 <body style="background:#070708;margin:0">
