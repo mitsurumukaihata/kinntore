@@ -206,6 +206,84 @@ body{font-family:var(--f-ui),var(--f-jp);color:var(--photo-text);min-height:100v
 .parts .p img{filter:grayscale(.70) saturate(.30) brightness(.55) contrast(.85);opacity:.50;transition:opacity .4s,filter .4s}
 .parts .p:active img{opacity:.68;filter:grayscale(.50) saturate(.4) brightness(.65)}
 
+/* ============================================================
+   CORE24 ホーム: 今週の統計 / ボリュームグラフ / 実績 を解体
+   - カード → 行 (上下境界線だけ)
+   - 赤強調 → mute
+   - SVG は currentColor (chart-card に color:mute 継承)
+   ============================================================ */
+/* 見出し: 18px 900 → 11px mute (sec-quiet と同等) */
+.sec{margin:14px 0 6px;padding:0 20px}
+.sec h2{font-size:11px;font-weight:500;color:var(--photo-mute);letter-spacing:.04em}
+.sec h2 small{font-size:9px;color:var(--photo-dim);letter-spacing:.14em;margin-left:6px}
+.sec a{font-size:10px;color:var(--photo-dim)}
+
+/* 今週の統計 (.stats2): カード3列 → 行 */
+.stats2{
+  margin:0 20px 14px;gap:0;padding:8px 0;
+  border-top:1px solid var(--photo-line);border-bottom:1px solid var(--photo-line);
+}
+.stats2 .s{
+  background:transparent !important;border:0 !important;
+  border-right:1px solid var(--photo-line);border-radius:0;
+  padding:6px 8px;text-align:center;
+}
+.stats2 .s:last-child{border-right:0}
+.stats2 .s .l{font-size:8.5px;color:var(--photo-dim);letter-spacing:.12em}
+.stats2 .s .v{font-size:14px;font-weight:400;color:var(--photo-text) !important;margin-top:3px}
+.stats2 .s .v small{font-size:9px;color:var(--photo-dim);margin-left:2px}
+
+/* ボリュームグラフ (.chart-card): カード → 痕跡行 */
+.charts-swipe{padding:4px 18px 0}
+.chart-card{
+  flex:0 0 calc(100% - 4px);
+  background:transparent !important;border:0 !important;
+  border-radius:0;padding:8px 0;
+  color:var(--photo-mute);  /* SVG currentColor 継承用 */
+}
+.chart-card .ttl{margin-bottom:6px}
+.chart-card .ttl h3{font-size:11px;font-weight:500;color:var(--photo-mute);letter-spacing:.02em}
+.chart-card .ttl h3 span{color:var(--photo-mute);margin-right:6px}  /* 赤● → mute */
+.chart-card .ttl small{font-size:9px;color:var(--photo-dim)}
+.line-chart{height:70px}
+.chart-axis{font-size:8.5px;color:var(--photo-dim);margin-top:4px}
+.chart-axis span.on{color:var(--photo-text)}  /* 赤 → 通常色 */
+.chart-foot{margin-top:6px}
+.chart-foot b{font-size:13px;font-weight:400;color:var(--photo-text);letter-spacing:-.005em}
+.chart-foot b small{font-size:9px;color:var(--photo-dim);margin-left:3px}
+.chart-foot .delta{font-size:10px;color:var(--photo-mute) !important;font-weight:400}
+.chart-foot .delta.neg{color:var(--photo-mute) !important}
+
+/* ページネーションドット: 赤 → mute */
+.dots{margin:6px 0 14px}
+.dots .d{background:var(--photo-line)}
+.dots .d.on{background:var(--photo-mute) !important;width:14px;border-radius:3px}
+
+/* 実績 (.medals): カード + 金/銀/銅グラデ → 行 + 透明統一 */
+.medals{
+  background:transparent !important;border:0 !important;
+  border-top:1px solid var(--photo-line);
+  border-radius:0;padding:10px 0;margin:6px 20px 14px;
+}
+.medals .ttl{margin-bottom:8px}
+.medals .ttl h3{font-size:11px;font-weight:500;color:var(--photo-mute);letter-spacing:.02em}
+.medals .ttl small{font-size:9px;color:var(--photo-dim)}
+.medals .row{gap:8px}
+.medals .m .badge{
+  background:transparent !important;
+  border:1px solid var(--photo-line) !important;
+  box-shadow:none !important;
+  width:38px;height:38px;
+}
+.medals .m.gold .badge,.medals .m.silver .badge,.medals .m.bronze .badge{
+  background:transparent !important;border-color:var(--photo-line) !important;
+  box-shadow:none !important;
+}
+.medals .m .badge svg{width:16px;height:16px;opacity:.5}
+.medals .m.locked .badge{opacity:.35}
+.medals .m .lab{font-size:9px;color:var(--photo-dim);margin-top:4px}
+.medals .m .lab b{color:var(--photo-mute);font-size:10px;font-weight:500}
+
 /* CORE24 新タイル画像 (Step C): B&W 漫画スタイル。filter を軽くして
    コントラスト維持。両モード共通の中立スタイル */
 .parts .p img[src*="part-chest.png"],
@@ -678,15 +756,15 @@ function buildChart(p, i, points, total, deltaPct, hasData) {
       <div class="ttl"><h3><span>●</span>${p.label} ボリューム</h3><small>直近${points.length}セッション</small></div>
       <svg class="line-chart" viewBox="0 0 ${w} ${h}" preserveAspectRatio="none">
         <defs><linearGradient id="g${i}" x1="0" y1="0" x2="0" y2="1">
-          <stop offset="0%" stop-color="#7D2530" stop-opacity=".45"/>
-          <stop offset="100%" stop-color="#7D2530" stop-opacity="0"/>
+          <stop offset="0%" stop-color="currentColor" stop-opacity=".08"/>
+          <stop offset="100%" stop-color="currentColor" stop-opacity="0"/>
         </linearGradient></defs>
-        <line x1="0" y1="${h-4}" x2="${w}" y2="${h-4}" stroke="rgba(255,255,255,0.06)" stroke-width="1"/>
-        <line x1="0" y1="${h*0.6}" x2="${w}" y2="${h*0.6}" stroke="rgba(255,255,255,0.04)" stroke-width="1" stroke-dasharray="2 4"/>
-        <line x1="0" y1="${h*0.3}" x2="${w}" y2="${h*0.3}" stroke="rgba(255,255,255,0.04)" stroke-width="1" stroke-dasharray="2 4"/>
+        <line x1="0" y1="${h-4}" x2="${w}" y2="${h-4}" stroke="currentColor" stroke-opacity=".12" stroke-width="1"/>
+        <line x1="0" y1="${h*0.6}" x2="${w}" y2="${h*0.6}" stroke="currentColor" stroke-opacity=".06" stroke-width="1" stroke-dasharray="2 4"/>
+        <line x1="0" y1="${h*0.3}" x2="${w}" y2="${h*0.3}" stroke="currentColor" stroke-opacity=".06" stroke-width="1" stroke-dasharray="2 4"/>
         <path d="${path}" fill="url(#g${i})"/>
-        <polyline points="${polyline}" fill="none" stroke="#7D2530" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"/>
-        <circle cx="${lastX.toFixed(1)}" cy="${lastY.toFixed(1)}" r="4" fill="#fff" stroke="#7D2530" stroke-width="2"/>
+        <polyline points="${polyline}" fill="none" stroke="currentColor" stroke-width="1.2" stroke-linecap="round" stroke-linejoin="round" opacity=".7"/>
+        <circle cx="${lastX.toFixed(1)}" cy="${lastY.toFixed(1)}" r="3" fill="currentColor"/>
       </svg>
       <div class="chart-axis"><span>過去</span><span></span><span></span><span class="on">最新</span></div>
       <div class="chart-foot">
