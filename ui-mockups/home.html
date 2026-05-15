@@ -640,14 +640,15 @@ body{font-family:var(--f-ui),var(--f-jp);color:var(--photo-text);min-height:100v
   background:transparent !important;
   padding:0 !important;border-radius:0 !important;
   flex:0 0 auto;
+  order:1;  /* 行の最左 */
 }
-/* EN ラベル: JP の横に小さく */
+/* EN ラベル: JP のすぐ右に小さく (隣接) */
 .parts .p::after{
   content:attr(data-en) !important;
   position:static !important;
   display:inline-block !important;
   font-family:var(--f-display) !important;
-  font-size:9px !important;
+  font-size:10px !important;
   font-weight:400 !important;
   color:var(--photo-dim) !important;
   letter-spacing:.14em !important;
@@ -658,8 +659,11 @@ body{font-family:var(--f-ui),var(--f-jp);color:var(--photo-text);min-height:100v
   box-shadow:none !important;
   border-radius:0 !important;
   flex:0 0 auto;
+  order:2;  /* JP の隣 */
+  margin-left:4px;
+  align-self:baseline;
 }
-/* 「○日前」: 右寄せ */
+/* 「○日前」: margin-left:auto で右寄せ */
 .parts .p .stat{
   position:static !important;
   background:transparent !important;
@@ -672,6 +676,7 @@ body{font-family:var(--f-ui),var(--f-jp);color:var(--photo-text);min-height:100v
   font-weight:400 !important;
   margin-left:auto !important;
   text-shadow:none !important;
+  order:3;  /* 右端へ */
 }
 /* next-flag (赤バッジ) 撤去 */
 .parts .p .next-flag,.parts .p.next-up .next-flag{display:none !important}
@@ -690,6 +695,7 @@ body{font-family:var(--f-ui),var(--f-jp);color:var(--photo-text);min-height:100v
   font-weight:400 !important;
   margin-left:6px !important;
   padding:0 !important;
+  order:4;  /* 最後 */
 }
 </style>
 </head>
