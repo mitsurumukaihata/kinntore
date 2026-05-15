@@ -541,6 +541,105 @@ body{font-family:var(--f-ui),var(--f-jp);color:var(--photo-text);min-height:100v
 .medals .m.locked .badge{opacity:.35}
 .medals .m .lab{font-size:9px !important;color:var(--photo-dim) !important;margin-top:4px}
 .medals .m .lab b{color:var(--photo-mute) !important;font-size:10px !important;font-weight:500 !important}
+
+/* ============================================================
+   CORE24 案B: 部位タイル を 縦リスト形式 へ (画像撤去・行統一)
+   record / progress / pattern-i と同じ "行が並ぶ" 構造に統一
+   現在の B&W 画像は種目用に温存
+   ============================================================ */
+.parts{
+  display:flex !important;
+  flex-direction:column !important;
+  padding:0 20px !important;
+  gap:0 !important;
+  border-top:1px solid var(--photo-line);
+  margin:0 0 14px !important;
+}
+.parts .p{
+  aspect-ratio:auto !important;
+  display:flex !important;
+  align-items:baseline !important;
+  justify-content:flex-start !important;
+  padding:14px 0 !important;
+  border-bottom:1px solid var(--photo-line);
+  border-radius:0 !important;
+  background:transparent !important;
+  text-decoration:none !important;
+  color:var(--photo-text) !important;
+  position:relative;
+  gap:8px;
+  min-height:auto !important;
+  overflow:visible !important;
+  transition:opacity .25s;
+}
+.parts .p:active{transform:none !important;opacity:.7}
+.parts .p img{display:none !important}
+/* JP ラベル: 行の左端、主役 */
+.parts .p::before{
+  content:attr(data-jp) !important;
+  position:static !important;
+  display:inline-block !important;
+  font-family:var(--f-jp) !important;
+  font-size:14px !important;
+  font-weight:500 !important;
+  color:var(--photo-text) !important;
+  letter-spacing:-.005em !important;
+  text-shadow:none !important;
+  left:auto !important;bottom:auto !important;
+  background:transparent !important;
+  padding:0 !important;border-radius:0 !important;
+  flex:0 0 auto;
+}
+/* EN ラベル: JP の横に小さく */
+.parts .p::after{
+  content:attr(data-en) !important;
+  position:static !important;
+  display:inline-block !important;
+  font-family:var(--f-display) !important;
+  font-size:9px !important;
+  font-weight:400 !important;
+  color:var(--photo-dim) !important;
+  letter-spacing:.14em !important;
+  text-shadow:none !important;
+  left:auto !important;bottom:auto !important;right:auto !important;top:auto !important;
+  width:auto !important;height:auto !important;
+  background:transparent !important;
+  box-shadow:none !important;
+  border-radius:0 !important;
+  flex:0 0 auto;
+}
+/* 「○日前」: 右寄せ */
+.parts .p .stat{
+  position:static !important;
+  background:transparent !important;
+  backdrop-filter:none !important;
+  padding:0 !important;
+  border-radius:0 !important;
+  color:var(--photo-mute) !important;
+  font-family:var(--f-mono) !important;
+  font-size:11px !important;
+  font-weight:400 !important;
+  margin-left:auto !important;
+  text-shadow:none !important;
+}
+/* next-flag (赤バッジ) 撤去 */
+.parts .p .next-flag,.parts .p.next-up .next-flag{display:none !important}
+.parts .p.next-up{box-shadow:none !important;background:transparent !important}
+/* arrow ›: 右端の最後に静かに */
+.parts .p .arrow{
+  display:inline-block !important;
+  position:static !important;
+  background:transparent !important;
+  box-shadow:none !important;
+  width:auto !important;height:auto !important;
+  border-radius:0 !important;
+  color:var(--photo-dim) !important;
+  font-family:var(--f-ui) !important;
+  font-size:14px !important;
+  font-weight:400 !important;
+  margin-left:6px !important;
+  padding:0 !important;
+}
 </style>
 </head>
 <body style="background:#070708;margin:0">
