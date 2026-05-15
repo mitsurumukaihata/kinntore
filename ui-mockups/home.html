@@ -145,7 +145,27 @@ body{font-family:var(--f-ui),var(--f-jp);color:var(--photo-text);min-height:100v
 .head{padding:calc(22px + env(safe-area-inset-top)) 20px 8px;display:flex;justify-content:space-between;align-items:flex-start}
 /* Phase 1 解体: ヒーローUI / streak を非表示で隔離。msg だけ静かな1行で残す */
 .legacy-hidden{display:none}
-.quiet-line{padding:6px 18px 14px;min-height:20px;font-family:var(--f-jp);font-size:12px;color:var(--photo-mute);letter-spacing:.005em;font-weight:400;line-height:1.5;opacity:.78}
+.quiet-line{
+  position:relative;
+  padding:8px 110px 14px 18px;  /* 右側はキャラ画像スペース */
+  min-height:120px;
+  font-family:var(--f-jp);font-size:12px;color:var(--photo-mute);
+  letter-spacing:.005em;font-weight:400;line-height:1.5;opacity:.78;
+}
+/* CORE24 案C: 時間帯キャラの気配 (主役化禁止、空気として右に居る) */
+.mood-char{
+  position:absolute;right:14px;top:-6px;
+  width:90px;height:130px;
+  object-fit:cover;object-position:center top;
+  opacity:.32;
+  filter:grayscale(.5) brightness(.7) contrast(.9);
+  pointer-events:none;
+  transition:opacity .6s,filter .6s;
+}
+:root[data-theme="light"] .mood-char{
+  opacity:.28;
+  filter:grayscale(.6) brightness(.78) contrast(.92);
+}
 
 /* Phase 2-C: 「生活ノイズを 1% 戻す」 (高級アート化を防ぐ)。
    美術館ではなく深夜の生活空間。"何も起きていないのに少し居たくなる"。
@@ -700,8 +720,11 @@ body{font-family:var(--f-ui),var(--f-jp);color:var(--photo-text);min-height:100v
     </div>
   </div>
 
-  <!-- Phase 1: ヒーローUI から隔離した静かな一言 (応援ではなく観測) -->
-  <div class="quiet-line"><span id="quietMsg"></span></div>
+  <!-- Phase 1+案C: ヒーローUI から隔離した静かな観測 + 時間帯キャラの気配 -->
+  <div class="quiet-line">
+    <span id="quietMsg"></span>
+    <img class="mood-char" id="moodCharImg" src="img/hero-chest-light.png?v=c8" alt="" loading="lazy">
+  </div>
 
   <!-- Phase 1 解体中: 101%ルール / streak / 主役立ち絵 を非表示。
        JS互換のため id だけ保持 (後で削除予定)。 -->
@@ -1342,6 +1365,21 @@ window.addEventListener('pageshow', () => {
     const sync = () => { _qMsg.textContent = (_onMsg.textContent || '').replace(/読込中…?/, '').trim(); };
     sync();
     new MutationObserver(sync).observe(_onMsg, { childList:true, characterData:true, subtree:true });
+  }
+  // CORE24 案C: 時間帯キャラの気配を設定 (朝/昼/夕/夜 の 4 系統)
+  // 画像未配置の場合は既存 hero 画像にフォールバック
+  const _moodImg = document.getElementById('moodCharImg');
+  if (_moodImg) {
+    const h = new Date().getHours();
+    let charSrc;
+    if (h >= 5 && h < 11) charSrc = 'img/char-morning.png';       // 朝 10時
+    else if (h >= 11 && h < 16) charSrc = 'img/char-day.png';     // 昼 13時
+    else if (h >= 16 && h < 21) charSrc = 'img/char-evening.png'; // 夕方 17時
+    else charSrc = 'img/char-night.png';                          // 夜 22時 / 深夜
+    // 画像が無ければ既存 hero に fallback (静かに表示)
+    const fallback = 'img/hero-chest-light.png?v=c8';
+    _moodImg.addEventListener('error', () => { _moodImg.src = fallback; }, { once:true });
+    _moodImg.src = charSrc + '?v=m1';
   }
 })();
 
