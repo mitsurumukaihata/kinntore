@@ -108,7 +108,7 @@ body{font-family:var(--f-ui),var(--f-jp);color:var(--photo-text);min-height:100v
 .confirm-card p{font-family:var(--f-jp);font-size:13px;color:var(--photo-mute);margin-bottom:18px;line-height:1.6}
 .confirm-card .acts{display:grid;grid-template-columns:1fr 1fr;gap:10px}
 
-.tab{position:fixed;bottom:0;left:50%;transform:translateX(-50%);width:100%;max-width:420px;background:rgba(10,10,10,.95);backdrop-filter:blur(12px);border-top:1px solid var(--photo-line);padding:10px 8px calc(28px + env(safe-area-inset-bottom));display:grid;grid-template-columns:repeat(5,1fr);gap:4px;z-index:30}
+.tab{position:fixed;bottom:0;left:0;transform:none;width:100%;max-width:100%;background:rgba(10,10,10,.95);backdrop-filter:blur(12px);border-top:1px solid var(--photo-line);padding:10px 8px calc(28px + env(safe-area-inset-bottom));display:grid;grid-template-columns:repeat(5,1fr);gap:4px;z-index:30}
 .tab a{display:flex;flex-direction:column;align-items:center;gap:4px;font-size:10px;color:var(--photo-dim);text-decoration:none;letter-spacing:.04em;cursor:pointer;font-family:var(--f-jp);font-weight:700;padding:4px 0;touch-action:manipulation;-webkit-touch-callout:none;user-select:none}
 .tab a.on{color:var(--photo-red)}
 .tab a .ic{font-size:18px;line-height:1;font-family:var(--f-ui)}

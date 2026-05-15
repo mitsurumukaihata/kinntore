@@ -120,30 +120,31 @@ body{font-family:var(--f-ui),var(--f-jp);color:var(--photo-text);min-height:100v
 /* CORE24 loading (Phase A): キャラの影だけ + 三点 "…"
    "読込中" は監視UI感が強いので消す。画像で「居る気配」を残す */
 .loading{
-  position:relative;padding:32px 20px 24px;
+  position:relative;min-height:60vh;padding:0;
   text-align:center;color:transparent;font-size:0;
-  letter-spacing:.18em;
+  letter-spacing:.18em;overflow:hidden;
 }
 .loading::before{
-  /* 部位キャラの影 — block flow で高さは画像のアスペクト比から決まる */
-  content:'';display:block;
-  width:78%;max-width:320px;aspect-ratio:941/1672;
-  margin:0 auto;
+  /* キャラを viewport いっぱいに敷く (端が見えない自然な背景化) */
+  content:'';position:fixed;
+  top:0;left:0;width:100vw;height:100vh;
   background:url('img/hero-chest-light.png') no-repeat center / cover;
-  opacity:.12;
+  opacity:.16;
   filter:grayscale(1) brightness(.6) contrast(.85);
   pointer-events:none;
+  z-index:0;
 }
 .loading::after{
-  /* 三点 "…" を画像の中央にオーバーレイ */
-  content:'…';position:absolute;
+  /* 三点 "…" を画面中央にオーバーレイ */
+  content:'…';position:fixed;
   top:50%;left:50%;transform:translate(-50%,-50%);
-  font-size:24px;color:var(--photo-mute);letter-spacing:.3em;
+  font-size:28px;color:var(--photo-mute);letter-spacing:.3em;
   font-family:var(--f-mono);opacity:.6;z-index:1;
+  pointer-events:none;
 }
-:root[data-theme="light"] .loading::before{opacity:.15;filter:grayscale(1) brightness(.55) contrast(.9)}
+:root[data-theme="light"] .loading::before{opacity:.20;filter:grayscale(1) brightness(.55) contrast(.9)}
 
-.tab{position:fixed;bottom:0;left:50%;transform:translateX(-50%);width:100%;max-width:420px;background:rgba(10,10,10,.95);backdrop-filter:blur(12px);border-top:1px solid var(--photo-line);padding:10px 8px calc(28px + env(safe-area-inset-bottom));display:grid;grid-template-columns:repeat(5,1fr);gap:4px;z-index:30}
+.tab{position:fixed;bottom:0;left:0;transform:none;width:100%;max-width:100%;background:rgba(10,10,10,.95);backdrop-filter:blur(12px);border-top:1px solid var(--photo-line);padding:10px 8px calc(28px + env(safe-area-inset-bottom));display:grid;grid-template-columns:repeat(5,1fr);gap:4px;z-index:30}
 .tab a{display:flex;flex-direction:column;align-items:center;gap:4px;font-size:10px;color:var(--photo-dim);text-decoration:none;letter-spacing:.04em;cursor:pointer;font-family:var(--f-jp);font-weight:700;padding:4px 0;touch-action:manipulation;-webkit-touch-callout:none;user-select:none}
 .tab a.on{color:var(--photo-red)}
 .tab a .ic{font-size:18px;line-height:1;font-family:var(--f-ui)}
