@@ -552,7 +552,8 @@ body{font-family:var(--f-ui),var(--f-jp);color:var(--photo-text);min-height:100v
   flex-direction:column !important;
   padding:0 20px !important;
   gap:0 !important;
-  border-top:1px solid var(--photo-line);
+  /* 区切り視認性: 上端の細線 + 各行 border。両端は -strong で読める線 */
+  border-top:1px solid var(--photo-line-strong);
   margin:0 0 14px !important;
 }
 .parts .p{
@@ -560,8 +561,9 @@ body{font-family:var(--f-ui),var(--f-jp);color:var(--photo-text);min-height:100v
   display:flex !important;
   align-items:baseline !important;
   justify-content:flex-start !important;
-  padding:14px 0 !important;
-  border-bottom:1px solid var(--photo-line);
+  padding:16px 0 !important;
+  /* 区切り線: -photo-line-strong (.16 alpha) で確実に見えるが主張しすぎない */
+  border-bottom:1px solid var(--photo-line-strong);
   border-radius:0 !important;
   background:transparent !important;
   text-decoration:none !important;
@@ -572,6 +574,7 @@ body{font-family:var(--f-ui),var(--f-jp);color:var(--photo-text);min-height:100v
   overflow:visible !important;
   transition:opacity .25s;
 }
+.parts .p:last-child{border-bottom:1px solid var(--photo-line-strong)}
 .parts .p:active{transform:none !important;opacity:.7}
 .parts .p img{display:none !important}
 /* JP ラベル: 行の左端、主役 */
