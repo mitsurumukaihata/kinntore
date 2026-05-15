@@ -575,6 +575,10 @@ body{font-family:var(--f-ui),var(--f-jp);color:var(--photo-text);min-height:100v
   transition:opacity .25s;
 }
 .parts .p:last-child{border-bottom:1px solid var(--photo-line-strong)}
+/* LIGHT モード: 暖かい紙色背景に対して .16 黒だとまだ薄い → .25 まで強く */
+:root[data-theme="light"] .parts{border-top-color:rgba(40,40,40,0.22) !important}
+:root[data-theme="light"] .parts .p{border-bottom-color:rgba(40,40,40,0.22) !important}
+:root[data-theme="light"] .parts .p:last-child{border-bottom-color:rgba(40,40,40,0.22) !important}
 .parts .p:active{transform:none !important;opacity:.7}
 .parts .p img{display:none !important}
 /* JP ラベル: 行の左端、主役 */
