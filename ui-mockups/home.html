@@ -175,12 +175,17 @@ body{font-family:var(--f-ui),var(--f-jp);color:var(--photo-text);min-height:100v
   opacity:.60;
   filter:grayscale(.30) brightness(.90) contrast(.95);
 }
-/* セリフ: 画像の左側に収まるよう幅制限 (改行は自動) */
+/* セリフ: 画像の左側に収まるよう幅制限。
+   日本語混じり文の単語途中改行を防ぐため line-break:strict + overflow-wrap:normal */
 .quiet-line > #quietMsg{
   display:inline-block;
-  max-width:55%;  /* 画像の左側に収める */
-  word-break:break-word;
-  line-height:1.6;
+  max-width:60%;  /* 画像の左側に収める */
+  word-break:normal;       /* 単語途中で切らない */
+  overflow-wrap:anywhere;  /* どうしても収まらない時のみ break */
+  line-break:strict;       /* 日本語の禁則処理 (句読点等で正しく折返し) */
+  line-height:1.65;
+  white-space:normal;
+  text-wrap:pretty;        /* 対応ブラウザでは自然な折返し位置を最適化 */
 }
 /* .head の日付も画像より前面に */
 .head{position:relative;z-index:1}
@@ -866,10 +871,9 @@ body{font-family:var(--f-ui),var(--f-jp);color:var(--photo-text);min-height:100v
     </div>
   </div>
 
-  <div class="sec"><h2>最近の履歴<small>RECENT</small></h2><a href="record.html">全履歴 ›</a></div>
-  <div class="recent" id="recentList">
-    <div style="text-align:center;color:var(--photo-dim);padding:20px;font-size:11px">読込中…</div>
-  </div>
+  <!-- 「最近の履歴」セクションは削除 (記録ページで見られるため重複) -->
+  <div class="sec" style="display:none"><h2>最近の履歴<small>RECENT</small></h2><a href="record.html">全履歴 ›</a></div>
+  <div class="recent" id="recentList" style="display:none"></div>
 
 </div>
 
