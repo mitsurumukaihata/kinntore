@@ -175,6 +175,15 @@ body{font-family:var(--f-ui),var(--f-jp);color:var(--photo-text);min-height:100v
   opacity:.60;
   filter:grayscale(.30) brightness(.90) contrast(.95);
 }
+/* キャラ名: セリフの上に小さく */
+.quiet-char{
+  display:block;
+  font-family:var(--f-display);font-size:9px;
+  color:var(--photo-dim);letter-spacing:.18em;
+  font-weight:400;margin-bottom:4px;
+  text-transform:uppercase;
+  min-height:11px;
+}
 /* セリフ: 画像の左側に収まるよう幅制限。
    日本語混じり文の単語途中改行を防ぐため line-break:strict + overflow-wrap:normal */
 .quiet-line > #quietMsg{
@@ -185,7 +194,7 @@ body{font-family:var(--f-ui),var(--f-jp);color:var(--photo-text);min-height:100v
   line-break:strict;       /* 日本語の禁則処理 (句読点等で正しく折返し) */
   line-height:1.65;
   white-space:normal;
-  text-wrap:pretty;        /* 対応ブラウザでは自然な折返し位置を最適化 */
+  text-wrap:pretty;
 }
 /* .head の日付も画像より前面に */
 .head{position:relative;z-index:1}
@@ -585,6 +594,23 @@ body{font-family:var(--f-ui),var(--f-jp);color:var(--photo-text);min-height:100v
 .medals .m .lab{font-size:9px !important;color:var(--photo-dim) !important;margin-top:4px}
 .medals .m .lab b{color:var(--photo-mute) !important;font-size:10px !important;font-weight:500 !important}
 
+/* タブ: 画面幅いっぱいに展開 (max-width 420 → 100%) */
+.tab{max-width:100% !important;left:0 !important;transform:none !important}
+
+/* ボリュームグラフ: 隣のカードが横にはみ出ないよう scroll-snap 厳密化 */
+.charts-swipe{
+  scroll-snap-type:x mandatory !important;
+  scroll-padding-inline:0 !important;
+  padding:4px 0 0 !important;
+}
+.chart-card{
+  flex:0 0 100% !important;  /* 1 枚で画面幅 (隣のカード見せない) */
+  scroll-snap-align:start !important;
+  scroll-snap-stop:always !important;
+  padding-left:18px !important;
+  padding-right:18px !important;
+}
+
 /* ============================================================
    CORE24 案B: 部位タイル を 縦リスト形式 へ (画像撤去・行統一)
    record / progress / pattern-i と同じ "行が並ぶ" 構造に統一
@@ -754,6 +780,7 @@ body{font-family:var(--f-ui),var(--f-jp);color:var(--photo-text);min-height:100v
 
   <!-- Phase 1+案A: 静かな観測セリフ (キャラはこの後ろに居る) -->
   <div class="quiet-line">
+    <span class="quiet-char" id="quietChar"></span>
     <span id="quietMsg"></span>
   </div>
 
@@ -867,8 +894,9 @@ body{font-family:var(--f-ui),var(--f-jp);color:var(--photo-text);min-height:100v
   <div class="charts-swipe" id="chartsSwipe"></div>
   <div class="dots" id="chartsDots"></div>
 
-  <div class="sec"><h2>実績<small>ACHIEVEMENTS</small></h2><a>すべて見る ›</a></div>
-  <div class="medals">
+  <!-- 「実績」セクションは削除 (CORE24 = 達成感の中和) -->
+  <div class="sec" style="display:none"><h2>実績<small>ACHIEVEMENTS</small></h2><a>すべて見る ›</a></div>
+  <div class="medals" style="display:none">
     <div class="row">
       <div class="m gold"><div class="badge"><svg viewBox="0 0 24 24" fill="none"><path d="M12 2 L14 9 L22 10 L16 15 L18 22 L12 18 L6 22 L8 15 L2 10 L10 9 Z" fill="#3a2a00"/></svg></div><div class="lab"><b>3日連続</b>WEEK STREAK</div></div>
       <div class="m silver"><div class="badge"><svg viewBox="0 0 24 24" fill="none"><path d="M12 2 L14 9 L22 10 L16 15 L18 22 L12 18 L6 22 L8 15 L2 10 L10 9 Z" fill="#222"/></svg></div><div class="lab"><b>10万kg</b>TOTAL VOLUME</div></div>
@@ -1254,9 +1282,13 @@ async function renderHomeData() {
 
       let result = null;
       if (window.pickDialogue && dialogueState) {
+        // bodyPart bias: 前回トレの部位でキャラを偏らせる (区分け強化)
+        // morizou: 肩/腕/胸 / rin: お尻/脚/腹
+        const lastPartJP = (lastSession && lastSession.part) || null;
         result = window.pickDialogue(dialogueState, {
           recent: recentMsgs,
-          vars: { days: daysSinceLast }
+          vars: { days: daysSinceLast },
+          bodyPart: lastPartJP
         });
       }
 
@@ -1388,11 +1420,22 @@ window.addEventListener('pageshow', () => {
     const day = Math.floor((d - start) / 86400000) + 1;
     dateEl.textContent = `${y}.${m}.${dd} ${wk} · DAY ${day}`;
   }
-  // Phase 1: onepctMsg → quietMsg ミラー (ヒーローUI隔離後の "静かな一言")
+  // Phase 1: onepctMsg → quietMsg ミラー + キャラ名表示
   const _onMsg = document.getElementById('onepctMsg');
   const _qMsg  = document.getElementById('quietMsg');
+  const _qChar = document.getElementById('quietChar');
   if (_onMsg && _qMsg) {
-    const sync = () => { _qMsg.textContent = (_onMsg.textContent || '').replace(/読込中…?/, '').trim(); };
+    const sync = () => {
+      _qMsg.textContent = (_onMsg.textContent || '').replace(/読込中…?/, '').trim();
+      // pinnedCharacter を localStorage の kt_101_log から取得して表示
+      if (_qChar) {
+        try {
+          const log = JSON.parse(localStorage.getItem('kt_101_log') || '{}');
+          const ch = log.pinnedCharacter;
+          _qChar.textContent = ch === 'morizou' ? 'モリゾウ' : ch === 'rin' ? 'リン' : '';
+        } catch (_) { _qChar.textContent = ''; }
+      }
+    };
     sync();
     new MutationObserver(sync).observe(_onMsg, { childList:true, characterData:true, subtree:true });
   }
