@@ -131,6 +131,9 @@ html,body{background:#000;overscroll-behavior-y:contain;-webkit-text-size-adjust
 /* ダッシュボード本体はスプラッシュとクロスフェード (ゆったり) */
 .app{opacity:0;animation:app-in 1.4s ease-in-out 3.2s forwards}
 .splash.skip ~ .app{opacity:1;animation:none}
+/* タブも .app と同タイミングでフェードイン (タブだけ先に見えるのを防ぐ) */
+.tab{opacity:0;animation:app-in 1.4s ease-in-out 3.2s forwards}
+.splash.skip ~ .tab{opacity:1;animation:none}
 @keyframes app-in{from{opacity:0}to{opacity:1}}
 button,a,.card,.btn,.tab a{touch-action:manipulation;-webkit-touch-callout:none;-webkit-user-select:none;user-select:none}
 /* テキスト切れ防止: flex/grid 子要素の最小幅を 0 に */
