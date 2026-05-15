@@ -562,8 +562,9 @@ body{font-family:var(--f-ui),var(--f-jp);color:var(--photo-text);min-height:100v
   align-items:baseline !important;
   justify-content:flex-start !important;
   padding:16px 0 !important;
-  /* 区切り線: -photo-line-strong (.16 alpha) で確実に見えるが主張しすぎない */
-  border-bottom:1px solid var(--photo-line-strong);
+  /* 区切り線: !important で Phase 2-B の border:0 を上書き */
+  border:0 !important;
+  border-bottom:1px solid var(--photo-line-strong) !important;
   border-radius:0 !important;
   background:transparent !important;
   text-decoration:none !important;
@@ -574,11 +575,11 @@ body{font-family:var(--f-ui),var(--f-jp);color:var(--photo-text);min-height:100v
   overflow:visible !important;
   transition:opacity .25s;
 }
-.parts .p:last-child{border-bottom:1px solid var(--photo-line-strong)}
-/* LIGHT モード: 暖かい紙色背景に対して .16 黒だとまだ薄い → .25 まで強く */
-:root[data-theme="light"] .parts{border-top-color:rgba(40,40,40,0.22) !important}
-:root[data-theme="light"] .parts .p{border-bottom-color:rgba(40,40,40,0.22) !important}
-:root[data-theme="light"] .parts .p:last-child{border-bottom-color:rgba(40,40,40,0.22) !important}
+.parts .p:last-child{border-bottom:1px solid var(--photo-line-strong) !important}
+/* LIGHT モード: 暖かい紙色背景に対して .16 黒だとまだ薄い → .22 まで強く */
+:root[data-theme="light"] .parts{border-top:1px solid rgba(40,40,40,0.22) !important}
+:root[data-theme="light"] .parts .p{border-bottom:1px solid rgba(40,40,40,0.22) !important}
+:root[data-theme="light"] .parts .p:last-child{border-bottom:1px solid rgba(40,40,40,0.22) !important}
 .parts .p:active{transform:none !important;opacity:.7}
 .parts .p img{display:none !important}
 /* JP ラベル: 行の左端、主役 */
