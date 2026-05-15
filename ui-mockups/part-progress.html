@@ -109,7 +109,29 @@ body{font-family:var(--f-ui),var(--f-jp);color:var(--photo-text);min-height:100v
 .ex-track-empty{font-family:var(--f-jp);font-size:11px;color:var(--photo-dim);padding-top:8px;border-top:1px solid rgba(255,255,255,.04);text-align:center}
 
 .empty{text-align:center;color:var(--photo-dim);padding:32px 16px;font-family:var(--f-jp);font-size:13px}
-.loading{text-align:center;padding:40px 20px;color:var(--photo-mute);font-family:var(--f-display);font-size:11px;letter-spacing:.18em}
+/* CORE24 loading (Phase A): キャラの影だけ + 三点 "…"
+   "読込中" は監視UI感が強いので消す。画像で「居る気配」を残す */
+.loading{
+  position:relative;min-height:240px;padding:80px 20px 0;
+  text-align:center;color:transparent;font-size:0;
+  letter-spacing:.18em;overflow:hidden;
+}
+.loading::before{
+  content:'';position:absolute;bottom:0;left:50%;
+  transform:translateX(-50%);
+  width:64%;max-width:240px;aspect-ratio:941/1672;
+  background:url('img/hero-chest-light.png') no-repeat center bottom / cover;
+  opacity:.10;
+  filter:grayscale(1) brightness(.6) contrast(.85);
+  pointer-events:none;
+}
+.loading::after{
+  content:'…';position:relative;display:block;
+  font-size:20px;color:var(--photo-mute);letter-spacing:.3em;
+  font-family:var(--f-mono);opacity:.55;z-index:1;
+  padding-top:8px;
+}
+:root[data-theme="light"] .loading::before{opacity:.13;filter:grayscale(1) brightness(.55) contrast(.9)}
 
 .tab{position:fixed;bottom:0;left:50%;transform:translateX(-50%);width:100%;max-width:420px;background:rgba(10,10,10,.95);backdrop-filter:blur(12px);border-top:1px solid var(--photo-line);padding:10px 8px calc(28px + env(safe-area-inset-bottom));display:grid;grid-template-columns:repeat(5,1fr);gap:4px;z-index:30}
 .tab a{display:flex;flex-direction:column;align-items:center;gap:4px;font-size:10px;color:var(--photo-dim);text-decoration:none;letter-spacing:.04em;cursor:pointer;font-family:var(--f-jp);font-weight:700;padding:4px 0}
