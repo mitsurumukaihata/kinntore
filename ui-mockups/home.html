@@ -147,33 +147,43 @@ body{font-family:var(--f-ui),var(--f-jp);color:var(--photo-text);min-height:100v
 .legacy-hidden{display:none}
 .quiet-line{
   position:relative;
-  padding:8px 18px 28px 18px;  /* 画像はもう右上にせり上がるので右 padding 不要 */
+  padding:8px 18px 28px 18px;
   min-height:520px;
   font-family:var(--f-jp);font-size:14px;color:var(--photo-mute);
   letter-spacing:.005em;font-weight:400;line-height:1.5;opacity:.92;
+  z-index:1;  /* 画像より前面 */
 }
-/* CORE24 案A サイズ: 部位ページに近い大型ヒーロー。右半分を占める */
+/* CORE24 案A サイズ: 大型ヒーロー。画面上端 (safe-area 含む) から開始、
+   下方向に向けてフェードアウト */
 .mood-char{
-  position:absolute;right:-10px;top:-100px;  /* .head 上端までせり上げる */
-  width:62%;max-width:300px;height:540px;
+  position:absolute;
+  top:0;right:-10px;  /* .app の最上端から (.app は safe-area 含む) */
+  width:64%;max-width:320px;height:560px;
   object-fit:cover;object-position:center top;
-  opacity:.65;
+  opacity:.70;
   filter:grayscale(.20) brightness(.92) contrast(.95);
   pointer-events:none;
   transition:opacity .6s,filter .6s;
   z-index:0;
-  /* 左端・下端を背景に溶ける mask で柔らかく */
-  -webkit-mask-image: linear-gradient(to left, rgba(0,0,0,1) 60%, rgba(0,0,0,0)),
-                      linear-gradient(to top, rgba(0,0,0,0), rgba(0,0,0,1) 30%);
-  -webkit-mask-composite: source-in;
-  mask-image: linear-gradient(to left, rgba(0,0,0,1) 60%, rgba(0,0,0,0));
+  /* 下方向にフェードアウト + 左端も少し溶ける */
+  -webkit-mask-image:
+    linear-gradient(to bottom, rgba(0,0,0,1) 65%, rgba(0,0,0,0) 100%);
+  mask-image:
+    linear-gradient(to bottom, rgba(0,0,0,1) 65%, rgba(0,0,0,0) 100%);
 }
 :root[data-theme="light"] .mood-char{
-  opacity:.55;
+  opacity:.60;
   filter:grayscale(.30) brightness(.90) contrast(.95);
 }
-/* 日付/セリフを画像より前面に */
-.quiet-line > span{position:relative;z-index:1}
+/* セリフ: 画像の左側に収まるよう幅制限 (改行は自動) */
+.quiet-line > #quietMsg{
+  display:inline-block;
+  max-width:55%;  /* 画像の左側に収める */
+  word-break:break-word;
+  line-height:1.6;
+}
+/* .head の日付も画像より前面に */
+.head{position:relative;z-index:1}
 
 /* Phase 2-C: 「生活ノイズを 1% 戻す」 (高級アート化を防ぐ)。
    美術館ではなく深夜の生活空間。"何も起きていないのに少し居たくなる"。
@@ -728,10 +738,12 @@ body{font-family:var(--f-ui),var(--f-jp);color:var(--photo-text);min-height:100v
     </div>
   </div>
 
-  <!-- Phase 1+案C: ヒーローUI から隔離した静かな観測 + 時間帯キャラの気配 -->
+  <!-- 時間帯キャラ: .app 直下に配置して画面上端 (safe-area) から開始 -->
+  <img class="mood-char" id="moodCharImg" src="img/hero-chest-light.png?v=c8" alt="" loading="lazy">
+
+  <!-- Phase 1+案A: 静かな観測セリフ (キャラはこの後ろに居る) -->
   <div class="quiet-line">
     <span id="quietMsg"></span>
-    <img class="mood-char" id="moodCharImg" src="img/hero-chest-light.png?v=c8" alt="" loading="lazy">
   </div>
 
   <!-- Phase 1 解体中: 101%ルール / streak / 主役立ち絵 を非表示。
