@@ -1,5 +1,5 @@
 // kinntore PWA service worker
-const VERSION = 'v133';
+const VERSION = 'v134';
 const CACHE = `kinntore-${VERSION}`;
 const PRECACHE = [
   './',
@@ -14,6 +14,8 @@ const PRECACHE = [
   'manifest.json',
   'img/icon-192.png',
   'img/icon-512.png',
+  'img/apple-touch-icon.png',
+  'img/favicon.png',
   'img/bachiluck-logo.png',
   'img/bachiluck-logo-mark.png',
   'img/bachiluck-mark.png'
