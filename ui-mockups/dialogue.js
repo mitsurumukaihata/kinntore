@@ -190,7 +190,7 @@ window.DIALOGUE_DATA = {
 window.DIALOGUE_PARTS = {
   morizou: ['肩', '腕', '胸'],
   rin: ['お尻', '脚', '腹']
-  // 背中, ふくらはぎ は共通 (50:50)
+  // 背中 は共通 (50:50)
 };
 
 // セリフ選択

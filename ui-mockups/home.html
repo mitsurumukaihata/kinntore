@@ -922,11 +922,6 @@ body{font-family:var(--f-ui),var(--f-jp);color:var(--photo-text);min-height:100v
       <img class="part-img" data-part="arm" src="img/part-arm.png" alt="arm">
       <span class="arrow">›</span>
     </a>
-    <a class="p" href="pattern-i.html#calf" data-jp="ふくらはぎ" data-en="CALF">
-      <div class="stat">--</div>
-      <img class="part-img" data-part="calf" src="img/part-calf.png" alt="calf">
-      <span class="arrow">›</span>
-    </a>
   </div>
 
   <div class="sec"><h2>今週の統計<small>THIS WEEK</small></h2></div>
@@ -966,7 +961,7 @@ const _PART_DEFS = [
   { tag:'abs', label:'腹' },
   { tag:'hip', label:'お尻' },
 ];
-const TAG_LABEL_HOME = { chest:'胸', shoulder:'肩', back:'背中', arm:'腕', leg:'脚', calf:'ふくらはぎ', abs:'腹', hip:'お尻' };
+const TAG_LABEL_HOME = { chest:'胸', shoulder:'肩', back:'背中', arm:'腕', leg:'脚', abs:'腹', hip:'お尻' };
 
 function buildChart(p, i, points, total, deltaPct, hasData) {
   const w=320, h=110, PAD_X=8;
@@ -1505,7 +1500,7 @@ window.addEventListener('pageshow', () => {
 // 本日にセットがあれば「本日のトレーニング」、無ければ過去14日で直近の日を「前回のトレーニング」として表示
 (async function() {
   const API = 'https://kinntore-api.33322666666mm.workers.dev';
-  const TAG_LABEL = { chest:'胸', shoulder:'肩', back:'背中', arm:'腕', leg:'脚', calf:'ふくらはぎ', abs:'腹', hip:'お尻' };
+  const TAG_LABEL = { chest:'胸', shoulder:'肩', back:'背中', arm:'腕', leg:'脚', abs:'腹', hip:'お尻' };
   const dayKey = (d) => d.getFullYear()+'-'+String(d.getMonth()+1).padStart(2,'0')+'-'+String(d.getDate()).padStart(2,'0');
   const fmtMD = (d) => (d.getMonth()+1)+'/'+d.getDate();
   const wkdays = ['SUN','MON','TUE','WED','THU','FRI','SAT'];
