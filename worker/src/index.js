@@ -120,6 +120,54 @@ export default {
         return json({ ok: false, message: 'no set to delete' }, 200, origin);
       }
 
+      // GET /api/export — 全記録を 1 発で取得 (バックアップ用、全期間)
+      if (url.pathname === '/api/export' && request.method === 'GET') {
+        const r = await env.DB
+          .prepare('SELECT day, tag, exercise_name, set_no, weight, reps, recorded_at FROM workout_logs ORDER BY day, tag, exercise_name, set_no')
+          .all();
+        const sets = r.results || [];
+        return json({ ok: true, count: sets.length, exported_at: new Date().toISOString(), sets }, 200, origin);
+      }
+
+      // POST /api/import — 一括復元  body: { sets:[...], mode:'replace'|'merge' }
+      //   replace = 全削除してから復元 (完全リストア)
+      //   merge   = 追加のみ (既存は残す)
+      if (url.pathname === '/api/import' && request.method === 'POST') {
+        const body = await request.json();
+        const sets = Array.isArray(body.sets) ? body.sets : [];
+        const mode = body.mode === 'merge' ? 'merge' : 'replace';
+        if (!sets.length) return json({ error: 'sets is empty' }, 400, origin);
+
+        // 入力検証 (壊れた行は弾く)
+        const clean = sets.filter(s => s && s.tag && s.exercise_name);
+        if (!clean.length) return json({ error: 'no valid rows' }, 400, origin);
+
+        if (mode === 'replace') {
+          await env.DB.prepare('DELETE FROM workout_logs').run();
+        }
+
+        // バッチ INSERT (D1 batch、50件ずつチャンク)
+        const stmt = env.DB.prepare(
+          'INSERT INTO workout_logs (day, tag, exercise_name, set_no, weight, reps, recorded_at) VALUES (?, ?, ?, ?, ?, ?, ?)'
+        );
+        let inserted = 0;
+        for (let i = 0; i < clean.length; i += 50) {
+          const chunk = clean.slice(i, i + 50);
+          const batch = chunk.map(s => stmt.bind(
+            s.day || todayUTCDate(),
+            s.tag,
+            s.exercise_name,
+            +s.set_no || 1,
+            +s.weight || 0,
+            +s.reps || 0,
+            s.recorded_at || ''
+          ));
+          await env.DB.batch(batch);
+          inserted += chunk.length;
+        }
+        return json({ ok: true, mode, inserted, skipped: sets.length - clean.length }, 200, origin);
+      }
+
       // GET /api/summary?from=YYYY-MM-DD&to=YYYY-MM-DD (期間集計、ボリューム推移用)
       if (url.pathname === '/api/summary' && request.method === 'GET') {
         const from = url.searchParams.get('from');

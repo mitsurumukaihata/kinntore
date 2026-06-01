@@ -106,7 +106,7 @@ body{font-family:var(--f-ui),var(--f-jp);color:var(--photo-text);min-height:100v
 .confirm.on{display:flex}
 .confirm-card{background:var(--photo-card);border:1px solid var(--photo-line);border-radius:14px;padding:24px;max-width:340px;width:100%;text-align:center}
 .confirm-card h3{font-family:var(--f-jp);font-size:16px;font-weight:900;margin-bottom:10px}
-.confirm-card p{font-family:var(--f-jp);font-size:13px;color:var(--photo-mute);margin-bottom:18px;line-height:1.6}
+.confirm-card p{font-family:var(--f-jp);font-size:13px;color:var(--photo-mute);margin-bottom:18px;line-height:1.6;white-space:pre-line}
 .confirm-card .acts{display:grid;grid-template-columns:1fr 1fr;gap:10px}
 
 .tab{position:fixed;bottom:0;left:0;transform:none;width:100%;max-width:100%;background:rgba(10,10,10,.95);backdrop-filter:blur(12px);border-top:1px solid var(--photo-line);padding:10px 8px calc(28px + env(safe-area-inset-bottom));display:grid;grid-template-columns:repeat(5,1fr);gap:4px;z-index:30}
@@ -358,10 +358,17 @@ body{font-family:var(--f-ui),var(--f-jp);color:var(--photo-text);min-height:100v
     <div class="card">
       <div class="row">
         <div class="l">
-          <div class="nm">エクスポート</div>
-          <div class="desc">全記録をJSONでダウンロード</div>
+          <div class="nm">バックアップ</div>
+          <div class="desc">全記録＋設定を1つのJSONで保存<br>機種変・端末故障に備えて</div>
         </div>
-        <div class="r"><button class="btn" id="btnExportJson">JSON</button></div>
+        <div class="r"><button class="btn" id="btnBackup">保存</button></div>
+      </div>
+      <div class="row">
+        <div class="l">
+          <div class="nm">復元</div>
+          <div class="desc">バックアップJSONから記録＋設定を戻す<br>復元前に現状を自動保存します</div>
+        </div>
+        <div class="r"><button class="btn" id="btnRestore">読込</button></div>
       </div>
       <div class="row">
         <div class="l">
@@ -371,6 +378,7 @@ body{font-family:var(--f-ui),var(--f-jp);color:var(--photo-text);min-height:100v
         <div class="r"><button class="btn" id="btnExportCsv">CSV</button></div>
       </div>
     </div>
+    <input type="file" id="restoreFile" accept="application/json,.json" style="display:none">
   </div>
 
   <!-- 危険ゾーン -->
@@ -522,18 +530,25 @@ function renderGoals() {
 }
 renderGoals();
 
-// エクスポート
+// ===== バックアップ / 復元 =====
+// 全記録を 1 発で取得 (新 /api/export エンドポイント、全期間)
 async function fetchAll() {
-  // 過去365日分を取得
-  const today = new Date(); today.setHours(0,0,0,0);
-  const days = []; for (let i=0;i<365;i++){const d=new Date(today);d.setDate(d.getDate()-i);days.push(d.getFullYear()+'-'+String(d.getMonth()+1).padStart(2,'0')+'-'+String(d.getDate()).padStart(2,'0'))}
-  const all = [];
-  const chunks=[]; for(let i=0;i<days.length;i+=8) chunks.push(days.slice(i,i+8));
-  for (const c of chunks) {
-    const r = await Promise.all(c.map(d => fetch(API+'/api/sets?day='+d).then(x=>x.ok?x.json():{sets:[]}).catch(()=>({sets:[]}))));
-    for (const x of r) all.push(...(x.sets||[]));
-  }
-  return all;
+  try {
+    const r = await fetch(API+'/api/export');
+    if (r.ok) { const j = await r.json(); return j.sets || []; }
+  } catch(_) {}
+  return [];
+}
+// localStorage の設定だけ抜き出す (kinntore_cache は除外)
+function collectSettings() {
+  const o = {};
+  Object.keys(localStorage)
+    .filter(k => k.startsWith('kinntore_') && !k.startsWith('kinntore_cache'))
+    .forEach(k => { o[k] = localStorage.getItem(k); });
+  // kt_101_log (ホームのミニログ) も含める
+  const kt = localStorage.getItem('kt_101_log');
+  if (kt !== null) o['kt_101_log'] = kt;
+  return o;
 }
 function download(filename, content, mime) {
   const blob = new Blob([content], { type: mime });
@@ -542,12 +557,29 @@ function download(filename, content, mime) {
   a.href = url; a.download = filename; document.body.appendChild(a); a.click();
   setTimeout(()=>{ a.remove(); URL.revokeObjectURL(url); }, 100);
 }
-$('btnExportJson').onclick = async () => {
+// 完全バックアップ JSON を作って返す (DL もする)
+async function makeBackup(silent) {
+  const sets = await fetchAll();
+  const backup = {
+    app: 'kinntore',
+    backup_version: 1,
+    exported_at: new Date().toISOString(),
+    count: sets.length,
+    settings: collectSettings(),
+    sets,
+  };
+  const name = 'kinntore_backup_'+new Date().toISOString().slice(0,10)+'.json';
+  download(name, JSON.stringify(backup, null, 2), 'application/json');
+  if (!silent) toast(sets.length+'件＋設定をバックアップしました');
+  return backup;
+}
+
+$('btnBackup').onclick = async () => {
   toast('読込中…');
-  const all = await fetchAll();
-  download('kinntore_'+new Date().toISOString().slice(0,10)+'.json', JSON.stringify(all, null, 2), 'application/json');
-  toast(all.length+'件をエクスポートしました');
+  try { await makeBackup(false); }
+  catch(e){ toast('バックアップ失敗: '+(e.message||e)); }
 };
+
 $('btnExportCsv').onclick = async () => {
   toast('読込中…');
   const all = await fetchAll();
@@ -555,6 +587,57 @@ $('btnExportCsv').onclick = async () => {
   const rows = all.map(s => [s.day, s.tag, '"'+(s.exercise_name||'').replace(/"/g,'""')+'"', s.set_no, s.weight, s.reps, s.recorded_at||''].join(',')).join('\n');
   download('kinntore_'+new Date().toISOString().slice(0,10)+'.csv', head + rows, 'text/csv;charset=utf-8');
   toast(all.length+'件をCSVに出力しました');
+};
+
+// 復元: ファイル選択 → 中身確認 → 安全スナップショット → /api/import (replace)
+$('btnRestore').onclick = () => $('restoreFile').click();
+$('restoreFile').onchange = async (e) => {
+  const file = e.target.files && e.target.files[0];
+  e.target.value = '';  // 同じファイル再選択を許可
+  if (!file) return;
+  let data;
+  try {
+    const text = await file.text();
+    data = JSON.parse(text);
+  } catch(_) { toast('JSONの読込に失敗しました'); return; }
+
+  // 旧形式 (sets だけの配列) と新形式 ({sets, settings}) 両対応
+  const sets = Array.isArray(data) ? data : (data.sets || []);
+  const settings = (data && data.settings) || null;
+  if (!Array.isArray(sets) || !sets.length) { toast('記録が含まれていません'); return; }
+
+  const dateStr = (data && data.exported_at) ? data.exported_at.slice(0,10) : '不明';
+  confirmDialog(
+    'バックアップから復元',
+    `${sets.length}件の記録${settings?'＋設定':''}を復元します (バックアップ日: ${dateStr})。\n\n現在のD1の記録は全て置き換わります。念のため、復元前に現状を自動でバックアップ保存します。`,
+    async () => {
+      try {
+        toast('現状を保存中…');
+        await makeBackup(true);  // pre-snapshot (CLAUDE.md ルール準拠)
+
+        toast('復元中…');
+        const r = await fetch(API+'/api/import', {
+          method:'POST',
+          headers:{'Content-Type':'application/json'},
+          body: JSON.stringify({ sets, mode:'replace' })
+        });
+        const j = await r.json();
+        if (!r.ok || !j.ok) throw new Error(j.error || 'import failed');
+
+        // 設定も復元
+        if (settings) {
+          Object.keys(settings).forEach(k => {
+            try { localStorage.setItem(k, settings[k]); } catch(_) {}
+          });
+        }
+        localStorage.removeItem('kinntore_cache');
+        toast(`${j.inserted}件を復元しました`);
+        setTimeout(()=>location.reload(), 1200);
+      } catch(err) {
+        toast('復元失敗: '+(err.message||err));
+      }
+    }
+  );
 };
 
 // リセット
