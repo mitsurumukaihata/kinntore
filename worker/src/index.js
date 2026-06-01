@@ -2,7 +2,8 @@
 // CORS: GitHub Pages + ローカル開発用に *.github.io と localhost を許可
 
 const ALLOW_ORIGINS = [
-  'https://mitsurumukaihata.github.io',
+  'https://core24.pages.dev',            // 本番 (Cloudflare Pages)
+  'https://mitsurumukaihata.github.io',  // 旧 (GitHub Pages、移行期間中の保険)
   'http://localhost:8765',
   'http://127.0.0.1:8765',
 ];

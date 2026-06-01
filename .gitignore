@@ -4,6 +4,9 @@ ui-mockups/img/hero.png
 ui-mockups/img/tile-*.png
 # hero-*.png は受領した正規アセットなのでコミット対象
 
+# Cloudflare Pages ビルド成果物 (wrangler pages deploy 用、git管理外)
+dist/
+
 # Node
 node_modules/
 ui-mockups/node_modules/
